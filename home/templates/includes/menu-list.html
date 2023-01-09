@@ -1,0 +1,567 @@
+{% load i18n static admin_berry %}
+
+<li class="pc-item pc-caption">
+  <label>Dashboard</label>
+  <i class="ti ti-dashboard"></i>
+</li>
+<li class="pc-item">
+  {% if request.user.is_superuser %}
+  <a href="{% url 'admin:index' %}" class="pc-link">
+  {% else %}
+  <a href="{% url 'dashboard_index' %}" class="pc-link">
+  {% endif %}
+    <span class="pc-micon"><i class="ti ti-dashboard"></i></span>
+    <span class="pc-mtext">Default</span>
+  </a>
+</li>
+
+{% admin_get_menu as app_list %}
+{% if app_list %}
+  {% for app in app_list %}
+    {% if app.has_perms and not app.pinned %}
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">
+        <span class="pc-micon"><i class="ti {{app.icon}}"></i></span>
+        <span class="pc-mtext">{{ app.label|slice:15 }}{% if app.label|length > 15 %}..{% endif %}</span>
+        <span class="pc-arrow"><i class="ti ti-chevron-right"></i></span>
+      </a>
+      {% if app.models %}
+        <ul class="pc-submenu">
+          {% for model in app.models %}
+          {% if model.url %}
+          <li class="pc-item">
+            <a class="pc-link" href="{{ model.url }}">
+              {{ model.label }}
+            </a>
+          </li>
+          {% else %}
+          <li class="pc-item">{{ model.label }}</li>
+          {% endif %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </li>
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% if not request.user.is_authenticated or request.user.is_superuser %}
+<li class="pc-item pc-caption">
+  <label>Pages</label>
+  <i class="ti ti-news"></i>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-key"></i></span><span
+      class="pc-mtext">User Pages</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    {% if request.user.is_superuser %}
+      <li class="pc-item"><a class="pc-link" href="{% url 'admin:password_change' %}">Change Password</a></li>
+      <li class="pc-item"><a class="pc-link" href="{% url 'admin:logout' %}">Logout</a></li>
+    {% else %}
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">Authentication 1<span class="pc-arrow"><i
+            data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" href="{% url 'login_v1' %}">Login</a></li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'register_v1' %}">Register</a></li>
+      </ul>
+    </li>
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">Authentication 2<span class="pc-arrow"><i
+            data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" href="{% url 'login_v2' %}">Login</a></li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'register_v2' %}">Register</a></li>
+      </ul>
+    </li>
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">Authentication 3<span class="pc-arrow"><i
+            data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" href="{% url 'login_v3' %}">Login</a></li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'register_v3' %}">register</a></li>
+      </ul>
+    </li>
+    {% endif %}
+  </ul>
+</li>
+
+{% endif %}
+
+
+{% if request.user.is_authenticated %}
+<li class="pc-item">
+  <a href="{% url 'analytics' %}" class="pc-link"><span class="pc-micon"><i
+        class="ti ti-device-analytics"></i></span><span class="pc-mtext">Analytics</span></a>
+</li>
+<li class="pc-item pc-caption">
+  <label>Widget</label>
+  <i class="ti ti-chart-arcs"></i>
+</li>
+<li class="pc-item">
+  <a href="{% url 'statistics' %}" class="pc-link"><span class="pc-micon"><i
+        class="ti ti-chart-arcs"></i></span><span class="pc-mtext">Statistics</span></a>
+</li>
+<li class="pc-item">
+  <a href="{% url 'data' %}" class="pc-link"><span class="pc-micon"><i
+        class="ti ti-clipboard-list"></i></span><span class="pc-mtext">Data</span></a>
+</li>
+<li class="pc-item">
+  <a href="{% url 'chart' %}" class="pc-link"><span class="pc-micon"><i
+        class="ti ti-chart-infographic"></i></span><span class="pc-mtext">Chart</span></a>
+</li>
+<li class="pc-item pc-caption">
+  <label>Layout Demo</label>
+  <i class="ti ti-layout"></i>
+</li>
+<li class="pc-item">
+  <a href="{% url 'vertical_layout' %}" class="pc-link"><span class="pc-micon"><i
+        class="ti ti-layout-sidebar"></i></span><span class="pc-mtext">Vertical</span></a>
+</li>
+<li class="pc-item">
+  <a href="{% url 'horizontal_layout' %}" class="pc-link"><span class="pc-micon"><i class="ti ti-layout-navbar"></i></span><span
+      class="pc-mtext">Horizontal</span></a>
+</li>
+<li class="pc-item">
+  <a href="{% url 'compact_layout' %}" class="pc-link"><span class="pc-micon"><i class="ti ti-layout"></i></span><span
+      class="pc-mtext">Compact</span></a>
+</li>
+<li class="pc-item pc-caption">
+  <label>Application</label>
+  <i class="ti ti-layout-kanban"></i>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-user-check"></i></span><span
+      class="pc-mtext">Users</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'social_profile' %}">Social Profile</a></li>
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">Account Profile<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" href="{% url 'account_profile_v1' %}">Profile 01</a></li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'account_profile_v2' %}">Profile 02</a></li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'account_profile_v3' %}">Profile 03</a></li>
+      </ul>
+    </li>
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">Cards<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" href="{% url 'user_card_v1' %}">Style 01</a></li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'user_card_v2' %}">Style 02</a></li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'user_card_v3' %}">Style 03</a></li>
+      </ul>
+    </li>
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">List<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" href="{% url 'user_list_v1' %}">Style 01</a></li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'user_list_v2' %}">Style 02</a></li>
+      </ul>
+    </li>
+  </ul>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-basket"></i></span><span
+      class="pc-mtext">Customer</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'customer_list' %}">Customer List</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'order_list' %}">Order List</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'create_invoice' %}">Create Invoice</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'order_details' %}">Order Details</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'product_list' %}">Product</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'product_review' %}">Product Review</a></li>
+  </ul>
+</li>
+<li class="pc-item">
+  <a href="{% url 'chat' %}" class="pc-link"><span class="pc-micon"><i class="ti ti-messages"></i></span><span
+      class="pc-mtext">Chat</span></a>
+</li>
+<li class="pc-item">
+  <a href="{% url 'kanban' %}" class="pc-link"><span class="pc-micon"><i
+        class="ti ti-layout-kanban"></i></span><span class="pc-mtext">Kanban</span></a>
+</li>
+<li class="pc-item">
+  <a href="{% url 'mail' %}" class="pc-link"><span class="pc-micon"><i class="ti ti-mail"></i></span><span
+      class="pc-mtext">Mail</span></a>
+</li>
+<li class="pc-item">
+  <a href="{% url 'calendar' %}" class="pc-link"><span class="pc-micon"><i
+        class="ti ti-calendar"></i></span><span class="pc-mtext">Calendar</span></a>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-nfc"></i></span><span
+      class="pc-mtext">Contact</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'contact_cards' %}">Cards</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'contact_list' %}">List</a></li>
+  </ul>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-basket"></i></span><span
+      class="pc-mtext">E-commerce</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'ecom_product' %}">Product</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'ecom_product_details' %}">Product details</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'ecom_product_list' %}">Product List</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'ecom_checkout' %}">Checkout</a></li>
+  </ul>
+</li>
+<li class="pc-item pc-caption">
+  <label>Elements</label>
+  <i class="ti ti-apps"></i>
+</li>
+<li class="pc-item">
+  <a href="{% url 'typography' %}" class="pc-link"><span class="pc-micon"><i
+        class="ti ti-typography"></i></span><span class="pc-mtext">Typography</span></a>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-apps"></i></span><span
+      class="pc-mtext">Basic</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'alerts' %}">Alert</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'button' %}">Button</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'badges' %}">Badges</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'breadcrumb_pagination' %}">Breadcrumb</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'card' %}">Cards</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'color' %}">Color</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'collapse' %}">Collapse</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'carousel' %}">Carousel</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'dropdowns' %}">Dropdowns</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'grid' %}">Grid system</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'offcanvas' %}">Offcanvas</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'progress' %}">Progress</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'list_group' %}">List group</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'modal' %}">Modal</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'spinner' %}">Spinner</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'tabs' %}">Tabs & pills</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'tooltip_popover' %}">Tooltip</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'toasts' %}">Toasts</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'extra' %}">Other</a></li>
+  </ul>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-briefcase"></i></span><span
+      class="pc-mtext">Advance</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'sweet_alert' %}">Sweet alert</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'datepicker' %}">Datepicker</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'lightbox' %}">Lightbox</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'ac_modal' %}">Model</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'notification' %}">Notification</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'range_slider' %}">Range slider</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'slider' %}">Slider</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'syntax_highlighter' %}">Syntax Highlighter</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'tour' %}">Tour</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'tree_view' %}">Tree view</a></li>
+  </ul>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-plant-2"></i></span><span
+      class="pc-mtext">Icons</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'feather' %}">Feather</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'font_awesome' %}">Font Awesome 5</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'material' %}">Material</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'tabler' %}">Tabler</a></li>
+  </ul>
+</li>
+<li class="pc-item pc-caption">
+  <label>Forms</label>
+  <i class="ti ti-forms"></i>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-forms"></i></span><span class="pc-mtext">Forms
+      Elements</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'form_elements' %}">Form Basic</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'form_floating' %}">Form Floating</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'form_options' %}">Form Options</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'input_groups' %}">Input Groups</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'checkbox' %}">Checkbox</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'radio' %}">Radio</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'switch' %}">Switch</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'mega_option' %}">Mega option</a></li>
+  </ul>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-plug"></i></span><span class="pc-mtext">Forms
+      Plugins</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item pc-hasmenu">
+      <a class="pc-link" href="#">Date<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" href="{% url 'form_datepicker' %}">Datepicker</a></li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'date_range_picker' %}">Date Range Picker</a> </li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'timepicker' %}">Timepicker</a></li>
+      </ul>
+    </li>
+    <li class="pc-item pc-hasmenu">
+      <a class="pc-link" href="#">Select<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" href="{% url 'form_choices' %}">Choices js</a></li>
+      </ul>
+    </li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'recaptcha' %}">Google reCaptcha</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'input_mask' %}">Input Masks</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'clipboard' %}">Clipboard</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'nouislider' %}">Nouislider</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'bootstrap_switch' %}">Bootstrap Switch</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'typeahead' %}">Typeahead</a></li>
+  </ul>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"> <i class="ti ti-pencil"></i></span><span class="pc-mtext">Text
+      Editors</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'tinymce' %}">Tinymce</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'quill' %}">Quill</a></li>
+    <li class="pc-item pc-hasmenu">
+      <a class="pc-link" href="#">CK editor<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" href="{% url 'ck_editor_classic' %}">classic</a></li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'ck_editor_document' %}">Document</a></li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'ck_editor_inline' %}">Inline</a></li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'ck_editor_balloon' %}">Balloon</a></li>
+      </ul>
+    </li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'markdown' %}">Markdown</a></li>
+  </ul>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-layout"></i></span><span class="pc-mtext">Form
+      Layouts</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'form_layout' %}">Layouts</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'multicolumn' %}">Multicolumn</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'action_bars' %}">Actionbars</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'sticky_action_bars' %}">Sticky Action bars</a> </li>
+  </ul>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-cloud-upload"></i></span><span
+      class="pc-mtext">File upload</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'dropzone' %}">Dropzone</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'uppy' %}">Uppy</a></li>
+  </ul>
+</li>
+<li class="pc-item">
+  <a href="{% url 'form_validation' %}" class="pc-link"><span class="pc-micon"><i
+        class="ti ti-clipboard-check"></i></span><span class="pc-mtext">Form Validation</span></a>
+</li>
+<li class="pc-item"><a href="{% url 'image_cropper' %}" class="pc-link"><span class="pc-micon"><i
+        class="ti ti-crop"></i></span><span class="pc-mtext">Image cropper</span></a></li>
+<li class="pc-item pc-caption">
+  <label>table</label>
+  <i class="ti ti-table-export"></i>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-table"></i></span><span class="pc-mtext">Bootstrap
+      table</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'basic_table' %}">Basic table</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'sizing_table' %}">Sizing table</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'border_table' %}">Border table</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'styling_table' %}">Styling table</a></li>
+  </ul>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-table-export"></i></span><span
+      class="pc-mtext">Vanilla table</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'basic_initialization' %}">Basic initialization</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'dynamic_import' %}">Dynamic Import</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'render_column_cells' %}">Render Column Cells</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'column_manipulation' %}">Column Manipulation</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'datetime_sorting' %}">Datetime Sorting</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'methods' %}">Methods</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'add_rows' %}">Add Rows</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'fetch_api' %}">Fetch API</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'filters' %}">Filters</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'export' %}">Export</a></li>
+  </ul>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-table"></i></span><span class="pc-mtext">Data
+      table</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'advance_initialization' %}">Advance initialization</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'advance_styling' %}">Styling</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'advance_api' %}">API</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'advance_plugin' %}">Plug-in</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'advance_data_source' %}">Data sources</a></li>
+  </ul>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-table"></i></span><span class="pc-mtext">DT
+      extensions</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'autofill' %}">Autofill</a></li>
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">Button<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" href="{% url 'basic_button' %}">Basic button</a></li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'data_export' %}">Data export</a></li>
+      </ul>
+    </li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'col_reorder' %}">Col reorder</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'fixed_column' %}">Fixed columns</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'fixed_header' %}">Fixed header</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'key_table' %}">Key table</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'responsive' %}">Responsive</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'row_reorder' %}">Row reorder</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'scroller' %}">Scroller</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'select_table' %}">Select table</a></li>
+  </ul>
+</li>
+<li class="pc-item pc-caption">
+  <label>Pages</label>
+  <i class="ti ti-news"></i>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-key"></i></span><span
+      class="pc-mtext">Authentication</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">Authentication 1<span class="pc-arrow"><i
+            data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'login_v1' %}">Login</a></li>
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'register_v1' %}">Register</a></li>
+        <li class="pc-item"><a class="pc-link" target="_blank" href="#">Forgot
+            Password</a></li>
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'check_mail_v1' %}">check mail</a></li>
+        <li class="pc-item"><a class="pc-link" target="_blank" href="#">reset password</a>
+        </li>
+        {% if request.user.is_authenticated %}
+        <li class="pc-item">
+          <a class="pc-link" target="_blank" href="{% url 'password_change_v1' %}">Change password</a>
+        </li>
+        {% endif %}
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'code_verification_v1' %}">code
+            verification</a></li>
+      </ul>
+    </li>
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">Authentication 2<span class="pc-arrow"><i
+            data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'login_v2' %}">Login</a></li>
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'register_v2' %}">Register</a></li>
+        <li class="pc-item"><a class="pc-link" target="_blank" href="#">Forgot
+            password</a>
+        </li>
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'check_mail_v2' %}">check mail</a></li>
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'reset_password_v2' %}">reset password</a>
+        {% if request.user.is_authenticated %}
+        <li class="pc-item">
+          <a class="pc-link" target="_blank" href="{% url 'password_change_v2' %}">Change password</a>
+        </li>
+        {% endif %}
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'code_verification_v2' %}">code
+            verification</a></li>
+      </ul>
+    </li>
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">Authentication 3<span class="pc-arrow"><i
+            data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'login_v3' %}">Login</a></li>
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'register_v3' %}">register</a></li>
+        <li class="pc-item"><a class="pc-link" target="_blank" href="#">forgot
+            password</a>
+        </li>
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'check_mail_v3' %}">check mail</a></li>
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'reset_password_v3' %}">reset password</a>
+        </li>
+        {% if request.user.is_authenticated %}
+        <li class="pc-item">
+          <a class="pc-link" target="_blank" href="{% url 'password_change_v3' %}">Change password</a>
+        </li>
+        {% endif %}
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'code_verification_v3' %}">code
+            verification</a></li>
+      </ul>
+    </li>
+  </ul>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-receipt-2"></i></span><span
+      class="pc-mtext">Price</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="{% url 'price_v1' %}">Price 1</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'price_v2' %}">Price 2</a></li>
+  </ul>
+</li>
+
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-bug"></i></span><span
+      class="pc-mtext">Maintenance</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'error_404' %}">Error 404</a></li>
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">Coming soon<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'coming_soon_v1' %}">Coming soon 1</a>
+        </li>
+        <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'coming_soon_v2' %}">Coming soon 2</a>
+        </li>
+      </ul>
+    </li>
+    <li class="pc-item"><a class="pc-link" target="_blank" href="{% url 'under_construction' %}">Under
+        construction</a></li>
+  </ul>
+</li>
+<li class="pc-item"><a href="{% url 'contact_us' %}" class="pc-link" target="_blank"><span class="pc-micon"><i
+        class="ti ti-phone-call"></i></span><span class="pc-mtext">Contact us</span></a></li>
+<li class="pc-item"><a href="{% url 'faq' %}" class="pc-link" target="_blank"><span class="pc-micon"><i
+        class="ti ti-question-mark"></i></span><span class="pc-mtext">FAQ</span></a></li>
+<li class="pc-item"><a href="{% url 'privacy_policy' %}" class="pc-link" target="_blank"><span class="pc-micon"><i
+        class="ti ti-shield-lock"></i></span><span class="pc-mtext">Privacy policy</span></a></li>
+<li class="pc-item"><a href="{% url 'landing' %}" class="pc-link" target="_blank"><span class="pc-micon"><i
+        class="ti ti-rocket"></i></span><span class="pc-mtext">Landing</span></a></li>
+<li class="pc-item pc-caption">
+  <label>Other</label>
+  <i class="ti ti-brand-chrome"></i>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-menu"></i></span><span class="pc-mtext">Menu
+      levels</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">
+    <li class="pc-item"><a class="pc-link" href="#!">Level 2.1</a></li>
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">Level 2.2<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" href="#!">Level 3.1</a></li>
+        <li class="pc-item"><a class="pc-link" href="#!">Level 3.2</a></li>
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link">Level 3.3<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="#!">Level 4.1</a></li>
+            <li class="pc-item"><a class="pc-link" href="#!">Level 4.2</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li class="pc-item pc-hasmenu">
+      <a href="#!" class="pc-link">Level 2.3<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+      <ul class="pc-submenu">
+        <li class="pc-item"><a class="pc-link" href="#!">Level 3.1</a></li>
+        <li class="pc-item"><a class="pc-link" href="#!">Level 3.2</a></li>
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link">Level 3.3<span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="#!">Level 4.1</a></li>
+            <li class="pc-item"><a class="pc-link" href="#!">Level 4.2</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</li>
+<li class="pc-item"><a href="{% url 'sample_page' %}" class="pc-link"><span class="pc-micon"><i
+        class="ti ti-brand-chrome"></i></span><span class="pc-mtext">Sample page</span></a></li>
+<li class="pc-item"><a href="https://codedthemes.gitbook.io/berry-bootstrap/" target="_blank" class="pc-link"><span class="pc-micon"><i
+        class="ti ti-vocabulary"></i></span><span class="pc-mtext">Document</span></a></li>
+
+{% endif %}
