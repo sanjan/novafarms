@@ -35,8 +35,11 @@ class Beekeeper(models.Model):
     state = models.CharField(max_length=3, choices=STATE)
     post_code = models.CharField(max_length=4)
     contact_number = models.CharField(max_length=20,blank=True,null=True)
-    abn = models.CharField(max_length=100,blank=True, verbose_name ='ABN')
+    abn = models.CharField(max_length=100,blank=True,null=True, verbose_name ='ABN')
     email = models.EmailField(max_length=100,blank=True, verbose_name ='e-mail')
+    account_name = models.CharField(max_length=100,blank=True,null=True)
+    bsb = models.CharField(max_length=100,blank=True,null=True, verbose_name ='BSB')
+    account_number =  models.CharField(max_length=100,blank=True,null=True)
     
     class Meta:
         ordering = ("supplier_name",)
@@ -48,8 +51,8 @@ class Beekeeper(models.Model):
 class Order(models.Model):
     bee_keeper = models.ForeignKey(Beekeeper, on_delete=models.SET_NULL, null=True)
     order_number = models.CharField(max_length=10, unique=True, null=True, editable=False)
-    gross_total_weight = models.DecimalField(default=0.00, decimal_places=2,  editable=False, max_digits=10)
-    ibc_weight = models.DecimalField(default=0.00, decimal_places=2,max_digits=10 )
+    gross_total_weight = models.DecimalField(default=0.00, decimal_places=2,  editable=False, max_digits=10,  verbose_name ='Gross Weight')
+    ibc_total_weight = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10,  verbose_name ='IBC/Drum Weight' )
     net_weight = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10)
     honey_levy = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10)
     unit_price = models.DecimalField(default=0.00, decimal_places=2,max_digits=10 )
@@ -64,8 +67,9 @@ class Order(models.Model):
         if self.pk is not None:
             order_items = self.order_items.all()
             self.gross_total_weight = order_items.aggregate(Sum('gross_weight'))['gross_weight__sum'] if order_items.exists() else 0.0
-            if self.ibc_weight > 0.0 and self.gross_total_weight > 0.0 and self.ibc_weight < self.gross_total_weight:
-                self.net_weight = self.gross_total_weight - self.ibc_weight
+            self.ibc_total_weight = order_items.aggregate(Sum('ibc_weight'))['ibc_weight__sum'] if order_items.exists() else 0.0
+            if self.ibc_total_weight > 0.0 and self.gross_total_weight > 0.0 and self.ibc_total_weight < self.gross_total_weight:
+                self.net_weight = self.gross_total_weight - self.ibc_total_weight
             if self.net_weight > 0.0:
                 self.honey_levy = self.net_weight * HONEY_LEVY_MULTIPLIER
             if self.unit_price > 0.0 and self.honey_levy > 0.0:
@@ -83,16 +87,21 @@ class Order(models.Model):
     
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.PROTECT, null=True, related_name='order_items')
-    type = models.ForeignKey(Honey, on_delete=models.PROTECT)
-    gross_weight = models.DecimalField(default=0.00, decimal_places=2,max_digits=10 )
+    ibc_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10 )
+    gross_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10 )
     
     def __str__(self) -> str:
-        return f'{self.order.id} - {self.type}({self.gross_weight} kg)'
+        return f'{self.order.order_number} - {self.id} - {self.gross_weight}kg ({self.ibc_weight} kg)'
     
-    def save(self,  *args, **kwargs):   
+    def save(self,  *args, **kwargs):
         super().save(*args, **kwargs)
         self.order.save()
-        
+
+class HoneyOrderItem(models.Model):
+    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE, null=True, related_name='honey_order_item')
+    type = models.ForeignKey(Honey, on_delete=models.PROTECT)
+    
+    
         
         
     
