@@ -2,6 +2,8 @@ import decimal
 from django.db import models
 from django.db.models import Sum
 from django.utils import timezone
+import qrcode
+from django.conf import settings
 
 # Create your models here.
 STATE = (
@@ -64,6 +66,7 @@ class Order(models.Model):
     total_price = models.DecimalField(default=0.00, decimal_places=2, editable=False,max_digits=10)
     payment_term = models.CharField(max_length=20, choices=PAYMENT_TERMS)
     date = models.DateField(default=timezone.now)
+    qrcode = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
         ordering = ("-id",)
@@ -83,14 +86,28 @@ class Order(models.Model):
                 self.honey_levy = self.net_weight * HONEY_LEVY_MULTIPLIER
             if self.unit_price > 0.0 and self.honey_levy > 0.0:
                 self.total_price = (self.net_weight * self.unit_price) + self.honey_levy
-        elif self.pk is None:
-            super().save(*args, **kwargs)
+            qc = qrcode.make(f'http://localhost:8000/order-details/{self.id}/')
+            qc_path = f'{settings.MEDIA_ROOT}/order_qr_codes/qr_code_{self.id}.png'
+            qc_url =  f'{settings.MEDIA_URL}order_qr_codes/qr_code_{self.id}.png'
+            qc.save(qc_path)
+            self.qrcode = qc_url
+            
+
+        super().save(*args, **kwargs)
+        self.set_order_number()
+        
+    
+    def set_order_number(self):
+        if not self.order_number:
             id_length = len(str(self.id))
             code_length = 7 - id_length
             zeroes = "".join("0" for i in range(code_length))
-            self.order_number = f"INV{zeroes}{self.id}"
-            self.save()
-            super().save(*args, **kwargs)
+            order_number = f"INV{zeroes}{self.id}"
+            order = Order.objects.get(id=self.id)
+            order.order_number = order_number
+            order.save()
+        
+
 
         
 

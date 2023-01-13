@@ -22,6 +22,12 @@ def order_view(request, order_id):
     order_items = OrderItem.objects.filter(order=order.id)
     context = {'order': order,
                'order_items': order_items}
+    
+    for i in order_items:
+        i.net_weight = i.gross_weight - i.ibc_weight
+    
+    order.save()
+    
     return render(request,'pages/order_details.html', context)
 
 # @login_required(login_url='/accounts/login-v3/')  
@@ -54,6 +60,8 @@ def new_order(request):
             )
             order_item.honey_types.add(*ht_pks)
             order_items.append(order_item.pk)
+        
+
         
 
         print(order)
