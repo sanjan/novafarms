@@ -1,7 +1,6 @@
 asgiref==3.6.0
 crispy-bootstrap5==0.7
 Django==4.1.5
-django-admin-berry-pro @ git+https://github.com/app-generator/priv-django-admin-berry-pro@0f16ca4cee8165241bda4026d9817cfdd11e47e1
 django-crispy-forms==1.14.0
 gunicorn==20.1.0
 Pillow==9.4.0
@@ -9,3 +8,4 @@ python-dotenv==0.21.0
 qrcode==7.3.1
 sqlparse==0.4.3
 whitenoise==6.3.0
+git+https://${GITHUB_TOKEN}@github.com/app-generator/priv-django-admin-berry-pro
