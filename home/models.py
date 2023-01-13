@@ -15,10 +15,15 @@ STATE = (
     ('WA', 'WA'),
 )
 
+PAYMENT_TERMS = (
+    ('Immediate', 'Immediate'),
+    ('30 Days', '30 Days'),
+)
+
 HONEY_LEVY_MULTIPLIER = decimal.Decimal('0.046')
 
 
-class Honey(models.Model):
+class HoneyType(models.Model):
     type = models.CharField(max_length=100,null=True, blank=True)
     
     def __str__(self) -> str:
@@ -49,19 +54,23 @@ class Beekeeper(models.Model):
     
 
 class Order(models.Model):
-    bee_keeper = models.ForeignKey(Beekeeper, on_delete=models.SET_NULL, null=True)
-    order_number = models.CharField(max_length=10, unique=True, null=True, editable=False)
-    gross_total_weight = models.DecimalField(default=0.00, decimal_places=2,  editable=False, max_digits=10,  verbose_name ='Gross Weight')
+    bee_keeper = models.ForeignKey(Beekeeper, on_delete=models.PROTECT)
+    order_number = models.CharField(max_length=10, unique=True, null=True, blank=True)
+    gross_total_weight = models.DecimalField(default=0.00, decimal_places=2,  editable=False, max_digits=10, verbose_name ='Gross Weight')
     ibc_total_weight = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10,  verbose_name ='IBC/Drum Weight' )
     net_weight = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10)
     honey_levy = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10)
-    unit_price = models.DecimalField(default=0.00, decimal_places=2,max_digits=10 )
+    unit_price = models.DecimalField(default=0.00, decimal_places=2, max_digits=10 )
     total_price = models.DecimalField(default=0.00, decimal_places=2, editable=False,max_digits=10)
-    immediate_payment = models.BooleanField(default=True)
+    payment_term = models.CharField(max_length=20, choices=PAYMENT_TERMS)
     date = models.DateField(default=timezone.now)
+
+    class Meta:
+        ordering = ("-id",)
     
     def __str__(self) -> str:
         return f'{self.order_number} - {self.bee_keeper}'
+
     
     def save(self, *args, **kwargs):
         if self.pk is not None:
@@ -74,32 +83,28 @@ class Order(models.Model):
                 self.honey_levy = self.net_weight * HONEY_LEVY_MULTIPLIER
             if self.unit_price > 0.0 and self.honey_levy > 0.0:
                 self.total_price = (self.net_weight * self.unit_price) + self.honey_levy
-        if self.pk is None or self.order_number is None:
+        elif self.pk is None:
+            super().save(*args, **kwargs)
             id_length = len(str(self.id))
             code_length = 7 - id_length
             zeroes = "".join("0" for i in range(code_length))
             self.order_number = f"INV{zeroes}{self.id}"
             self.save()
-                
-        super().save(*args, **kwargs)
+            super().save(*args, **kwargs)
+
+        
 
     
     
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.PROTECT, null=True, related_name='order_items')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
     ibc_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10 )
     gross_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10 )
+    honey_types = models.ManyToManyField(HoneyType)
     
     def __str__(self) -> str:
-        return f'{self.order.order_number} - {self.id} - {self.gross_weight}kg ({self.ibc_weight} kg)'
-    
-    def save(self,  *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.order.save()
+        return f'{self.id} - {self.gross_weight}kg ({self.ibc_weight} kg)'
 
-class HoneyOrderItem(models.Model):
-    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE, null=True, related_name='honey_order_item')
-    type = models.ForeignKey(Honey, on_delete=models.PROTECT)
     
     
         

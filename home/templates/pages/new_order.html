@@ -1,0 +1,221 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %} New Order {% endblock title %}
+
+{% block content %}
+
+  <!-- [ Main Content ] start -->
+  <div class="pc-container">
+    <div class="pc-content">
+      <!-- [ breadcrumb ] start -->
+      <div class="page-header">
+        <div class="page-block">
+          <div class="row align-items-center">
+            <div class="col-md-12">
+              <div class="page-header-title">
+                <h5 class="m-b-10">New Order</h5>
+              </div>
+              <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item" aria-current="page">New Order</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- [ breadcrumb ] end -->
+
+
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <!-- [ sample-page ] start -->
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card">
+              <div class="card-header">
+                <h5>New Order</h5>
+              </div>
+              <div class="card-body">
+                <form method="post">
+                  {% csrf_token %}
+                <div class="form-group">
+                  <label class="form-label">Bee Keeper</label>
+                  <input name="bee_keeper" type="text" class="form-control" placeholder="beekeeper name" list="bkeepers" />
+                  <datalist id="bkeepers">
+                    {% for b in bee_keepers %}
+                    <option value="{{ b.supplier_name }}"></option>
+                    {% endfor%}
+                  </datalist>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Unit Price</label>
+                  <input name="unit_price" type="number" class="form-control" placeholder="0.00" step="0.01"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="paymentterm">Payment terms:</label>
+                  <select class="form-select" name="payment_term">
+                    {% for p in payment_terms %}
+                      <option value="{{ p }}">{{ p }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <!-- order items -->
+                <div class="order-items">
+                  <div class="order-items-row row">
+                    <div class="col-md-1">
+                      <div class="form-group">
+                        <label class="form-label">Item</label>
+                        <input name="item_numbers[]" id="item_number_1" type="number" class="form-control" value="1" disabled/>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">Container Weight</label>
+                        <input name="container_weights[]" id="container_weight_1" type="number" class="form-control" placeholder="0.00" step="0.01"/>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">Gross Weight</label>
+                        <input name="gross_weights[]" id="gross_weight_1" type="number" class="form-control" placeholder="0.00" step="0.01"/>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                    <div class="form-group">
+                      <label class="form-label">Honey Types</label>
+              
+                        <select
+                          class="form-control"
+                          name="honey_types_1[]"
+                          id="honey_types_1"
+                          placeholder=""
+                          multiple
+                        >
+                        {% for h in honey_types %}
+                          <option value="{{ h.type }}" >{{ h.type }}</option>
+                        {% endfor %}
+                        </select>
+         
+                    </div>
+                    </div>
+                    <div class="col-md-1">
+                      <div class="form-group">
+                      <label class="form-label">Add</label>
+                      <button type="button" class="btn btn-icon btn-primary  form-control add_node_btn_frm_field"><i class="ti ti-circle-plus"></i></button>
+                    </div>
+                    </div>
+                    <div class="col-md-1">
+                      <div class="form-group">
+                      <label class="form-label">Remove</label>
+                      <button type="button" class="btn btn-icon btn-secondary form-control remove_node_btn_frm_field disabled"><i class="ti ti-trash"></i></button>
+                    </div>
+                    </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-primary me-2">Submit</button>
+                <button type="reset" class="btn btn-light">Reset</button>
+              </div>
+            </div>
+            </form>
+          </div>
+        </div>
+        <!-- [ sample-page ] end -->
+      </div>
+      <!-- [ Main Content ] end -->
+    </div>
+  </div>
+  <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+{% block extra_js %}
+
+<!-- <script src="static/js/jquery.min.js"></script> -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script src="{% static 'assets/js/plugins/choices.min.js' %}"></script>
+
+<script>
+
+  $(document).ready(function(){ $("body").on("click",".add_node_btn_frm_field", function (){ 
+    console.log("clicked"); 
+    var index = $(".order-items").find(".order-items-row").length + 1; 
+    $(".order-items").append(`
+  <div class="order-items-row row">
+    <div class="col-md-1">
+      <div class="form-group">
+        <label class="form-label">Item</label>
+        <input name="item_numbers[]" id="item_number_${index}" type="number" class="form-control" value="${index}" disabled/>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <label class="form-label">Container Weight</label>
+        <input name="container_weights[]" id="container_weight_${index}" type="number" class="form-control" placeholder="0.00" step="0.01"/>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <label class="form-label">Gross Weight</label>
+        <input name="gross_weights[]" id="gross_weight_${index}" type="number" class="form-control" placeholder="0.00" step="0.01"/>
+      </div>
+    </div>
+    <div class="col-md-3">
+    <div class="form-group">
+      <label class="form-label">Honey Types</label>
+
+        <select
+          class="form-control"
+          name="honey_types_${index}[]"
+          id="honey_types_${index}"
+          placeholder=""
+          multiple
+        >
+        {% for h in honey_types %}
+          <option value="{{ h.type }}" >{{ h.type }}</option>
+        {% endfor %}
+        </select>
+
+    </div>
+    </div>
+    <div class="col-md-1">
+      <div class="form-group">
+      <label class="form-label">Add</label>
+      <button type="button" class="btn btn-icon btn-primary  form-control add_node_btn_frm_field"><i class="ti ti-circle-plus"></i></button>
+    </div>
+    </div>
+    <div class="col-md-1">
+      <div class="form-group">
+      <label class="form-label">Remove</label>
+      <button type="button" class="btn btn-icon btn-secondary form-control remove_node_btn_frm_field "><i class="ti ti-trash"></i></button>
+    </div>
+    </div>
+</div>
+`); 
+$(".order-items").find(".remove_node_btn_frm_field:not(:first)").prop("disabled", false); 
+$(".order-items").find(".remove_node_btn_frm_field").first().prop("disabled", true);
+
+var multipleCancelButton = new Choices(`#honey_types_${index}`, {
+  removeItemButton: true
+});
+}); });
+
+$(document).ready(function () {
+  //===== delete the form fieed row
+  $("body").on("click", ".remove_node_btn_frm_field", function () {
+    $(this).closest(".order-items-row").remove();
+    console.log("success");
+  });
+});
+
+var multipleCancelButton = new Choices(`#honey_types_1`, {
+  removeItemButton: true
+});
+
+
+</script>
+
+{% endblock extra_js %}
+
+

@@ -88,8 +88,10 @@
 
 {% endif %}
 
-
-{% if request.user.is_authenticated %}
+<li class="pc-item">
+  <a href="{% url 'new_order' %}" class="pc-link"><span class="pc-micon"><i
+        class="ti ti-device-analytics"></i></span><span class="pc-mtext">New Order</span></a>
+</li>
 <li class="pc-item">
   <a href="{% url 'analytics' %}" class="pc-link"><span class="pc-micon"><i
         class="ti ti-device-analytics"></i></span><span class="pc-mtext">Analytics</span></a>
@@ -564,4 +566,3 @@
 <li class="pc-item"><a href="https://codedthemes.gitbook.io/berry-bootstrap/" target="_blank" class="pc-link"><span class="pc-micon"><i
         class="ti ti-vocabulary"></i></span><span class="pc-mtext">Document</span></a></li>
 
-{% endif %}

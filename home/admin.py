@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Beekeeper, Order, OrderItem, Honey, HoneyOrderItem
+from .models import Beekeeper, Order, OrderItem, HoneyType
 
 
 admin.site.site_header = "Nova Farms Administration"
@@ -9,18 +9,14 @@ class BeekeeperAdmin(admin.ModelAdmin):
     list_filter = ['state', 'suburb']
     
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('order_number', 'bee_keeper', 'date', 'gross_total_weight', 'ibc_total_weight', 'net_weight', 'honey_levy', 'unit_price', 'total_price', 'immediate_payment')
+    list_display = ('order_number', 'bee_keeper', 'date', 'gross_total_weight', 'ibc_total_weight', 'net_weight', 'honey_levy', 'unit_price', 'total_price', 'payment_term')
     list_filter = ('bee_keeper', 'date')
 class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ('id', 'order','ibc_weight', 'gross_weight')
+    list_display = ('id','ibc_weight', 'gross_weight')
     list_filter = [ 'order']
-
-class HoneyOrderItemAdmin(admin.ModelAdmin):
-    list_display = ('id', 'order_item', 'type')
     
 # Register your models here.
 admin.site.register(Beekeeper, BeekeeperAdmin)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderItem, OrderItemAdmin)
-admin.site.register(HoneyOrderItem, HoneyOrderItemAdmin)
-admin.site.register(Honey)
+admin.site.register(HoneyType)
