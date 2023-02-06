@@ -39,13 +39,18 @@
                 <form method="post">
                   {% csrf_token %}
                 <div class="form-group">
-                  <label class="form-label">Bee Keeper</label>
-                  <input name="bee_keeper" type="text" class="form-control" placeholder="beekeeper name" list="bkeepers" />
-                  <datalist id="bkeepers">
-                    {% for b in bee_keepers %}
-                    <option value="{{ b.supplier_name }}"></option>
-                    {% endfor%}
-                  </datalist>
+                  <label for="bee_keeper"  class="form-label">Bee Keeper</label>
+                  <select
+                  class="form-control"
+                  data-trigger
+                  name="bee_keeper"
+                  id="bee_keeper"
+                >
+                  <option value="">Select Bee Keeper</option>
+                  {% for b in bee_keepers %}
+                  <option value="{{ b.supplier_name }}">{{ b.supplier_name }}</option>
+                  {% endfor%}
+                </select>
                 </div>
                 <div class="form-group">
                   <label class="form-label">Unit Price</label>
@@ -213,6 +218,11 @@ var multipleCancelButton = new Choices(`#honey_types_1`, {
   removeItemButton: true
 });
 
+var beeKeeperDropDown = new Choices(`#bee_keeper`,
+{
+  searchPlaceholderValue: 'search for bee keeper'
+}
+);
 
 </script>
 
