@@ -37,7 +37,7 @@
             </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-hover" id="pc-dt-simple">
+                <table class="table table-hover" id="orders-table">
                   <thead>
                     <tr>
                       <th>
@@ -64,7 +64,7 @@
                         </div>
                       </td>
                       <td>
-                      <h5 class="mb-0"><a href="{% url 'order_view' order.id %}">#{{order.order_number}}</a></h5>
+                      <h5 class="mb-0"><a href="{% url 'order_details' order.id %}">#{{order.order_number}}</a></h5>
                       </td>
                       <td>
                         <h5 class="mb-0">{{order.bee_keeper.supplier_name}}</h5>
@@ -74,6 +74,60 @@
                       <td>${{order.unit_price}}</td>
                       <td>${{order.total_price}}</td>
                       <td><span class="badge bg-light-primary rounded-pill f-12">Processing</span> </td>
+                      <td class="text-center">
+                        <button type="button" class="btn btn-link-primary"><i class="ti ti-eye"></i></button>
+                        <button type="button" class="btn btn-link-secondary"><i class="ti ti-pencil"></i></button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="card table-card">
+            <div class="card-header">
+              <h5>Batch List</h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover" id="batch-table">
+                  <thead>
+                    <tr>
+                      <th>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" />
+                        </div>
+                      </th>
+                      <th>Batch Number</th>
+                      <th>Batch Date</th>
+                      <th>Expiry Date</th>
+                      <th>Brand</th>
+                      <th>Bottle Type</th>
+                      <th>Unit Weight</th>
+                      <th>Status</th>
+                      <th class="text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for batch in batches %}
+                    <tr>
+                      <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" />
+                        </div>
+                      </td>
+                      <td>
+                      <h5 class="mb-0"><a href="{% url 'batch_details' batch.id %}">#{{batch.batch_number}}</a></h5>
+                      </td>
+                      <td>{{batch.batch_date}}</td>
+                      <td>{{batch.expiry_date}}</td>
+                      <td>
+                        <h5 class="mb-0">{{batch.brand}}</h5>
+                      </td>
+                      <td>{{batch.bottle_type}}</td>
+                      <td>{{batch.unit_weight}}</td>
+                      <td><span class="badge bg-light-primary rounded-pill f-12">{{batch.status}}</span> </td>
                       <td class="text-center">
                         <button type="button" class="btn btn-link-primary"><i class="ti ti-eye"></i></button>
                         <button type="button" class="btn btn-link-secondary"><i class="ti ti-pencil"></i></button>
@@ -100,7 +154,11 @@
     <!-- [Page Specific JS] start -->
     <script src="{% static 'assets/js/plugins/simple-datatables.js' %}"></script>
     <script>
-      const dataTable = new simpleDatatables.DataTable('#pc-dt-simple', {
+      const ordersTable = new simpleDatatables.DataTable('#orders-table', {
+        sortable: false,
+        perPage: 5
+      });
+      const batchesTable = new simpleDatatables.DataTable('#batches-table', {
         sortable: false,
         perPage: 5
       });
