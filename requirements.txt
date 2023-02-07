@@ -8,4 +8,8 @@ django
 gunicorn
 python-dotenv
 whitenoise
+dj-database-url
+psycopg2-binary
 git+https://${GITHUB_TOKEN}@github.com/app-generator/priv-django-admin-berry-pro
+
+
