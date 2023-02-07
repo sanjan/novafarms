@@ -8,7 +8,7 @@
   {% if request.user.is_superuser %}
   <a href="{% url 'admin:index' %}" class="pc-link">
   {% else %}
-  <a href="{% url 'dashboard_index' %}" class="pc-link">
+  <a href="{% url 'index' %}" class="pc-link">
   {% endif %}
     <span class="pc-micon"><i class="ti ti-dashboard"></i></span>
     <span class="pc-mtext">Default</span>
@@ -57,7 +57,7 @@
     {% if request.user.is_superuser %}
       <li class="pc-item"><a class="pc-link" href="{% url 'admin:password_change' %}">Change Password</a></li>
       <li class="pc-item"><a class="pc-link" href="{% url 'admin:logout' %}">Logout</a></li>
-    {% else %}
+<!-- add else here -->
     <li class="pc-item pc-hasmenu">
       <a href="#!" class="pc-link">Authentication 1<span class="pc-arrow"><i
             data-feather="chevron-right"></i></span></a>
@@ -96,6 +96,8 @@
   <a href="{% url 'new_batch' %}" class="pc-link"><span class="pc-micon"><i
         class="ti ti-news"></i></span><span class="pc-mtext">New Batch</span></a>
 </li>
+
+{% if request.user.is_authenticated and not request.user.is_superuser %}
 <li class="pc-item">
   <a href="{% url 'analytics' %}" class="pc-link"><span class="pc-micon"><i
         class="ti ti-device-analytics"></i></span><span class="pc-mtext">Analytics</span></a>
@@ -570,3 +572,4 @@
 <li class="pc-item"><a href="https://codedthemes.gitbook.io/berry-bootstrap/" target="_blank" class="pc-link"><span class="pc-micon"><i
         class="ti ti-vocabulary"></i></span><span class="pc-mtext">Document</span></a></li>
 
+{% endif %}
