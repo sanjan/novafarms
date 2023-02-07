@@ -33,8 +33,8 @@ def order_details(request, order_id):
     
     return render(request,'pages/order_details.html', context)
 
-def batch_details(request, batch_id):
-    batch = Batch.objects.get(id=batch_id)
+def batch_details(request, batch_number):
+    batch = Batch.objects.get(batch_number=batch_number)
     
     order_items = batch.source_containers.all()
     

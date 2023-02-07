@@ -118,7 +118,7 @@
                         </div>
                       </td>
                       <td>
-                      <h5 class="mb-0"><a href="{% url 'batch_details' batch.id %}">#{{batch.batch_number}}</a></h5>
+                      <h5 class="mb-0"><a href="{% url 'batch_details' batch.batch_number %}">#{{batch.batch_number}}</a></h5>
                       </td>
                       <td>{{batch.batch_date}}</td>
                       <td>{{batch.expiry_date}}</td>
@@ -126,7 +126,7 @@
                         <h5 class="mb-0">{{batch.brand}}</h5>
                       </td>
                       <td>{{batch.bottle_type}}</td>
-                      <td>{{batch.unit_weight}}</td>
+                      <td>{{batch.unit_weight}}g</td>
                       <td><span class="badge bg-light-primary rounded-pill f-12">{{batch.status}}</span> </td>
                       <td class="text-center">
                         <button type="button" class="btn btn-link-primary"><i class="ti ti-eye"></i></button>
