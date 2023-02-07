@@ -50,11 +50,12 @@
   <label>Pages</label>
   <i class="ti ti-news"></i>
 </li>
+{% if request.user.is_superuser %}
 <li class="pc-item pc-hasmenu">
   <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-key"></i></span><span
       class="pc-mtext">User Pages</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
   <ul class="pc-submenu">
-    {% if request.user.is_superuser %}
+   
       <li class="pc-item"><a class="pc-link" href="{% url 'admin:password_change' %}">Change Password</a></li>
       <li class="pc-item"><a class="pc-link" href="{% url 'admin:logout' %}">Logout</a></li>
 <!-- add else here -->
@@ -82,10 +83,10 @@
         <li class="pc-item"><a class="pc-link" href="{% url 'register_v3' %}">register</a></li>
       </ul>
     </li>
-    {% endif %}
+   
   </ul>
 </li>
-
+{% endif %}
 {% endif %}
 
 <li class="pc-item">
@@ -572,4 +573,4 @@
 <li class="pc-item"><a href="https://codedthemes.gitbook.io/berry-bootstrap/" target="_blank" class="pc-link"><span class="pc-micon"><i
         class="ti ti-vocabulary"></i></span><span class="pc-mtext">Document</span></a></li>
 
-{% endif %}
+        {% endif %}
