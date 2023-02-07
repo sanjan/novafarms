@@ -92,6 +92,9 @@ class Order(models.Model):
             if self.net_weight > 0.0:
                 self.honey_levy = self.net_weight * HONEY_LEVY_MULTIPLIER
             if self.unit_price > 0.0 and self.honey_levy > 0.0:
+                print('type of net weight: ', type(self.net_weight),  f'({self.net_weight})')
+                print('type of unit price: ', type(self.unit_price), f'({self.unit_price})' )
+                
                 self.total_price = (self.net_weight * self.unit_price) + self.honey_levy
             qc = qrcode.make(f'http://localhost:8000/order-details/{self.id}/')
             qc_path = f'{settings.MEDIA_ROOT}/order_qr_codes/qr_code_{self.id}.png'
@@ -157,7 +160,6 @@ class Batch(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.set_batch_number()
-        self.gen_qr_code()
     
     def set_batch_number(self):
         if not self.batch_number:
@@ -167,18 +169,6 @@ class Batch(models.Model):
             batch_number = f"NVF{zeroes}{self.id}"
             batch = Batch.objects.get(id=self.id)
             batch.batch_number = batch_number
-            batch.save()
-    
-    def gen_qr_code(self):
-        if not self.qrcode_url:
-            qc = qrcode.make(f'http://localhost:8000/batch-details/{self.batch_number}/')
-            file_path = f'/batch_qr_codes/batch_qr_code_{self.batch_number}.png'
-            qc_path = f'{settings.MEDIA_ROOT}{file_path}'
-            qc_url =  f'{settings.MEDIA_URL}{file_path}'
-            qc.save(qc_path)
-            batch = Batch.objects.get(id=self.id)
-            batch.qrcode_url = qc_url
-            batch.qrcode_path = qc_path
             batch.save()
             
             

@@ -22,4 +22,9 @@ urlpatterns = [
     path('', include('home.urls')),
     path("admin/", admin.site.urls),
     path('', include('admin_berry_pro.urls'))
-] +  static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+# new rules 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

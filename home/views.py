@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from .models import Beekeeper, Order, OrderItem, HoneyType, Batch, PAYMENT_TERMS
 from decimal import Decimal
 from datetime import datetime
+import qrcode
+from django.conf import settings
 # Create your views here.
 # @login_required(login_url='/accounts/login-v3/')  
 def index(request):
@@ -47,7 +49,7 @@ def new_order(request):
     if request.method == 'POST':
         
         bee_keeper = Beekeeper.objects.get(supplier_name=request.POST.get('bee_keeper'))
-        unit_price = float(request.POST.get('unit_price'))
+        unit_price = Decimal(request.POST.get('unit_price'))
         payment_term = request.POST.get('payment_term')
         order = Order.objects.create(
             bee_keeper = bee_keeper,
@@ -75,7 +77,7 @@ def new_order(request):
         
 
         
-
+        order.save()
         print(order)
         # order.order_items.add(*order_items)
 
@@ -125,6 +127,19 @@ def new_batch(request):
         batch.total_weight = total_weight
         batch.max_possible = (total_weight * 1000) // unit_weight
         batch.save()
+        
+        new_batch = Batch.objects.get(id=batch.id)
+        
+        qc = qrcode.make(f'http://{request.get_host()}/batch-details/{new_batch.batch_number}/')
+        file_path = f'batch_qr_codes/batch_qr_code_{new_batch.batch_number}.png'
+        qc_path = f'{settings.MEDIA_ROOT}{file_path}'
+        qc_url =  f'{settings.MEDIA_URL}{file_path}'
+        
+        qc.save(qc_path)
+       
+        new_batch.qrcode_url = qc_url
+        new_batch.qrcode_path = qc_path
+        new_batch.save()
             
         
     source_containers = OrderItem.objects.filter(used=False)
