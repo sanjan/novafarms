@@ -148,8 +148,7 @@ Details {% endblock title %} {% block content %}
                             <td>
                               <div>
                                 <h5 class="mb-1">
-                                  {% for i in item.honey_types.all %}
-                                  {{i.type}},{% endfor %}
+                                  {{item.ht}}
                                 </h5>
                               </div>
                             </td>

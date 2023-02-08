@@ -20,16 +20,17 @@ def index(request):
     }
     return render(request, 'pages/application/cust_order_list.html', context)
 
-def order_details(request, order_id):
-    order = Order.objects.get(id=order_id)
-    order_items = OrderItem.objects.filter(order=order.id)
-    context = {'order': order,
-               'order_items': order_items}
-    
+def order_details(request, order_number):
+    order = Order.objects.get(order_number=order_number)
+    order_items = OrderItem.objects.filter(order=order.id)    
     for i in order_items:
         i.net_weight = i.gross_weight - i.ibc_weight
+        i.ht = ', '.join([h.type for h in i.honey_types.all()])
     
     order.save()
+    
+    context = {'order': order,
+            'order_items': order_items}
     
     return render(request,'pages/order_details.html', context)
 
@@ -38,11 +39,30 @@ def batch_details(request, batch_number):
     
     order_items = batch.source_containers.all()
     
+    for i in order_items:
+        i.net_weight = i.gross_weight - i.ibc_weight
+        i.ht = ', '.join([h.type for h in i.honey_types.all()])
+    
     context = {'batch': batch,
                'order_items': order_items,
             }
     
     return render(request,'pages/batch_details.html', context)
+
+def edit_batch(request, batch_number):
+    batch = Batch.objects.get(batch_number=batch_number)
+    
+    order_items = batch.source_containers.all()
+    
+    for i in order_items:
+        i.net_weight = i.gross_weight - i.ibc_weight
+        i.ht = ', '.join([h.type for h in i.honey_types.all()])
+    
+    context = {'batch': batch,
+               'order_items': order_items,
+            }
+    
+    return render(request,'pages/edit_batch.html', context)
 
 # @login_required(login_url='/accounts/login-v3/')  
 def new_order(request):
@@ -75,15 +95,19 @@ def new_order(request):
             order_item.honey_types.add(*ht_pks)
             order_items.append(order_item.pk)
         
-
-        
         order.save()
-        print(order)
-        # order.order_items.add(*order_items)
-
+        new_order = Order.objects.get(id=order.id)
         
-
+        qc = qrcode.make(f'http://{request.get_host()}/order-details/{new_order.order_number}/')
+        file_path = f'order_qr_codes/order_qr_code_{new_order.order_number}.png'
+        qc_path = f'{settings.MEDIA_ROOT}{file_path}'
+        qc_url =  f'{settings.MEDIA_URL}{file_path}'
         
+        qc.save(qc_path)
+       
+        new_order.qrcode = qc_url
+        new_order.save()
+
     honey_types = HoneyType.objects.all()
     bee_keepers = Beekeeper.objects.all()
     context = {

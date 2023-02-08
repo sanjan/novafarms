@@ -93,14 +93,8 @@ class Order(models.Model):
                 self.honey_levy = self.net_weight * HONEY_LEVY_MULTIPLIER
             if self.unit_price > 0.0 and self.honey_levy > 0.0:
                 print('type of net weight: ', type(self.net_weight),  f'({self.net_weight})')
-                print('type of unit price: ', type(self.unit_price), f'({self.unit_price})' )
-                
+                print('type of unit price: ', type(self.unit_price), f'({self.unit_price})' )            
                 self.total_price = (self.net_weight * self.unit_price) + self.honey_levy
-            qc = qrcode.make(f'http://localhost:8000/order-details/{self.id}/')
-            qc_path = f'{settings.MEDIA_ROOT}/order_qr_codes/qr_code_{self.id}.png'
-            qc_url =  f'{settings.MEDIA_URL}order_qr_codes/qr_code_{self.id}.png'
-            qc.save(qc_path)
-            self.qrcode = qc_url
             
 
         super().save(*args, **kwargs)

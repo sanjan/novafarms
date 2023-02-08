@@ -1,0 +1,220 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %} New Batch {% endblock title %}
+
+{% block extrastyle %}
+  <!-- [Page specific CSS] start -->
+  <!-- Bootstrap DatePicker -->
+  <link rel="stylesheet" href="{% static 'assets/css/plugins/datepicker-bs5.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'assets/css/plugins/nouislider.min.css' %}" />
+  <!-- [Page specific CSS] end -->
+{% endblock extrastyle %}
+
+{% block content %}
+
+  <!-- [ Main Content ] start -->
+  <div class="pc-container">
+    <div class="pc-content">
+      <!-- [ breadcrumb ] start -->
+      <div class="page-header">
+        <div class="page-block">
+          <div class="row align-items-center">
+            <div class="col-md-12">
+              <div class="page-header-title">
+                <h5 class="m-b-10">Update Batch</h5>
+              </div>
+              <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item" aria-current="page">Update Batch</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- [ breadcrumb ] end -->
+
+
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <!-- [ sample-page ] start -->
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card">
+              <div class="card-header">
+                <h5>Update Batch #{{batch.batch_number}}</h5>
+              </div>
+              <div class="card-body">
+                <form method="post">
+                  {% csrf_token %}
+                <div class="form-group">
+                  <label for="batch-date" class="col-form-label">Batch Date</label>
+                  <input class="form-control" type="text" id="batch-date" value="{{ batch.batch_date }}" name="batch-date"/>
+                </div>
+                <div class="form-group">
+                  <label for="expiry-date" class="col-form-label">Expiry Date</label>
+                  <input class="form-control" type="text" id="expiry-date" value="{{ batch.expiry_date }}" name="expiry-date"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Source Containers</label>
+                  <select
+                  class="form-control"
+                  name="source_containers[]"
+                  id="source_containers"
+                  placeholder=""
+                  multiple
+                  >
+                {% for s in batch.source_containers.all %}
+                  <option value="{{ s.id }}" >{{ s }}</option>
+                {% endfor %}
+                </select>
+
+                </div>
+                <div class="form-group">
+                  <label for="brand" class="form-label">Brand</label>
+                  <select
+                  class="form-control"
+                  data-trigger
+                  name="brand"
+                  id="brand"
+                >
+                  <option value="">Pick a brand</option>
+                  {% for b in brands %}
+                  <option value="{{ b }}">{{ b }}</option>
+                  {% endfor%}
+                </select>
+                </div>
+                <div class="form-group">
+                  <label for="bottle-type"  class="form-label">Bottle type</label>
+                  <select
+                  class="form-control"
+                  data-trigger
+                  name="bottle-type"
+                  id="bottle-type"
+                >
+                  <option value="">Pick a bottle type</option>
+                  {% for b in bottle_types %}
+                  <option value="{{ b }}">{{ b }}</option>
+                  {% endfor%}
+                </select>
+                </div>
+                <div class="form-group">
+                  <label for="unit-weight"  class="form-label">Unit weight</label>
+                <div class="row align-items-center">
+                  <div class="col-4">
+                    <div class="input-group">
+                    <input type="text" class="form-control" id="unit-weight" name="unit-weight" placeholder="Unit Weight" />
+                    <span class="input-group-text"> grams</span>
+                    </div>
+                  </div>
+                  <div class="col-8">
+                    <div id="unit-weight-slider" class="pc-nouislider--drag-danger"></div>
+                  </div>
+                </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Product name</label>
+                  <input name="product-name" id="product-name" type="text" class="form-control" placeholder="product name" />
+                </div>
+
+              <div class="card-footer">
+                <button class="btn btn-primary me-2">Create batch</button>
+                <button type="reset" class="btn btn-light">Reset</button>
+              </div>
+            </div>
+            </form>
+          </div>
+        </div>
+        <!-- [ sample-page ] end -->
+      </div>
+      <!-- [ Main Content ] end -->
+    </div>
+  </div>
+  <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+{% block extra_js %}
+
+<!-- <script src="static/js/jquery.min.js"></script> -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script src="{% static 'assets/js/plugins/choices.min.js' %}"></script>
+
+  <!-- DatePicker js -->
+  <script src="{% static 'assets/js/plugins/datepicker-full.min.js' %}"></script>
+
+    <!-- tagify -->
+    <script src="{% static 'assets/js/plugins/wNumb.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/nouislider.min.js' %}"></script>
+
+<script>
+      (function () {
+        // init slider
+        var slider = document.getElementById('unit-weight-slider');
+
+        noUiSlider.create(slider, {
+          start: [200],
+          step: 25,
+          range: {
+            min: [200],
+            max: [3000]
+          },
+          format: wNumb({
+            decimals: 0
+          })
+        });
+
+        // init slider input
+        var sliderInput = document.getElementById('unit-weight');
+
+        slider.noUiSlider.on('update', function (values, handle) {
+          sliderInput.value = values[handle];
+        });
+
+        sliderInput.addEventListener('change', function () {
+          slider.noUiSlider.set(this.value);
+        });
+      })();
+
+
+var branddropdown =  new Choices(`#brand`, {
+  searchPlaceholderValue: 'search for brand'
+});
+
+var bottletypedropdown =  new Choices(`#bottle-type`, {
+  searchPlaceholderValue: 'search for bottle type'
+});
+
+var srccontainerbutton = new Choices(`#source_containers`, {
+  removeItemButton: true
+});
+
+const d_today = new Datepicker(document.querySelector('#batch-date'), {
+  buttonClass: 'btn',
+  todayHighlight: true,
+  autohide: true,
+  format: 'dd/mm/yyyy'
+});
+
+const d_expiry = new Datepicker(document.querySelector('#expiry-date'), {
+  buttonClass: 'btn',
+  autohide: true,
+  format: 'dd/mm/yyyy'
+});
+
+var today = new Date();
+d_today.setDate(today);
+today.setFullYear(today.getFullYear() + 5);
+d_expiry.setDate(today);
+
+
+
+
+
+
+</script>
+
+{% endblock extra_js %}
+
+

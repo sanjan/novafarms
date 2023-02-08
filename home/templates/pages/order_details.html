@@ -161,7 +161,7 @@
                              
                               <td>
                                 <div>
-                                  <h5 class="mb-1">{% for i in item.honey_types.all %} {{i.type}},{% endfor %}</h5>
+                                  <h5 class="mb-1">{{ item.ht }}</h5>
                                 </div>
                               </td>
                               <td class="text-end">{{item.ibc_weight}}</td>
@@ -221,7 +221,7 @@
                         <div class="col-sm-6">
                           <h5 class="mb-0">Invoice #{{ order.order_number}}</h5>
                         </div>
-                        <div class="col-sm-6 text-sm-end"><img src="{% static 'assets/images/logo-dark.svg' %}" alt="logo" class="img-fluid" /></div>
+                        <div class="col-sm-6 text-sm-end"><img src="/media/logo.svg" alt="logo" class="img-fluid" /></div>
                       </div>
                     </div>
                     <div class="card-body">
@@ -271,7 +271,7 @@
                             <tr>
                               <td>
                                 <div>
-                                  <h5 class="mb-1">{% for i in item.honey_types.all %} {{i.type}},{% endfor %}</h5>
+                                  <h5 class="mb-1">{{item.ht}}</h5>
                                 </div>
                               </td>
                               <td class="text-end">{{item.ibc_weight}}</td>
