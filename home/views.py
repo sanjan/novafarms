@@ -18,9 +18,15 @@ def index(request):
     # Page from the theme 
     # return render(request, 'pages/index.html')
     # return redirect('sample_page')
+    this_week_units = 0
+    for b in batches:
+        if b.number_made:
+            this_week_units += b.number_made
+            
     context = {
         'orders' : orders,
         'batches' : batches,
+        'this_week_units': this_week_units,
     }
     return render(request, 'pages/application/cust_order_list.html', context)
 
@@ -54,6 +60,23 @@ def batch_details(request, batch_number):
     return render(request,'pages/batch_details.html', context)
 
 def edit_batch(request, batch_number):
+    
+    if request.method == 'POST':
+        print(request.POST)
+        date_format = '%d/%m/%Y'
+        batch = Batch.objects.get(batch_number=request.POST.get('batch-number'))
+        batch.batch_date = datetime.strptime(request.POST.get('batch-date'), date_format) 
+        batch.expiry_date = datetime.strptime(request.POST.get('expiry-date'), date_format)
+        src_containers = request.POST.getlist('source_containers[]')
+        batch.brand = request.POST.get('brand')
+        batch.bottle_type = request.POST.get('bottle-type')
+        batch.unit_weight = int(request.POST.get('unit-weight'))
+        batch.product_name = request.POST.get('product-name')
+        batch.number_made  = request.POST.get('number-made')
+        batch.batch_status = request.POST.get('batch-status')
+        batch.save()
+        
+ 
     batch = Batch.objects.get(batch_number=batch_number)
     batch.number_made = batch.number_made if batch.number_made else 0
     

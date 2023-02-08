@@ -141,7 +141,7 @@ class Batch(models.Model):
     total_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10 )
     number_made = models.PositiveIntegerField(null=True)
     max_possible = models.PositiveIntegerField(null=True, blank=True)
-    status = models.CharField(max_length=20, choices=BATCH_STATE, default='New')
+    batch_status = models.CharField(max_length=20, choices=BATCH_STATE, default='New')
     qrcode_url = models.CharField(max_length=100, null=True, blank=True)
     qrcode_path = models.CharField(max_length=100, null=True, blank=True)
     

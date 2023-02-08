@@ -7,6 +7,43 @@
   <!-- [ Main Content ] start -->
   <div class="pc-container">
     <div class="pc-content">
+            <!-- [ Main Content ] start -->
+            <div class="row">
+              <!-- [ sample-page ] start -->
+              <div class="col-xl-4 col-md-6">
+                <div class="card bg-secondary-dark dashnum-card text-white overflow-hidden">
+                  <span class="round small"></span>
+                  <span class="round big"></span>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col">
+                        <div class="avtar avtar-lg">
+                          <i class="text-white ti ti-credit-card"></i>
+                        </div>
+                      </div>
+                      <div class="col-auto">
+                        <div class="btn-group">
+                          <a
+                            type="button"
+                            class="avtar bg-secondary dropdown-toggle arrow-none"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                          >
+                            <i class="ti ti-dots"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item" type="button">Import Card</button></li>
+                            <li><button class="dropdown-item" type="button">Export</button></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <span class="text-white d-block f-34 f-w-500 my-2">{{this_week_units}}<i class="ti ti-arrow-up-right-circle opacity-50"></i></span>
+                    <p class="mb-0 opacity-50">This weeks production</p>
+                  </div>
+                </div>
+              </div>
+      </div>
       <!-- [ breadcrumb ] start -->
       <div class="page-header">
         <div class="page-block">
@@ -127,7 +164,7 @@
                       </td>
                       <td>{{batch.bottle_type}}</td>
                       <td>{{batch.unit_weight}}g</td>
-                      <td><span class="badge bg-light-primary rounded-pill f-12">{{batch.status}}</span> </td>
+                      <td><span class="badge bg-light-primary rounded-pill f-12">{{batch.batch_status}}</span> </td>
                       <td class="text-center">
                         <button type="button" class="btn btn-link-primary"><i class="ti ti-eye"></i></button>
                         <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='/edit-batch/{{batch.batch_number}}';"><i class="ti ti-pencil"></i></button>

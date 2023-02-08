@@ -46,6 +46,7 @@
               <div class="card-body">
                 <form method="post">
                   {% csrf_token %}
+                  <input type="hidden" id="batch-number" name="batch-number" value="{{batch.batch_number}}">
                 <div class="form-group">
                   <label for="batch-date" class="col-form-label">Batch Date</label>
                   <input class="form-control" type="text" id="batch-date" value="{{ batch.batch_date }}" name="batch-date"/>
