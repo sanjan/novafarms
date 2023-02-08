@@ -76,11 +76,10 @@ Details {% endblock title %} {% block content %}
                     <div class="row">
                       <div class="col-sm-6">
                         <h5 class="mb-0">For: {{batch.brand}}</h5>
+                        <h5 class="mb-0">Name: {{batch.product_name}}</h5>
                       </div>
                       <div class="col-sm-6 text-sm-end">
-                        <h5 class="mb-0">
-                         Name: {{batch.product_name}}
-                        </h5>
+                        <a href="/edit-batch/{{batch.batch_number}}" class="btn btn-primary me-2">Update Batch</a>
                       </div>
                     </div>
                   </div>

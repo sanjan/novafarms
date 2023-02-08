@@ -74,6 +74,7 @@ def edit_batch(request, batch_number):
         batch.product_name = request.POST.get('product-name')
         batch.number_made  = request.POST.get('number-made')
         batch.batch_status = request.POST.get('batch-status')
+        batch.max_possible = (batch.total_weight * 1000) // batch.unit_weight
         batch.save()
         
  
