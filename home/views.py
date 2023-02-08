@@ -1,13 +1,17 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from .models import Beekeeper, Order, OrderItem, HoneyType, Batch, PAYMENT_TERMS
+from .models import Beekeeper, Order, OrderItem, HoneyType, Batch, PAYMENT_TERMS, BATCH_STATE
 from decimal import Decimal
 from datetime import datetime
 import qrcode
 from django.conf import settings
 # Create your views here.
-# @login_required(login_url='/accounts/login-v3/')  
+# @login_required(login_url='/accounts/login-v3/') 
+
+brands =  ['Aldi', 'Costco', 'Fairprice', 'Panda Honey']
+bottle_types = ['Squeeze', 'Jar', 'Pail']
+
 def index(request):
     orders = Order.objects.all()
     batches = Batch.objects.all()
@@ -51,15 +55,23 @@ def batch_details(request, batch_number):
 
 def edit_batch(request, batch_number):
     batch = Batch.objects.get(batch_number=batch_number)
+    batch.number_made = batch.number_made if batch.number_made else 0
     
     order_items = batch.source_containers.all()
+    source_containers = OrderItem.objects.all()
     
-    for i in order_items:
-        i.net_weight = i.gross_weight - i.ibc_weight
-        i.ht = ', '.join([h.type for h in i.honey_types.all()])
+    for i in source_containers:
+        if i in order_items:
+            i.selected = True
+        else:
+            i.selected = False
     
-    context = {'batch': batch,
-               'order_items': order_items,
+    context = {
+                'batch': batch,
+                'source_containers': source_containers,
+                'brands': brands,
+                'bottle_types': bottle_types,
+                'batch_status' : [s[0] for s in BATCH_STATE]
             }
     
     return render(request,'pages/edit_batch.html', context)
@@ -169,8 +181,8 @@ def new_batch(request):
     source_containers = OrderItem.objects.filter(used=False)
     context = {
         'source_containers': source_containers,
-        'brands': ['Aldi', 'Costco', 'Fairprice', 'Panda Honey'],
-        'bottle_types': ['Squeeze', 'Jar', 'Pail'],
+        'brands': brands,
+        'bottle_types': bottle_types,
        
         }
     return render(request, 'pages/new_batch.html', context)

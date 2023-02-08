@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
-{% block title %} New Batch {% endblock title %}
+{% block title %} Update Batch {{batch.batch_number}} {% endblock title %}
 
 {% block extrastyle %}
   <!-- [Page specific CSS] start -->
@@ -63,8 +63,8 @@
                   placeholder=""
                   multiple
                   >
-                {% for s in batch.source_containers.all %}
-                  <option value="{{ s.id }}" >{{ s }}</option>
+                {% for s in source_containers %}
+                  <option value="{{ s.id }}" {% if s.selected %} selected {% endif %}>{{ s }}</option>
                 {% endfor %}
                 </select>
 
@@ -79,7 +79,7 @@
                 >
                   <option value="">Pick a brand</option>
                   {% for b in brands %}
-                  <option value="{{ b }}">{{ b }}</option>
+                  <option value="{{ b }}" {% if b == batch.brand %} selected {% endif %}>{{ b }}</option>
                   {% endfor%}
                 </select>
                 </div>
@@ -93,7 +93,7 @@
                 >
                   <option value="">Pick a bottle type</option>
                   {% for b in bottle_types %}
-                  <option value="{{ b }}">{{ b }}</option>
+                  <option value="{{ b }}" {% if b == batch.bottle_type %} selected {% endif %}>{{ b }}</option>
                   {% endfor%}
                 </select>
                 </div>
@@ -102,7 +102,7 @@
                 <div class="row align-items-center">
                   <div class="col-4">
                     <div class="input-group">
-                    <input type="text" class="form-control" id="unit-weight" name="unit-weight" placeholder="Unit Weight" />
+                    <input type="text" class="form-control" id="unit-weight" name="unit-weight" placeholder="Unit Weight" value="{{batch.unit_weight}}"/>
                     <span class="input-group-text"> grams</span>
                     </div>
                   </div>
@@ -114,12 +114,40 @@
 
                 <div class="form-group">
                   <label class="form-label">Product name</label>
-                  <input name="product-name" id="product-name" type="text" class="form-control" placeholder="product name" />
+                  <input name="product-name" id="product-name" type="text" class="form-control" placeholder="product name" value="{{batch.product_name}}" />
+                </div>
+
+                <div class="form-group">
+                  <label for="number-made"  class="form-label">Number made</label>
+                <div class="row align-items-center">
+                  <div class="col-4">
+                    <div class="input-group">
+                    <input type="text" class="form-control" id="number-made" name="number-made" placeholder="Number made" value="{{batch.number_made}}"/>
+                    <span class="input-group-text" id="max-possible">maximum: {{batch.max_possible}}</span>
+                    </div>
+                  </div>
+                  <div class="col-8">
+                    <div id="number-made-slider" class="pc-nouislider--drag-danger"></div>
+                  </div>
+                </div>
+                </div>
+                <div class="form-group">
+                  <label for="batch-status"  class="form-label">Batch status</label>
+                  <select
+                  class="form-control"
+                  data-trigger
+                  name="batch-status"
+                  id="batch-status"
+                >
+                  {% for s in batch_status %}
+                  <option value="{{ s }}" {% if s == batch.status %} selected {% endif %}>{{ s }}</option>
+                  {% endfor%}
+                </select>
                 </div>
 
               <div class="card-footer">
-                <button class="btn btn-primary me-2">Create batch</button>
-                <button type="reset" class="btn btn-light">Reset</button>
+                <button class="btn btn-primary me-2">Update batch</button>
+                <button type="reset" class="btn btn-light">Cancel</button>
               </div>
             </div>
             </form>
@@ -149,12 +177,46 @@
     <script src="{% static 'assets/js/plugins/nouislider.min.js' %}"></script>
 
 <script>
+
+  (function () {
+    // init slider
+    var nbslider = document.getElementById('number-made-slider');
+
+    var startval = document.getElementById('number-made').value;
+
+    noUiSlider.create(nbslider, {
+      start: [startval],
+      step: 1,
+      range: {
+        min: [0],
+        max: [{{batch.max_possible}}]
+      },
+      format: wNumb({
+        decimals: 0
+      })
+    });
+
+    // init slider input
+    var sliderInput = document.getElementById('number-made');
+
+
+    nbslider.noUiSlider.on('update', function (values, handle) {
+      sliderInput.value = values[handle];
+    });
+
+    sliderInput.addEventListener('change', function () {
+      nbslider.noUiSlider.set(this.value);
+    });
+  })();
+
       (function () {
         // init slider
         var slider = document.getElementById('unit-weight-slider');
 
+        var startval = document.getElementById('unit-weight').value;
+
         noUiSlider.create(slider, {
-          start: [200],
+          start: [startval],
           step: 25,
           range: {
             min: [200],
@@ -167,9 +229,21 @@
 
         // init slider input
         var sliderInput = document.getElementById('unit-weight');
+        var maxPossible = document.getElementById('max-possible');
+        var nbslider = document.getElementById('number-made-slider');
 
         slider.noUiSlider.on('update', function (values, handle) {
           sliderInput.value = values[handle];
+          console.log("max" + {{batch.total_weight}});
+          var maxval = Math.floor(({{batch.total_weight}}*1000) / values[handle])
+          maxPossible.innerText = "maximum: " + maxval;
+          nbslider.noUiSlider.updateOptions({
+            range: {
+                'min': 0,
+                'max': maxval
+            }
+        });
+
         });
 
         sliderInput.addEventListener('change', function () {
@@ -178,12 +252,19 @@
       })();
 
 
+     
+
+
 var branddropdown =  new Choices(`#brand`, {
   searchPlaceholderValue: 'search for brand'
 });
 
 var bottletypedropdown =  new Choices(`#bottle-type`, {
   searchPlaceholderValue: 'search for bottle type'
+});
+
+var batchstatusdropdown =  new Choices(`#batch-status`, {
+  searchPlaceholderValue: 'search for batch status'
 });
 
 var srccontainerbutton = new Choices(`#source_containers`, {
