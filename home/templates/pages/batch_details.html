@@ -91,6 +91,9 @@ Details {% endblock title %} {% block content %}
                       <li class="list-inline-item">
                         Batch Date: {{batch.batch_date}}
                       </li>
+                      <li class="list-inline-item">
+                        Batch Expiry: {{batch.expiry_date}}
+                      </li>
                     </ul>
                     <hr class="my-4" />
                     <div class="row align-items-center">
@@ -117,7 +120,7 @@ Details {% endblock title %} {% block content %}
                         
                       </div>
                       <div class="col-md-4">
-                        <h4 class="mb-2">Order QR Code</h4>
+                        <h4 class="mb-2">Batch QR Code</h4>
                         <img src="{{batch.qrcode_url}}" width="100px" />
                       </div>
                     </div>
