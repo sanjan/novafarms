@@ -1,20 +1,21 @@
 {% load i18n static admin_berry %}
 
+{% if request.user.is_superuser %}
 <li class="pc-item pc-caption">
   <label>Dashboard</label>
   <i class="ti ti-dashboard"></i>
 </li>
 <li class="pc-item">
-  {% if request.user.is_superuser %}
+ 
   <a href="{% url 'admin:index' %}" class="pc-link">
-  {% else %}
-  <a href="{% url 'index' %}" class="pc-link">
-  {% endif %}
+
+  <!-- <a href="{% url 'index' %}" class="pc-link"> -->
+ 
     <span class="pc-micon"><i class="ti ti-dashboard"></i></span>
-    <span class="pc-mtext">Default</span>
+    <span class="pc-mtext">Home</span>
   </a>
 </li>
-
+{% endif %}
 {% admin_get_menu as app_list %}
 {% if app_list %}
   {% for app in app_list %}
@@ -47,7 +48,7 @@
 
 {% if not request.user.is_authenticated or request.user.is_superuser %}
 <li class="pc-item pc-caption">
-  <label>Pages</label>
+  <label>Create New</label>
   <i class="ti ti-news"></i>
 </li>
 {% if request.user.is_superuser %}
