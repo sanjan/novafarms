@@ -81,10 +81,16 @@
                     <div class="card-header">
                       <div class="row">
                         <div class="col-sm-6">
+                  
                           <h5 class="mb-0">From: {{order.bee_keeper.supplier_name}}</h5>
+                          <br/>
+                          <h5 class="mb-0"> Order: #{{order.order_number}} Placed on {{ order.date }}</h5>
                         </div>
                         <div class="col-sm-6 text-sm-end">
-                          <h5 class="mb-0">Order: {{order.order_number}} Placed on {{ order.date }}</h5>
+                         
+                   
+                            <a href="/edit-order/{{order.order_number}}" class="btn btn-primary me-2">Modify Order</a>
+                          
                         </div>
                       </div>
                     </div>

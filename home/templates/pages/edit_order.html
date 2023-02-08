@@ -1,0 +1,132 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %} Update Order {{order.order_number}} {% endblock title %}
+
+{% block extrastyle %}
+  <!-- [Page specific CSS] start -->
+  <!-- Bootstrap DatePicker -->
+  <link rel="stylesheet" href="{% static 'assets/css/plugins/datepicker-bs5.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'assets/css/plugins/nouislider.min.css' %}" />
+  <!-- [Page specific CSS] end -->
+{% endblock extrastyle %}
+
+{% block content %}
+
+  <!-- [ Main Content ] start -->
+  <div class="pc-container">
+    <div class="pc-content">
+      <!-- [ breadcrumb ] start -->
+      <div class="page-header">
+        <div class="page-block">
+          <div class="row align-items-center">
+            <div class="col-md-12">
+              <div class="page-header-title">
+                <h5 class="m-b-10">Update Order</h5>
+              </div>
+              <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item" aria-current="page">Update Order</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- [ breadcrumb ] end -->
+
+
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <!-- [ sample-page ] start -->
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card">
+              <div class="card-header">
+                <h5>Update Order #{{order.order_number}}</h5>
+              </div>
+              <div class="card-body">
+                <form method="post">
+                  {% csrf_token %}
+                  <input type="hidden" id="order-number" name="order-number" value="{{order.order_number}}">
+                <div class="form-group">
+                  <label for="order-date" class="col-form-label">Order Date</label>
+                  <input class="form-control" type="text" id="order-date" value="{{ order.date }}" name="order-date"/>
+                </div>
+                <div class="form-group">
+                  <label for="beekeeper" class="form-label">Beekeeper</label>
+                  <select
+                  class="form-control"
+                  data-trigger
+                  name="beekeeper"
+                  id="beekeeper"
+                >
+                  <option value="">Pick a beekeeper</option>
+                  {% for b in bee_keepers %}
+                  <option value="{{ b.supplier_name }}" {% if b.supplier_name == order.bee_keeper.supplier_name %} selected {% endif %}>{{ b.supplier_name }}</option>
+                  {% endfor%}
+                </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Unit Price</label>
+                  <input name="unit-price" id="unit-price" type="number" class="form-control" placeholder="0.00" step="0.25" value="{{order.unit_price}}"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="payment-term">Payment terms:</label>
+                  <select class="form-select" name="payment-term" id="payment-term">
+                    {% for p in payment_terms %}
+                      <option value="{{ p }}" {% if p == order.payment_term %} selected {% endif %} >{{ p }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+
+              <div class="card-footer">
+                <button class="btn btn-primary me-2">Update order</button>
+                <a href="/order-details/{{order.order_number}}" class="btn btn-secondary me-2">Cancel</a>
+              </div>
+            </div>
+            </form>
+          </div>
+        </div>
+        <!-- [ sample-page ] end -->
+      </div>
+      <!-- [ Main Content ] end -->
+    </div>
+  </div>
+  <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+{% block extra_js %}
+
+<!-- <script src="static/js/jquery.min.js"></script> -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script src="{% static 'assets/js/plugins/choices.min.js' %}"></script>
+
+  <!-- DatePicker js -->
+  <script src="{% static 'assets/js/plugins/datepicker-full.min.js' %}"></script>
+
+
+<script>
+
+
+var beekeeperdd =  new Choices(`#beekeeper`, {
+  searchPlaceholderValue: 'search for beekeeper'
+});
+
+
+const d_today = new Datepicker(document.querySelector('#order-date'), {
+  buttonClass: 'btn',
+  todayHighlight: true,
+  autohide: true,
+  format: 'dd/mm/yyyy'
+});
+
+
+
+
+</script>
+
+{% endblock extra_js %}
+
+

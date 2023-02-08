@@ -59,6 +59,31 @@ def batch_details(request, batch_number):
     
     return render(request,'pages/batch_details.html', context)
 
+def edit_order(request, order_number):
+    
+    if request.method == 'POST':
+        print(request.POST)
+        date_format = '%d/%m/%Y'
+        order = Order.objects.get(order_number=request.POST.get('order-number'))
+        order.date = datetime.strptime(request.POST.get('order-date'), date_format)
+        order.bee_keeper = Beekeeper.objects.get(supplier_name=request.POST.get('beekeeper'))
+        order.unit_price = Decimal(request.POST.get('unit-price'))
+        order.payment_term = request.POST.get('payment-term')
+        order.save()
+
+    order = Order.objects.get(order_number=order_number)
+    order.date = order.date.strftime("%d/%m/%Y")
+    honey_types = HoneyType.objects.all()
+    bee_keepers = Beekeeper.objects.all()
+    context = {
+                'order': order,
+                'honey_types': honey_types,
+                'bee_keepers': bee_keepers,
+                'payment_terms': [p[0] for p in PAYMENT_TERMS]
+            }
+    
+    return render(request,'pages/edit_order.html', context)
+
 def edit_batch(request, batch_number):
     
     if request.method == 'POST':
@@ -81,6 +106,8 @@ def edit_batch(request, batch_number):
     batch = Batch.objects.get(batch_number=batch_number)
     batch.number_made = batch.number_made if batch.number_made else 0
     
+    batch.batch_date = batch.batch_date.strftime("%d/%m/%Y")
+    batch.expiry_date = batch.expiry_date.strftime("%d/%m/%Y")
     order_items = batch.source_containers.all()
     source_containers = OrderItem.objects.all()
     

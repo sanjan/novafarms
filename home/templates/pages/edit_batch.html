@@ -235,8 +235,7 @@
 
         slider.noUiSlider.on('update', function (values, handle) {
           sliderInput.value = values[handle];
-          console.log("max" + {{batch.total_weight}});
-          var maxval = Math.floor(({{batch.total_weight}}*1000) / values[handle])
+          var maxval = Math.floor(({{batch.total_weight}}*1000) / values[handle]);
           maxPossible.innerText = "maximum: " + maxval;
           nbslider.noUiSlider.updateOptions({
             range: {
@@ -284,12 +283,6 @@ const d_expiry = new Datepicker(document.querySelector('#expiry-date'), {
   autohide: true,
   format: 'dd/mm/yyyy'
 });
-
-var today = new Date();
-d_today.setDate(today);
-today.setFullYear(today.getFullYear() + 5);
-d_expiry.setDate(today);
-
 
 
 
