@@ -2,7 +2,7 @@
 
 Django starter styled with Berry Dashboard PRO, a premium Boostrap 5 design from CodedThemes The product is designed to deliver the best possible user experience with highly customizable feature-rich pages.
 
-> **YOUR ACCESS TOKEN**: `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` 
+> **YOUR ACCESS TOKEN**: `***REMOVED***` 
 
 <br />
 
@@ -25,9 +25,9 @@ Django starter styled with Berry Dashboard PRO, a premium Boostrap 5 design from
 > 👉 Export `GITHUB_TOKEN` in the environment: 
 
 ```bash
-$ export GITHUB_TOKEN='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'  # for Linux, Mac
-$ set GITHUB_TOKEN='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'     # Windows CMD
-$ $env:GITHUB_TOKEN = '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'  # Windows powerShell 
+$ export GITHUB_TOKEN='***REMOVED***'  # for Linux, Mac
+$ set GITHUB_TOKEN='***REMOVED***'     # Windows CMD
+$ $env:GITHUB_TOKEN = '***REMOVED***'  # Windows powerShell 
 ```
 
 This is required because the project has a private REPO dependency: `github.com/app-generator/priv-django-admin-berry-pro`
