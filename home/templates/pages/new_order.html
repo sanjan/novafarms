@@ -36,7 +36,6 @@
       <div class="row">
         <!-- [ sample-page ] start -->
         <div class="col-sm-12">
-          <div class="card">
             <div class="card">
               <div class="card-header">
                 <h5>New Order</h5>
@@ -237,6 +236,7 @@ var beeKeeperDropDown = new Choices(`#bee_keeper`,
 
 {% if messages %}
 {% for message in messages %}
+
 Swal.fire({
   position: 'top-end',
   icon: 'success',
@@ -248,8 +248,8 @@ Swal.fire({
     window.location.href = "/order-details/{{message.extra_tags}}";
     }
 });
-{% endfor %}
 
+{% endfor %}
 {% endif %}
 
 </script>

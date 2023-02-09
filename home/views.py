@@ -29,7 +29,7 @@ def index(request):
         'batches' : batches,
         'this_week_units': this_week_units,
     }
-    return render(request, 'pages/application/cust_order_list.html', context)
+    return render(request, 'pages/index.html', context)
 
 def order_details(request, order_number):
     order = Order.objects.get(order_number=order_number)
