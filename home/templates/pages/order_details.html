@@ -82,7 +82,7 @@
                       <div class="row">
                         <div class="col-sm-6">
                   
-                          <h5 class="mb-0">From: {{order.bee_keeper.supplier_name}}</h5>
+                          <h5 class="mb-0">From: {{order.bee_keeper.name}}</h5>
                           <br/>
                           <h5 class="mb-0"> Order: #{{order.order_number}} Placed on {{ order.date }}</h5>
                         </div>
@@ -246,7 +246,7 @@
                       </div>
                       <div class="row mb-3">
                         <div class="col-md-6">
-                          <h4 class="mb-2"><b>Customer : {{ order.bee_keeper.supplier_name}}</b></h4>
+                          <h4 class="mb-2"><b>Customer : {{ order.bee_keeper.name}}</b></h4>
                           <p class="text-muted mb-1">{% if order.bee_keeper.unit_number %}{{order.bee_keeper.unit_number}}{% endif %} {{order.bee_keeper.street_number}} {{order.bee_keeper.address_line_1}}</p>
                           <p class="text-muted mb-1"> {{order.bee_keeper.suburb}}  {{order.bee_keeper.state}}  {{order.bee_keeper.post_code}}</p>
                           <p class="text-muted mb-1"> {{order.bee_keeper.contact_number}}</p>

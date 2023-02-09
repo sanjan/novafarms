@@ -67,7 +67,7 @@ def edit_order(request, order_number):
         date_format = '%d/%m/%Y'
         order = Order.objects.get(order_number=request.POST.get('order-number'))
         order.date = datetime.strptime(request.POST.get('order-date'), date_format)
-        order.bee_keeper = Beekeeper.objects.get(supplier_name=request.POST.get('beekeeper'))
+        order.bee_keeper = Beekeeper.objects.get(name=request.POST.get('beekeeper'))
         order.unit_price = Decimal(request.POST.get('unit-price'))
         order.payment_term = request.POST.get('payment-term')
         order.save()
@@ -132,7 +132,7 @@ def edit_batch(request, batch_number):
 def new_order(request):
     if request.method == 'POST':
         
-        bee_keeper = Beekeeper.objects.get(supplier_name=request.POST.get('bee_keeper'))
+        bee_keeper = Beekeeper.objects.get(name=request.POST.get('bee_keeper'))
         unit_price = Decimal(request.POST.get('unit_price'))
         payment_term = request.POST.get('payment_term')
         order = Order.objects.create(

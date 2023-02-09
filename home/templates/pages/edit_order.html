@@ -60,7 +60,7 @@
                 >
                   <option value="">Pick a beekeeper</option>
                   {% for b in bee_keepers %}
-                  <option value="{{ b.supplier_name }}" {% if b.supplier_name == order.bee_keeper.supplier_name %} selected {% endif %}>{{ b.supplier_name }}</option>
+                  <option value="{{ b.name }}" {% if b.name == order.bee_keeper.name %} selected {% endif %}>{{ b.name }}</option>
                   {% endfor%}
                 </select>
                 </div>

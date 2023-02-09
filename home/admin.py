@@ -5,7 +5,7 @@ from .models import Beekeeper, Order, OrderItem, HoneyType, Batch
 admin.site.site_header = "Nova Farms Administration"
 
 class BeekeeperAdmin(admin.ModelAdmin):
-    list_display = ('supplier_name', 'supplier_number', 'suburb','state', 'email')
+    list_display = ('name', 'supplier_number', 'suburb', 'state', 'email')
     list_filter = ['state', 'suburb']
     
 class OrderAdmin(admin.ModelAdmin):

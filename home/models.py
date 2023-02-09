@@ -40,7 +40,7 @@ class HoneyType(models.Model):
     def __str__(self) -> str:
         return self.type
 class Beekeeper(models.Model):
-    supplier_name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=50, null=True)
     supplier_number = models.CharField(max_length=100,null=True, blank=True)
     ibc_identification = models.CharField(max_length=100,null=True, blank=True, verbose_name='IBC identification')
     unit_number = models.CharField(max_length=10, blank=True, null=True)
@@ -58,10 +58,10 @@ class Beekeeper(models.Model):
     account_number =  models.CharField(max_length=100,blank=True,null=True)
     
     class Meta:
-        ordering = ("supplier_name",)
+        ordering = ("name",)
     
     def __str__(self) -> str:
-        return self.supplier_name
+        return self.name
     
 
 class Order(models.Model):
