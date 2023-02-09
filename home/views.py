@@ -6,6 +6,7 @@ from decimal import Decimal
 from datetime import datetime
 import qrcode
 from django.conf import settings
+from django.contrib import messages
 # Create your views here.
 # @login_required(login_url='/accounts/login-v3/') 
 
@@ -162,6 +163,7 @@ def new_order(request):
         new_order = Order.objects.get(id=order.id)        
         new_order.qr_pointer = f'https://{request.get_host()}/order-details/{new_order.order_number}/'
         new_order.save()
+        messages.success(request, f'Order #{new_order.order_number} created successfully', extra_tags=new_order.order_number)
 
     honey_types = HoneyType.objects.all()
     bee_keepers = Beekeeper.objects.all()
@@ -210,6 +212,8 @@ def new_batch(request):
         new_batch = Batch.objects.get(id=batch.id)     
         new_batch.qr_pointer = f'https://{request.get_host()}/batch-details/{new_batch.batch_number}/'
         new_batch.save()
+        
+        messages.success(request, f'New batch #{new_batch.batch_number} created successfully', extra_tags=new_batch.batch_number)
             
         
     source_containers = OrderItem.objects.filter(used=False)

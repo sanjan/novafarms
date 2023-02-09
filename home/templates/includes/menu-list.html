@@ -99,7 +99,7 @@
         class="ti ti-news"></i></span><span class="pc-mtext">New Batch</span></a>
 </li>
 
-{% if request.user.is_authenticated and not request.user.is_superuser %}
+{% if request.user.is_superuser %}
 <li class="pc-item">
   <a href="{% url 'analytics' %}" class="pc-link"><span class="pc-micon"><i
         class="ti ti-device-analytics"></i></span><span class="pc-mtext">Analytics</span></a>

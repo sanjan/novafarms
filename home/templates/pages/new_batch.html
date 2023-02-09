@@ -7,6 +7,8 @@
   <!-- Bootstrap DatePicker -->
   <link rel="stylesheet" href="{% static 'assets/css/plugins/datepicker-bs5.min.css' %}" />
   <link rel="stylesheet" href="{% static 'assets/css/plugins/nouislider.min.css' %}" />
+    <!-- Animate.css -->
+  <link rel="stylesheet" href="{% static 'assets/css/plugins/animate.min.css' %}" />
   <!-- [Page specific CSS] end -->
 {% endblock extrastyle %}
 
@@ -141,12 +143,15 @@
 
 <script src="{% static 'assets/js/plugins/choices.min.js' %}"></script>
 
-  <!-- DatePicker js -->
-  <script src="{% static 'assets/js/plugins/datepicker-full.min.js' %}"></script>
+<!-- DatePicker js -->
+<script src="{% static 'assets/js/plugins/datepicker-full.min.js' %}"></script>
 
-    <!-- tagify -->
-    <script src="{% static 'assets/js/plugins/wNumb.min.js' %}"></script>
-    <script src="{% static 'assets/js/plugins/nouislider.min.js' %}"></script>
+<!-- tagify -->
+<script src="{% static 'assets/js/plugins/wNumb.min.js' %}"></script>
+<script src="{% static 'assets/js/plugins/nouislider.min.js' %}"></script>
+
+<!-- Sweet Alert -->
+<script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
 
 <script>
       (function () {
@@ -209,7 +214,22 @@ today.setFullYear(today.getFullYear() + 5);
 d_expiry.setDate(today);
 
 
+{% if messages %}
+{% for message in messages %}
+Swal.fire({
+  position: 'top-end',
+  icon: 'success',
+  title: '{{message}}',
+  showConfirmButton: false,
+  timer: 3500,}).then(
+  function(result){
+    if (result.dismiss === swal.DismissReason.timer) {
+    window.location.href = "/batch-details/{{message.extra_tags}}";
+    }
+});
+{% endfor %}
 
+{% endif %}
 
 
 

@@ -1,6 +1,12 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 {% block title %} New Order {% endblock title %}
+{% block extrastyle %}
+  <!-- [Page specific CSS] start -->
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="{% static 'assets/css/plugins/animate.min.css' %}" />
+  <!-- [Page specific CSS] end -->
+{% endblock extrastyle %}
 
 {% block content %}
 
@@ -141,6 +147,11 @@
 
 <script src="{% static 'assets/js/plugins/choices.min.js' %}"></script>
 
+
+  <!-- Sweet Alert -->
+  <script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
+
+
 <script>
 
   $(document).ready(function(){ $("body").on("click",".add_node_btn_frm_field", function (){ 
@@ -223,6 +234,23 @@ var beeKeeperDropDown = new Choices(`#bee_keeper`,
   searchPlaceholderValue: 'search for bee keeper'
 }
 );
+
+{% if messages %}
+{% for message in messages %}
+Swal.fire({
+  position: 'top-end',
+  icon: 'success',
+  title: '{{message}}',
+  showConfirmButton: false,
+  timer: 3500,}).then(
+  function(result){
+    if (result.dismiss === swal.DismissReason.timer) {
+    window.location.href = "/order-details/{{message.extra_tags}}";
+    }
+});
+{% endfor %}
+
+{% endif %}
 
 </script>
 
