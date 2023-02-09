@@ -4,7 +4,8 @@ from django.db.models import Sum
 from django.utils import timezone
 import qrcode
 import datetime
-from django.conf import settings
+import io
+from django.core.files.base import ContentFile
 
 # Create your models here.
 STATE = (
@@ -74,8 +75,8 @@ class Order(models.Model):
     total_price = models.DecimalField(default=0.00, decimal_places=2, editable=False,max_digits=10)
     payment_term = models.CharField(max_length=20, choices=PAYMENT_TERMS)
     date = models.DateField(default=timezone.now)
-    qrcode = models.CharField(max_length=100, null=True, blank=True)
-
+    qrcode = models.ImageField(upload_to='order_qr_codes',blank=True,null=True)
+    qr_pointer = models.CharField(max_length=300, unique=True, null=True, blank=True)
     class Meta:
         ordering = ("-id",)
     
@@ -91,10 +92,18 @@ class Order(models.Model):
                 self.net_weight = self.gross_total_weight - self.ibc_total_weight
             if self.net_weight > 0.0:
                 self.honey_levy = self.net_weight * HONEY_LEVY_MULTIPLIER
-            if self.unit_price > 0.0 and self.honey_levy > 0.0:
-                print('type of net weight: ', type(self.net_weight),  f'({self.net_weight})')
-                print('type of unit price: ', type(self.unit_price), f'({self.unit_price})' )            
+            if self.unit_price > 0.0 and self.honey_levy > 0.0 and self.total_price == 0.0:       
                 self.total_price = (self.net_weight * self.unit_price) + self.honey_levy
+        
+        if self.qr_pointer is not None:
+            qr_file_name = f'order_qr_code_{self.order_number}.png'
+            qr = qrcode.QRCode(version=2)
+            qr.add_data(self.qr_pointer)
+            qr.make(fit=True)
+            img = qr.make_image()
+            buff = io.BytesIO()
+            img.save(buff)
+            self.qrcode.save(qr_file_name, ContentFile(buff.getvalue()), save=False)
             
 
         super().save(*args, **kwargs)
@@ -142,8 +151,8 @@ class Batch(models.Model):
     number_made = models.PositiveIntegerField(null=True)
     max_possible = models.PositiveIntegerField(null=True, blank=True)
     batch_status = models.CharField(max_length=20, choices=BATCH_STATE, default='New')
-    qrcode_url = models.CharField(max_length=100, null=True, blank=True)
-    qrcode_path = models.CharField(max_length=100, null=True, blank=True)
+    qrcode = models.ImageField(upload_to='batch_qr_codes',blank=True,null=True)
+    qr_pointer = models.CharField(max_length=300, unique=True, null=True, blank=True)
     
     class Meta:
         ordering = ("-id",)
@@ -152,6 +161,16 @@ class Batch(models.Model):
         return f'{self.batch_number} - {self.brand} - {self.bottle_type}'
    
     def save(self, *args, **kwargs):
+        if self.qr_pointer is not None:
+            qr_file_name = f'batch_qr_code_{self.batch_number}.png'
+            qr = qrcode.QRCode(version=2)
+            qr.add_data(self.qr_pointer)
+            qr.make(fit=True)
+            img = qr.make_image()
+            buff = io.BytesIO()
+            img.save(buff)
+            self.qrcode.save(qr_file_name, ContentFile(buff.getvalue()), save=False)
+            
         super().save(*args, **kwargs)
         self.set_batch_number()
     

@@ -9,6 +9,7 @@ build/
 env
 /staticfiles/
 *.sqlite*
+*qr_code*.png
 #src
 
 .env

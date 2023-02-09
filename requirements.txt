@@ -1,6 +1,7 @@
 asgiref
 crispy-bootstrap5
 django-crispy-forms
+django-cloudinary-storage
 Pillow
 qrcode
 sqlparse

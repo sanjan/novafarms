@@ -159,16 +159,8 @@ def new_order(request):
             order_items.append(order_item.pk)
         
         order.save()
-        new_order = Order.objects.get(id=order.id)
-        
-        qc = qrcode.make(f'http://{request.get_host()}/order-details/{new_order.order_number}/')
-        file_path = f'order_qr_codes/order_qr_code_{new_order.order_number}.png'
-        qc_path = f'{settings.MEDIA_ROOT}{file_path}'
-        qc_url =  f'{settings.MEDIA_URL}{file_path}'
-        
-        qc.save(qc_path)
-       
-        new_order.qrcode = qc_url
+        new_order = Order.objects.get(id=order.id)        
+        new_order.qr_pointer = f'https://{request.get_host()}/order-details/{new_order.order_number}/'
         new_order.save()
 
     honey_types = HoneyType.objects.all()
@@ -215,17 +207,8 @@ def new_batch(request):
         batch.max_possible = (total_weight * 1000) // unit_weight
         batch.save()
         
-        new_batch = Batch.objects.get(id=batch.id)
-        
-        qc = qrcode.make(f'http://{request.get_host()}/batch-details/{new_batch.batch_number}/')
-        file_path = f'batch_qr_codes/batch_qr_code_{new_batch.batch_number}.png'
-        qc_path = f'{settings.MEDIA_ROOT}{file_path}'
-        qc_url =  f'{settings.MEDIA_URL}{file_path}'
-        
-        qc.save(qc_path)
-       
-        new_batch.qrcode_url = qc_url
-        new_batch.qrcode_path = qc_path
+        new_batch = Batch.objects.get(id=batch.id)     
+        new_batch.qr_pointer = f'https://{request.get_host()}/batch-details/{new_batch.batch_number}/'
         new_batch.save()
             
         

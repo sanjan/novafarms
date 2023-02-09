@@ -76,6 +76,7 @@ Details {% endblock title %} {% block content %}
                     <div class="row">
                       <div class="col-sm-6">
                         <h5 class="mb-0">For: {{batch.brand}}</h5>
+                        <br/>
                         <h5 class="mb-0">Name: {{batch.product_name}}</h5>
                       </div>
                       <div class="col-sm-6 text-sm-end">
@@ -121,7 +122,7 @@ Details {% endblock title %} {% block content %}
                       </div>
                       <div class="col-md-4">
                         <h4 class="mb-2">Batch QR Code</h4>
-                        <img src="{{batch.qrcode_url}}" width="100px" />
+                        <img src="{{batch.qrcode.url}}" width="200px" />
                       </div>
                     </div>
                     <hr class="my-4" />
