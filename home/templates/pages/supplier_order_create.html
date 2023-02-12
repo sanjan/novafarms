@@ -38,22 +38,22 @@
         <div class="col-sm-12">
             <div class="card">
               <div class="card-header">
-                <h5>New Order</h5>
+                <h5>New Supplier Order</h5>
               </div>
               <div class="card-body">
                 <form method="post">
                   {% csrf_token %}
                 <div class="form-group">
-                  <label for="bee_keeper"  class="form-label">Bee Keeper</label>
+                  <label for="supplier"  class="form-label">Supplier</label>
                   <select
                   class="form-control"
                   data-trigger
-                  name="bee_keeper"
-                  id="bee_keeper"
+                  name="supplier"
+                  id="supplier"
                 >
-                  <option value="">Select Bee Keeper</option>
-                  {% for b in bee_keepers %}
-                  <option value="{{ b.name }}">{{ b.name }}</option>
+                  <option value="">Select Supplier</option>
+                  {% for b in suppliers %}
+                  <option value="{{ b.id }}">{{ b.name }}</option>
                   {% endfor%}
                 </select>
                 </div>
@@ -126,8 +126,9 @@
                 <button class="btn btn-primary me-2">Submit</button>
                 <button type="reset" class="btn btn-light">Reset</button>
               </div>
-            </div>
             </form>
+            </div>
+           
           </div>
         </div>
         <!-- [ sample-page ] end -->
@@ -228,29 +229,12 @@ var multipleCancelButton = new Choices(`#honey_types_1`, {
   removeItemButton: true
 });
 
-var beeKeeperDropDown = new Choices(`#bee_keeper`,
+var supplierdd = new Choices(`#supplier`,
 {
-  searchPlaceholderValue: 'search for bee keeper'
+  searchPlaceholderValue: 'search for supplier'
 }
 );
 
-{% if messages %}
-{% for message in messages %}
-
-Swal.fire({
-  position: 'top-end',
-  icon: 'success',
-  title: '{{message}}',
-  showConfirmButton: false,
-  timer: 3500,}).then(
-  function(result){
-    if (result.dismiss === swal.DismissReason.timer) {
-    window.location.href = "/order-details/{{message.extra_tags}}";
-    }
-});
-
-{% endfor %}
-{% endif %}
 
 </script>
 

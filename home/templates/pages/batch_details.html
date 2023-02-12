@@ -138,16 +138,16 @@ Details {% endblock title %} {% block content %}
                         <thead>
                           <tr>
                             <th >Order Number</th>
-                            <th >Beekeeper</th>
+                            <th >Supplier</th>
                             <th>Honey content</th>
                             <th class="text-end">Net Weight</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {% for item in order_items%}
+                          {% for item in honey_stock%}
                           <tr>
                             <td class="">{{item.order.order_number}}</td>
-                            <td class="">{{item.order.bee_keeper}}</td>
+                            <td class="">{{item.order.supplier}}</td>
                             <td>
                               <div>
                                 <h5 class="mb-1">

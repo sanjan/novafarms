@@ -21,11 +21,11 @@
           <div class="row align-items-center">
             <div class="col-md-12">
               <div class="page-header-title">
-                <h5 class="m-b-10">Update Order</h5>
+                <h5 class="m-b-10">Update Supplier Order</h5>
               </div>
               <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item" aria-current="page">Update Order</li>
+                <li class="breadcrumb-item" aria-current="page">Update Supplier Order</li>
               </ul>
             </div>
           </div>
@@ -51,16 +51,16 @@
                   <input class="form-control" type="text" id="order-date" value="{{ order.date }}" name="order-date"/>
                 </div>
                 <div class="form-group">
-                  <label for="beekeeper" class="form-label">Beekeeper</label>
+                  <label for="supplier" class="form-label">Supplier</label>
                   <select
                   class="form-control"
                   data-trigger
-                  name="beekeeper"
-                  id="beekeeper"
+                  name="supplier"
+                  id="supplier"
                 >
-                  <option value="">Pick a beekeeper</option>
-                  {% for b in bee_keepers %}
-                  <option value="{{ b.name }}" {% if b.name == order.bee_keeper.name %} selected {% endif %}>{{ b.name }}</option>
+                  <option value="">Pick a supplier</option>
+                  {% for b in suppliers %}
+                  <option value="{{ b.id }}" {% if b.name == order.supplier.name %} selected {% endif %}>{{ b.name }}</option>
                   {% endfor%}
                 </select>
                 </div>
@@ -109,8 +109,8 @@
 <script>
 
 
-var beekeeperdd =  new Choices(`#beekeeper`, {
-  searchPlaceholderValue: 'search for beekeeper'
+var supplierdd =  new Choices(`#supplier`, {
+  searchPlaceholderValue: 'search for supplier'
 });
 
 

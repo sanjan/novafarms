@@ -48,7 +48,7 @@
 
 {% if not request.user.is_authenticated or request.user.is_superuser %}
 <li class="pc-item pc-caption">
-  <label>Create New</label>
+  <label>Admin</label>
   <i class="ti ti-news"></i>
 </li>
 {% if request.user.is_superuser %}
@@ -90,14 +90,37 @@
 {% endif %}
 {% endif %}
 
-<li class="pc-item">
-  <a href="{% url 'new_order' %}" class="pc-link"><span class="pc-micon"><i
-        class="ti ti-device-analytics"></i></span><span class="pc-mtext">New Order</span></a>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-key"></i></span><span
+      class="pc-mtext">Production</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">  
+
+  </ul>
 </li>
-<li class="pc-item">
-  <a href="{% url 'new_batch' %}" class="pc-link"><span class="pc-micon"><i
-        class="ti ti-news"></i></span><span class="pc-mtext">New Batch</span></a>
+
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-key"></i></span><span
+      class="pc-mtext">Inventory</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">  
+
+  </ul>
 </li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-key"></i></span><span
+      class="pc-mtext">Supplies</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">  
+    <li class="pc-item"><a class="pc-link" href="{% url 'suppliers' %}">Suppliers</a></li>
+    <li class="pc-item"><a class="pc-link" href="{% url 'supplier_orders' %}">Supplier Orders</a></li>
+  </ul>
+</li>
+<li class="pc-item pc-hasmenu">
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-key"></i></span><span
+      class="pc-mtext">Customers</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <ul class="pc-submenu">  
+    <li class="pc-item"><a class="pc-link" href="{% url 'customers' %}">Customers</a></li>
+  </ul>
+</li>
+
 
 {% if request.user.is_superuser %}
 <li class="pc-item">

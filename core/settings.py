@@ -14,6 +14,7 @@ import os, random, string
 from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
+import decimal
 
 load_dotenv()  # take environment variables from .env.
 
@@ -52,7 +53,8 @@ INSTALLED_APPS = [
     "home",
     "crispy_forms",
     "crispy_bootstrap5",
-    "django_extensions"
+    "django_extensions",
+    "sweetify"
 ]
 
 MIDDLEWARE = [
@@ -181,3 +183,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+HONEY_LEVY_MULTIPLIER = decimal.Decimal(os.getenv('HONEY_LEVY_MULTIPLIER', None)) if os.getenv('HONEY_LEVY_MULTIPLIER', None) else decimal.Decimal('0.046')
+
+SWEETIFY_SWEETALERT_LIBRARY = 'sweetalert2'

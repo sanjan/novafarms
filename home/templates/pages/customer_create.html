@@ -1,0 +1,74 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %} New Customer {% endblock title %}
+
+{% block content %}
+
+  <!-- [ Main Content ] start -->
+  <div class="pc-container">
+    <div class="pc-content">
+      <!-- [ Main Content ] start -->
+      <!-- [ breadcrumb ] start -->
+      <div class="page-header">
+        <div class="page-block">
+          <div class="row align-items-center">
+            <div class="col-md-12">
+              <div class="page-header-title">
+                <h5 class="m-b-10">New Customer</h5>
+              </div>
+              <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'customers' %}">Customers</a></li>
+                <li class="breadcrumb-item" aria-current="page">New</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- [ breadcrumb ] end -->
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <!-- [ sample-page ] start -->
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              <h5>New Customer</h5>
+            </div>
+            <div class="card-body">
+          {% load crispy_forms_tags %}
+          <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{form|crispy}}
+          <div class="card-footer">
+            <button class="btn btn-primary me-2">Submit</button>
+            <button type="reset" class="btn btn-light">Reset</button>
+          </div>
+          </form>
+          </div>
+        
+
+      </div>
+        <!-- [ sample-page ] end -->
+      </div>
+      <!-- [ Main Content ] end -->
+    </div>
+  </div>
+  <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+{% block extra_js %}
+
+    <!-- [Page Specific JS] start -->
+  <!-- Sweet Alert -->
+  <script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
+  {% load sweetify %}
+  {% sweetify %}
+  <script>
+
+  </script>
+  <!-- [Page Specific JS] end -->
+
+{% endblock extra_js %}
+
+

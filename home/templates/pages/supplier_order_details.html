@@ -82,14 +82,14 @@
                       <div class="row">
                         <div class="col-sm-6">
                   
-                          <h5 class="mb-0">From: {{order.bee_keeper.name}}</h5>
+                          <h5 class="mb-0">From: {{order.supplier.name}}</h5>
                           <br/>
-                          <h5 class="mb-0"> Order: #{{order.order_number}} Placed on {{ order.date }}</h5>
+                          <h5 class="mb-0"> Order: #{{order.order_number | upper}} Placed on {{ order.date }}</h5>
                         </div>
                         <div class="col-sm-6 text-sm-end">
                          
                    
-                            <a href="/edit-order/{{order.order_number}}" class="btn btn-primary me-2">Modify Order</a>
+                            <a href="{% url 'supplier_order_edit' order.order_number %}" class="btn btn-primary me-2">Modify Order</a>
                           
                         </div>
                       </div>
@@ -98,10 +98,10 @@
                       <ul class="list-inline">
     
                         <li class="list-inline-item"
-                          ><i class="material-icons-two-tone opacity-75 me-1 f-16">phone_android</i> {{ order.bee_keeper.contact_number }}</li
+                          ><i class="material-icons-two-tone opacity-75 me-1 f-16">phone_android</i> {{ order.supplier.contact_number }}</li
                         >
                         <li class="list-inline-item"
-                          ><i class="material-icons-two-tone opacity-75 me-1 f-16">email</i> {{ order.bee_keeper.email }}</li
+                          ><i class="material-icons-two-tone opacity-75 me-1 f-16">email</i> {{ order.supplier.email }}</li
                         >
                       </ul>
                       <hr class="my-4" />
@@ -116,10 +116,10 @@
                         </div>
                         <div class="col-md-4">
                           <h4 class="mb-2">Supplier Number</h4>
-                          <span class="badge text-secondary border border-secondary rounded-pill f-12 align-baseline mb-1">{{order.bee_keeper.supplier_number}}</span> 
+                          <span class="badge text-secondary border border-secondary rounded-pill f-12 align-baseline mb-1">{{order.supplier.supplier_number}}</span> 
                           <span class="text-muted f-14"></span>
                           <h4 class="mb-2">IBC Identification</h4>
-                          <span class="badge text-secondary border border-secondary rounded-pill f-12 align-baseline mb-1">{{order.bee_keeper.ibc_identification}}</span>
+                          <span class="badge text-secondary border border-secondary rounded-pill f-12 align-baseline mb-1">{{order.supplier.ibc_identification}}</span>
                         </div>
                         <div class="col-md-4">
                           <h4 class="mb-2">Order QR Code</h4>
@@ -130,17 +130,17 @@
                       <div class="row">
                         <div class="col-md-4">
                           <h4 class="mb-3">Billing address</h4>
-                          <p class="mb-1"><b>Address :</b> {% if order.bee_keeper.unit_number %}{{order.bee_keeper.unit_number}}{% endif %} {{order.bee_keeper.street_number}} {{order.bee_keeper.address_line_1}} {{order.bee_keeper.address_line_2}}</p>
-                          <p class="mb-1"><b>Suburb :</b> {{order.bee_keeper.suburb}}</p>
-                          <p class="mb-1"><b>State :</b> {{order.bee_keeper.state}}</p>
-                          <p><b>Post Code :</b> {{order.bee_keeper.post_code}}</p>
+                          <p class="mb-1"><b>Address :</b> {% if order.supplier.unit_number %}{{order.supplier.unit_number}}{% endif %} {{order.supplier.street_number}} {{order.supplier.address_line_1}} {{order.supplier.address_line_2}}</p>
+                          <p class="mb-1"><b>Suburb :</b> {{order.supplier.suburb}}</p>
+                          <p class="mb-1"><b>State :</b> {{order.supplier.state}}</p>
+                          <p><b>Post Code :</b> {{order.supplier.post_code}}</p>
                         </div>
                         <div class="col-md-4">
                           <h4 class="mb-3">Shipping address</h4>
-                          <p class="mb-1"><b>Address :</b> {% if order.bee_keeper.unit_number %}{{order.bee_keeper.unit_number}}{% endif %} {{order.bee_keeper.street_number}} {{order.bee_keeper.address_line_1}} {{order.bee_keeper.address_line_2}}</p>
-                          <p class="mb-1"><b>Suburb :</b> {{order.bee_keeper.suburb}}</p>
-                          <p class="mb-1"><b>State :</b> {{order.bee_keeper.state}}</p>
-                          <p><b>Post Code :</b> {{order.bee_keeper.post_code}}</p>
+                          <p class="mb-1"><b>Address :</b> {% if order.supplier.unit_number %}{{order.supplier.unit_number}}{% endif %} {{order.supplier.street_number}} {{order.supplier.address_line_1}} {{order.supplier.address_line_2}}</p>
+                          <p class="mb-1"><b>Suburb :</b> {{order.supplier.suburb}}</p>
+                          <p class="mb-1"><b>State :</b> {{order.supplier.state}}</p>
+                          <p><b>Post Code :</b> {{order.supplier.post_code}}</p>
                         </div>
                       </div>
                     </div>
@@ -162,7 +162,7 @@
                             </tr>
                           </thead>
                           <tbody>
-                            {% for item in order_items%}
+                            {% for item in honey_stock%}
                             <tr>
                              
                               <td>
@@ -199,8 +199,28 @@
                                   </tr>
                                   <tr>
                                     <th>Net weight:</th>
-                                    <td>{{order.net_weight}}</td>
+                                    <td>{{order.net_total_weight}}</td>
                                   </tr>
+                                  <tr>
+                                    <td class="pe-0 pt-0">
+                                      <hr class="mb-3 mt-0" />
+                                      <h5 class="text-primary m-r-10">Total for Weight :</h5>
+                                    </td>
+                                    <td class="ps-0 pt-0">
+                                      <hr class="mb-3 mt-0" />
+                                      <h5 class="text-primary">$ {{order.total_weight_price}}</h5>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                  <td class="pe-0 pt-0">
+                                    <hr class="mb-3 mt-0" />
+                                    <h5 class="text-primary m-r-10">Total Honey Levy :</h5>
+                                  </td>
+                                  <td class="ps-0 pt-0">
+                                    <hr class="mb-3 mt-0" />
+                                    <h5 class="text-primary">$ {{order.honey_levy}}</h5>
+                                  </td>
+                                </tr>
                                   <tr>
                                     <td class="pe-0 pt-0">
                                       <hr class="mb-3 mt-0" />
@@ -246,11 +266,11 @@
                       </div>
                       <div class="row mb-3">
                         <div class="col-md-6">
-                          <h4 class="mb-2"><b>Customer : {{ order.bee_keeper.name}}</b></h4>
-                          <p class="text-muted mb-1">{% if order.bee_keeper.unit_number %}{{order.bee_keeper.unit_number}}{% endif %} {{order.bee_keeper.street_number}} {{order.bee_keeper.address_line_1}}</p>
-                          <p class="text-muted mb-1"> {{order.bee_keeper.suburb}}  {{order.bee_keeper.state}}  {{order.bee_keeper.post_code}}</p>
-                          <p class="text-muted mb-1"> {{order.bee_keeper.contact_number}}</p>
-                          <p class="text-muted mb-1"><a href="mailto:demo@company.com"> {{order.bee_keeper.email}}</a></p>
+                          <h4 class="mb-2"><b>Customer : {{ order.supplier.name}}</b></h4>
+                          <p class="text-muted mb-1">{% if order.supplier.unit_number %}{{order.supplier.unit_number}}{% endif %} {{order.supplier.street_number}} {{order.supplier.address_line_1}}</p>
+                          <p class="text-muted mb-1"> {{order.supplier.suburb}}  {{order.supplier.state}}  {{order.supplier.post_code}}</p>
+                          <p class="text-muted mb-1"> {{order.supplier.contact_number}}</p>
+                          <p class="text-muted mb-1"><a href="mailto:demo@company.com"> {{order.supplier.email}}</a></p>
                         </div>
                         <div class="col-md-6">
                           <h4 class="mb-2"><b>Order Details :</b></h4>
@@ -304,12 +324,32 @@
                                   </tr>
                                   <tr>
                                     <th>Net weight:</th>
-                                    <td>{{order.net_weight}}</td>
+                                    <td>{{order.net_total_weight}}</td>
                                   </tr>
                                   <tr>
                                     <td class="pe-0 pt-0">
                                       <hr class="mb-3 mt-0" />
-                                      <h5 class="text-primary m-r-10">Total :</h5>
+                                      <h5 class="text-primary m-r-10">Total for Weight :</h5>
+                                    </td>
+                                    <td class="ps-0 pt-0">
+                                      <hr class="mb-3 mt-0" />
+                                      <h5 class="text-primary">$ {{order.total_weight_price}}</h5>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                  <td class="pe-0 pt-0">
+                                    <hr class="mb-3 mt-0" />
+                                    <h5 class="text-primary m-r-10">Total Honey Levy :</h5>
+                                  </td>
+                                  <td class="ps-0 pt-0">
+                                    <hr class="mb-3 mt-0" />
+                                    <h5 class="text-primary">$ {{order.honey_levy}}</h5>
+                                  </td>
+                                </tr>
+                                  <tr>
+                                    <td class="pe-0 pt-0">
+                                      <hr class="mb-3 mt-0" />
+                                      <h5 class="text-primary m-r-10">Total Sum :</h5>
                                     </td>
                                     <td class="ps-0 pt-0">
                                       <hr class="mb-3 mt-0" />
