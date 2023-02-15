@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import Supplier, SupplierOrder, Customer, HoneyStock, HoneyType, Batch, Production, PAYMENT_TERMS, PRODUCTION_STATUS, BATCH_STATUS
+from .models import Supplier, SupplierOrder, Customer, CustomerOrder, HoneyStock, HoneyType, Batch, Production, Brand, Pallet, Container, Lid, Carton, Label, TopInsert, PAYMENT_TERMS, PRODUCTION_STATUS, BATCH_STATUS
 from .forms import SupplierForm, CustomerForm
 from decimal import Decimal
 from datetime import datetime
@@ -31,7 +31,6 @@ def index(request):
         'this_week_units': this_week_units,
     }
     return render(request, 'pages/index.html', context)
-
 
 # @login_required(login_url='/accounts/login-v3/')  
 def batch_create(request):
@@ -67,7 +66,6 @@ def batch_create(request):
         'honey_stock': honey_stock,
         }
     return render(request, 'pages/batch_create.html', context)
-
 
 def batch_edit(request, batch_number):
     
@@ -249,7 +247,6 @@ def suppliers(request):
         'count' : count,
     }
     return render(request, 'pages/supplier_list.html', context)
-
     
 def supplier_create(request):
     form = SupplierForm(request.POST or None)
@@ -266,7 +263,6 @@ def supplier_create(request):
             sweetify.error(request, 'Error saving new supplier data')
 
     return render(request, 'pages/supplier_create.html', context)
-
 
 def supplier_edit(request, supplier_id):
     supplier = Supplier.objects.get(id=supplier_id)
@@ -298,7 +294,6 @@ def customers(request):
     }
     return render(request, 'pages/customer_list.html', context)
 
-    
 def customer_create(request):
     form = CustomerForm(request.POST or None)
     context = {
@@ -314,7 +309,6 @@ def customer_create(request):
         
 
     return render(request, 'pages/customer_create.html', context)
-
 
 def customer_edit(request, customer_id):
     customer = Customer.objects.get(id=customer_id)
@@ -334,3 +328,29 @@ def customer_edit(request, customer_id):
         'form' : form,
     }
     return render(request, 'pages/customer_edit.html', context)
+
+def production_create(request):
+    orders = CustomerOrder.objects.all()
+    brands = Brand.objects.all()
+    pallets = Pallet.objects.all()
+    containers = Container.objects.all()
+    lids = Lid.objects.all()
+    cartons = Carton.objects.all()
+    labels = Label.objects.all()
+    top_inserts = TopInsert.objects.all()
+    batches = Batch.objects.filter((~Q(batch_status='Used')))
+    
+    context = {
+        'orders' : orders,
+        'brands' : brands,
+        'pallets' : pallets,
+        'containers' : containers,
+        'lids' : lids,
+        'cartons' : cartons,
+        'labels' : labels,
+        'top_inserts' : top_inserts,
+        'batches': batches,
+    }
+    
+    return render(request,'pages/production_create.html', context)
+    

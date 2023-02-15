@@ -36,7 +36,7 @@ urlpatterns = [
     # path('inventory/<int:inventory_id>/edit', views.inventory_edit, name='inventory_edit'),
     
     # path('production/list', views.production_list, name='production_list'),
-    # path('production/create', views.production_create, name='production_create'),
+    path('production/create', views.production_create, name='production_create'),
     # path('production/<str:production_number>/details', views.production_details, name='production_details'),
     # path('production/<str:production_number>/edit', views.production_edit, name='production_edit'),
     

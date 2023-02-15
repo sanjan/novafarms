@@ -1,9 +1,7 @@
-
 from django.db import models
 from django.db.models import Sum
 from django.utils import timezone
 import qrcode
-import datetime
 import io
 from django.core.files.base import ContentFile
 from shortuuid.django_fields import ShortUUIDField
@@ -45,6 +43,7 @@ HONEY_CONTAINER_TYPES = (
     ('Squeeze Bottle','Squeeze Bottle'),
     ('Pail','Pail'),
 )
+
 LID_TYPES = (
     ('Jar Lid','Jar Lid'),
     ('Squeeze Lid','Squeeze Lid'),
@@ -60,8 +59,6 @@ LID_CONTAINER_COLORS = (
     ('Dark Brown','Dark Brown'),
     ('White','White'),
 )
-
-
 
 class Config(models.Model):
     last_updated = models.DateField(default=timezone.now)
@@ -153,7 +150,7 @@ class Pallet(models.Model):
     last_updated =  models.DateField(auto_now=True)
     
     def __str__(self) -> str:
-        return f'{self.pallet_name} - {self.customer.name} - {self.pallet_number}'
+        return f'{self.pallet_name} - {self.customer.name} - {self.pallet_number} ({self.width} cm x {self.length} cm)'
 
 class Container(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
@@ -168,6 +165,7 @@ class Lid(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
     brand = models.ForeignKey(Brand, null=True,blank=True, on_delete=models.PROTECT)
     type = models.CharField(max_length=20, choices=LID_TYPES)
+    container_type = models.CharField(max_length=20, choices=HONEY_CONTAINER_TYPES)
     quantity =  models.IntegerField(default=0)
     color = models.CharField(max_length=20, choices=LID_CONTAINER_COLORS)
     last_updated =  models.DateField(auto_now=True)
@@ -181,6 +179,7 @@ class Carton(models.Model):
 
 class Label(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
+    container_type = models.CharField(max_length=20, choices=HONEY_CONTAINER_TYPES)
     brand = models.ForeignKey(Brand, null=True, blank=True, on_delete=models.PROTECT)
     quantity =  models.IntegerField(default=0)
     last_updated =  models.DateField(auto_now=True)
@@ -272,11 +271,6 @@ class SupplierOrder(models.Model):
     #         order.order_number = order_number
     #         order.save()
             
-
-        
-
-
-   
 class HoneyStock(models.Model):
     order = models.ForeignKey(SupplierOrder, on_delete=models.CASCADE, related_name='honey_stock', blank=True, null=True)
     stock_id = ShortUUIDField(length=16,max_length=16,prefix="h_",alphabet="abcdefhkmnrstuvwxz123456789")
@@ -295,8 +289,7 @@ class HoneyStock(models.Model):
     def save(self, *args, **kwargs):
         self.net_weight = self.gross_weight - self.ibc_weight
         super().save(*args, **kwargs)   
-    
-    
+  
 class Batch(models.Model):
     batch_date = models.DateField(auto_now_add=True)
     expiry_date = models.DateField()
@@ -340,7 +333,6 @@ class Batch(models.Model):
     #         batch.batch_number = batch_number
     #         batch.save()
         
-
 class Production(models.Model):
     packing_date = models.DateField(default=timezone.now)
     production_code = ShortUUIDField(length=16,max_length=16,prefix="p_",alphabet="abcdefhkmnrstuvwxz123456789_",)
@@ -353,13 +345,12 @@ class Production(models.Model):
     label = models.ForeignKey(Label, on_delete=models.PROTECT)
     top_insert = models.ForeignKey(TopInsert, on_delete=models.PROTECT, null=True, blank=True)
     product_name = models.CharField(max_length=100,blank=True, null=True)
-    bottle_type = models.CharField(max_length=100,blank=True, null=True)
     total_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10)
     units_made = models.PositiveIntegerField(null=True)
     units_requested = models.PositiveIntegerField(null=True)
     status = models.CharField(max_length=20, choices=PRODUCTION_STATUS, default='New')
     product_image = models.ImageField(upload_to='production_images',blank=True,null=True)
-    production = models.ForeignKey(Batch, on_delete=models.SET_NULL, related_name='batch', null=True)
+    batch = models.ForeignKey(Batch, on_delete=models.PROTECT, related_name='batch', null=True)
         
     def save(self, *args, **kwargs):           
         super().save(*args, **kwargs)     

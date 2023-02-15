@@ -52,53 +52,67 @@
                   <label for="production-date" class="col-form-label">Production Date</label>
                   <input class="form-control" type="text" id="production-date" name="production-date"/>
                 </div>
+   
                 <div class="form-group">
-                  <label for="expiry-date" class="col-form-label">Expiry Date</label>
-                  <input class="form-control" type="text" id="expiry-date" name="expiry-date"/>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Source Containers</label>
+                  <label for="order" class="form-label">Customer Order</label>
                   <select
-                  class="form-control"
-                  name="source_containers[]"
-                  id="source_containers"
-                  placeholder=""
-                  multiple
+                    class="form-control"
+                    data-trigger
+                    name="order"
+                    id="order"
                   >
-                {% for s in source_containers %}
-                  <option value="{{ s.id }}" >{{ s }}</option>
-                {% endfor %}
+                  <option value="">Pick an order</option>
+                  {% for b in orders %}
+                  <option value="{{ b.id }}">{{ b }}</option>
+                  {% endfor%}
                 </select>
-
                 </div>
+
                 <div class="form-group">
                   <label for="brand" class="form-label">Brand</label>
                   <select
-                  class="form-control"
-                  data-trigger
-                  name="brand"
-                  id="brand"
-                >
+                    class="form-control"
+                    data-trigger
+                    name="brand"
+                    id="brand"
+                  >
                   <option value="">Pick a brand</option>
                   {% for b in brands %}
-                  <option value="{{ b }}">{{ b }}</option>
+                  <option value="{{ b.id }}">{{ b.name }}</option>
                   {% endfor%}
                 </select>
                 </div>
+
                 <div class="form-group">
-                  <label for="bottle-type"  class="form-label">Bottle type</label>
+                  <label for="pallet"  class="form-label">Pallet type</label>
                   <select
                   class="form-control"
                   data-trigger
-                  name="bottle-type"
-                  id="bottle-type"
+                  name="pallet"
+                  id="pallet"
                 >
-                  <option value="">Pick a bottle type</option>
-                  {% for b in bottle_types %}
-                  <option value="{{ b }}">{{ b }}</option>
-                  {% endfor%}
+                <option value="">Pick a Pallete type</option>
+                {% for b in pallets %}
+                <option value="{{ b.id }}">{{ b }}</option>
+                {% endfor%}
                 </select>
                 </div>
+
+                <div class="form-group">
+                  <label for="pallet"  class="form-label">Container type</label>
+                  <select
+                  class="form-control"
+                  data-trigger
+                  name="container"
+                  id="container"
+                >
+                <option value="">Pick a Container Type</option>
+                {% for b in containers %}
+                <option value="{{ b.id }}">{{ b }}</option>
+                {% endfor%}
+                </select>
+                </div>
+
                 <div class="form-group">
                   <label for="unit-weight"  class="form-label">Unit weight</label>
                 <div class="row align-items-center">
@@ -187,13 +201,10 @@ var branddropdown =  new Choices(`#brand`, {
   searchPlaceholderValue: 'search for brand'
 });
 
-var bottletypedropdown =  new Choices(`#bottle-type`, {
-  searchPlaceholderValue: 'search for bottle type'
+var bottletypedropdown =  new Choices(`#pallet`, {
+  searchPlaceholderValue: 'search for pallet type'
 });
 
-var srccontainerbutton = new Choices(`#source_containers`, {
-  removeItemButton: true
-});
 
 const d_today = new Datepicker(document.querySelector('#production-date'), {
   buttonClass: 'btn',
@@ -202,16 +213,9 @@ const d_today = new Datepicker(document.querySelector('#production-date'), {
   format: 'dd/mm/yyyy'
 });
 
-const d_expiry = new Datepicker(document.querySelector('#expiry-date'), {
-  buttonClass: 'btn',
-  autohide: true,
-  format: 'dd/mm/yyyy'
-});
 
 var today = new Date();
 d_today.setDate(today);
-today.setFullYear(today.getFullYear() + 5);
-d_expiry.setDate(today);
 
 
 
