@@ -5,10 +5,10 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     
-    # path('batch/list', views.batch_list, name='batch_list'),
-    # path('batch/create', views.batch_create, name='batch_create'),
-    # path('batch/<str:batch_number>/details', views.batch_details, name='batch_details'),
-    # path('batch/<str:batch_number>/edit', views.batch_edit, name='batch_edit'),
+    path('batch/list', views.batch_list, name='batch_list'),
+    path('batch/create', views.batch_create, name='batch_create'),
+    path('batch/<str:batch_number>/details', views.batch_details, name='batch_details'),
+    path('batch/<str:batch_number>/edit', views.batch_edit, name='batch_edit'),
     
     # path('customer/order/list', views.customer_orders, name='customer_orders'),
     # path('customer/order/create', views.customer_order_create, name='customer_order_create'),
@@ -34,6 +34,11 @@ urlpatterns = [
     # path('inventory/create', views.inventory_create, name='inventory_create'),
     # path('inventory/<int:inventory_id>/details', views.inventory_details, name='inventory_details'),
     # path('inventory/<int:inventory_id>/edit', views.inventory_edit, name='inventory_edit'),
+    
+    # path('production/list', views.production_list, name='production_list'),
+    # path('production/create', views.production_create, name='production_create'),
+    # path('production/<str:production_number>/details', views.production_details, name='production_details'),
+    # path('production/<str:production_number>/edit', views.production_edit, name='production_edit'),
     
     
 ]

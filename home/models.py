@@ -29,6 +29,12 @@ PRODUCTION_STATUS = (
     ('Complete', 'Complete'),
 )
 
+BATCH_STATUS = (
+    ('New', 'New'),
+    ('In Production', 'In Production'),
+    ('Used', 'Used'),
+)
+
 PAYMENT_TERMS = (
     ('Immediate', 'Immediate'),
     ('30 Days', '30 Days'),
@@ -266,43 +272,51 @@ class SupplierOrder(models.Model):
     #         order.order_number = order_number
     #         order.save()
             
-class Production(models.Model):
-    packing_date = models.DateField(default=timezone.now)
-    production_code = ShortUUIDField(length=16,max_length=16,prefix="p_",alphabet="abcdefhkmnrstuvwxz123456789_",)
-    order = models.ForeignKey(CustomerOrder, on_delete=models.SET_NULL, related_name='product', null=True, blank=True)
-    brand = models.ForeignKey(Brand, on_delete=models.PROTECT)
-    pallet = models.ForeignKey(Pallet, on_delete=models.PROTECT, null=True, blank=True)
-    container = models.ForeignKey(Container, on_delete=models.PROTECT)
-    lid = models.ForeignKey(Lid, on_delete=models.PROTECT)
-    carton  = models.ForeignKey(Carton, on_delete=models.PROTECT)
-    label = models.ForeignKey(Label, on_delete=models.PROTECT)
-    top_insert = models.ForeignKey(TopInsert, on_delete=models.PROTECT, null=True, blank=True)
-    product_name = models.CharField(max_length=100,blank=True, null=True)
-    bottle_type = models.CharField(max_length=100,blank=True, null=True)
-    total_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10)
-    units_made = models.PositiveIntegerField(null=True)
-    units_requested = models.PositiveIntegerField(null=True)
-    status = models.CharField(max_length=20, choices=PRODUCTION_STATUS, default='New')
-    product_image = models.ImageField(upload_to='production_images',blank=True,null=True)
+
         
-    def save(self, *args, **kwargs):           
-        super().save(*args, **kwargs)
-        
+
+
+   
+class HoneyStock(models.Model):
+    order = models.ForeignKey(SupplierOrder, on_delete=models.CASCADE, related_name='honey_stock', blank=True, null=True)
+    stock_id = ShortUUIDField(length=16,max_length=16,prefix="h_",alphabet="abcdefhkmnrstuvwxz123456789")
+    ibc_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10)
+    gross_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10)
+    net_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10, null=True)
+    honey_types = models.ManyToManyField(HoneyType)
+    nova_ibc = models.CharField(max_length=100,null=True, blank=True, verbose_name='Nova IBC')
+    supplier_ibc = models.CharField(max_length=100,null=True, blank=True, verbose_name='Supplier IBC')
+    date_received = models.DateField(auto_now_add=True)
+    
+    def __str__(self) -> str:
+        ht = ', '.join([h.type for h in self.honey_types.all() ])
+        return f'{self.stock_id} {self.order.date} {self.order.supplier} {self.net_weight}kg ({ht})'
+    
+    def save(self, *args, **kwargs):
+        self.net_weight = self.gross_weight - self.ibc_weight
+        super().save(*args, **kwargs)   
+    
+    
 class Batch(models.Model):
     batch_date = models.DateField(auto_now_add=True)
     expiry_date = models.DateField()
     batch_number = ShortUUIDField(length=16,max_length=16,prefix="b_",alphabet="abcdefhkmnrstuvwxz123456789",)
-    production = models.ForeignKey(Production, on_delete=models.SET_NULL, related_name='batch', null=True)
     qrcode = models.ImageField(upload_to='batch_qr_codes',blank=True,null=True)
     qr_pointer = models.CharField(max_length=300, unique=True, null=True, blank=True)
-    
+    honey_stock = models.ManyToManyField(HoneyStock)
+    batch_status = models.CharField(max_length=20, choices=BATCH_STATUS, default='New')
+    weight = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10)
     class Meta:
         ordering = ("-id",)
     
     def __str__(self) -> str:
         return f'{self.batch_number} - {self.brand} - {self.bottle_type}'
-   
+
     def save(self, *args, **kwargs):
+        if self.pk is not None:
+            honey_stock = self.honey_stock.all()
+            self.weight = honey_stock.aggregate(Sum('net_weight'))['net_weight__sum'] if honey_stock.exists() else 0.0
+            
         if self.qr_pointer is not None:
             qr_file_name = f'batch_{self.batch_number}.png'
             qr = qrcode.QRCode(version=2)
@@ -325,27 +339,27 @@ class Batch(models.Model):
     #         batch = Batch.objects.get(id=self.id)
     #         batch.batch_number = batch_number
     #         batch.save()
-            
-class HoneyStock(models.Model):
-    order = models.ForeignKey(SupplierOrder, on_delete=models.CASCADE, related_name='honey_stock', blank=True, null=True)
-    stock_id = ShortUUIDField(length=16,max_length=16,prefix="h_",alphabet="abcdefhkmnrstuvwxz123456789")
-    ibc_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10)
-    gross_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10)
-    net_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10, null=True)
-    honey_types = models.ManyToManyField(HoneyType)
-    batch = models.ForeignKey(Batch, on_delete=models.SET_NULL, related_name='batch', null=True, blank=True)
-    nova_ibc = models.CharField(max_length=100,null=True, blank=True, verbose_name='Nova IBC')
-    supplier_ibc = models.CharField(max_length=100,null=True, blank=True, verbose_name='Supplier IBC')
-    date_received = models.DateField(auto_now_add=True)
-    
-    def __str__(self) -> str:
-        # ht = ', '.join([h.type for h in self.honey_types.all() ])
-        return f'{self.order.date} {self.order.supplier} {self.net_weight}kg ()'
-    
-    def save(self, *args, **kwargs):
-        self.net_weight = self.gross_weight - self.ibc_weight
-        super().save(*args, **kwargs)   
-            
-    
-    
-    
+        
+
+class Production(models.Model):
+    packing_date = models.DateField(default=timezone.now)
+    production_code = ShortUUIDField(length=16,max_length=16,prefix="p_",alphabet="abcdefhkmnrstuvwxz123456789_",)
+    order = models.ForeignKey(CustomerOrder, on_delete=models.SET_NULL, related_name='product', null=True, blank=True)
+    brand = models.ForeignKey(Brand, on_delete=models.PROTECT)
+    pallet = models.ForeignKey(Pallet, on_delete=models.PROTECT, null=True, blank=True)
+    container = models.ForeignKey(Container, on_delete=models.PROTECT)
+    lid = models.ForeignKey(Lid, on_delete=models.PROTECT)
+    carton  = models.ForeignKey(Carton, on_delete=models.PROTECT)
+    label = models.ForeignKey(Label, on_delete=models.PROTECT)
+    top_insert = models.ForeignKey(TopInsert, on_delete=models.PROTECT, null=True, blank=True)
+    product_name = models.CharField(max_length=100,blank=True, null=True)
+    bottle_type = models.CharField(max_length=100,blank=True, null=True)
+    total_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10)
+    units_made = models.PositiveIntegerField(null=True)
+    units_requested = models.PositiveIntegerField(null=True)
+    status = models.CharField(max_length=20, choices=PRODUCTION_STATUS, default='New')
+    product_image = models.ImageField(upload_to='production_images',blank=True,null=True)
+    production = models.ForeignKey(Batch, on_delete=models.SET_NULL, related_name='batch', null=True)
+        
+    def save(self, *args, **kwargs):           
+        super().save(*args, **kwargs)     

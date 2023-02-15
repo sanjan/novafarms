@@ -154,6 +154,7 @@
                         <table class="table mb-0">
                           <thead>
                             <tr>
+                              <th>Stock ID</th>
                               <th>Description</th>
                               <th class="text-end">IBC/Container Weight</th>
                               <th class="text-end">Gross Weight</th>
@@ -164,7 +165,7 @@
                           <tbody>
                             {% for item in honey_stock%}
                             <tr>
-                             
+                             <td>{{item.stock_id}}</td>
                               <td>
                                 <div>
                                   <h5 class="mb-1">{{ item.ht }}</h5>
@@ -283,9 +284,10 @@
                         </div>
                       </div>
                       <div class="table-responsive">
-                        <table class="table">
+                        <table class="table" >
                           <thead>
                             <tr>
+                              <!-- <th>Stock ID</th> -->
                               <th>Description</th>
                               <th class="text-end">IBC/Container Weight</th>
                               <th class="text-end">Gross Weight</th>
@@ -293,8 +295,9 @@
                             </tr>
                           </thead>
                           <tbody>
-                            {% for item in order_items%}
+                            {% for item in honey_stock %}
                             <tr>
+                              <!-- <td>{{item.stock_id}}</td> -->
                               <td>
                                 <div>
                                   <h5 class="mb-1">{{item.ht}}</h5>

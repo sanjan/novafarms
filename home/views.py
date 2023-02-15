@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import Supplier, SupplierOrder, Customer, HoneyStock, HoneyType, Batch, PAYMENT_TERMS, PRODUCTION_STATUS
+from .models import Supplier, SupplierOrder, Customer, HoneyStock, HoneyType, Batch, Production, PAYMENT_TERMS, PRODUCTION_STATUS, BATCH_STATUS
 from .forms import SupplierForm, CustomerForm
 from decimal import Decimal
 from datetime import datetime
@@ -9,6 +9,7 @@ import sweetify
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.forms.models import model_to_dict
+from django.db.models import Q
 
 # Create your views here.
 # @login_required(login_url='/accounts/login-v3/') 
@@ -23,9 +24,6 @@ def index(request):
     # return render(request, 'pages/index.html')
     # return redirect('sample_page')
     this_week_units = 0
-    for b in batches:
-        if b.number_made:
-            this_week_units += b.number_made
             
     context = {
         'orders' : orders,
@@ -35,112 +33,109 @@ def index(request):
     return render(request, 'pages/index.html', context)
 
 
-# # @login_required(login_url='/accounts/login-v3/')  
-# def batch_create(request):
-#     if request.method == 'POST':
-#         date_format = '%d/%m/%Y'
-#         batch_date = datetime.strptime(request.POST.get('batch-date'), date_format) 
-#         expiry_date = datetime.strptime(request.POST.get('expiry-date'), date_format)
-#         src_containers = request.POST.getlist('source_containers[]')
-#         brand = request.POST.get('brand')
-#         bottle_type = request.POST.get('bottle-type')
-#         unit_weight = int(request.POST.get('unit-weight'))
-#         product_name = request.POST.get('product-name')
+# @login_required(login_url='/accounts/login-v3/')  
+def batch_create(request):
+    if request.method == 'POST':
+        date_format = '%d/%m/%Y'
+        batch_date = datetime.strptime(request.POST.get('batch-date'), date_format) 
+        expiry_date = datetime.strptime(request.POST.get('expiry-date'), date_format)
+        honey_stocks = request.POST.get('honey_stock[]')
         
-#         batch = Batch.objects.create(
-#             batch_date = batch_date,
-#             expiry_date = expiry_date,
-#             brand = brand,
-#             bottle_type = bottle_type,
-#             unit_weight = unit_weight,
-#             product_name = product_name
-#         )
+        batch = Batch.objects.create(
+            batch_date = batch_date,
+            expiry_date = expiry_date,
+        )
         
-#         container_pks = []
-#         total_weight = 0
-#         for c in src_containers:
-#             container = HoneyStock.objects.get(id=c)
-#             total_weight += container.net_weight
-#             container_pks.append(container.pk)
-#         batch.source_containers.add(*container_pks)
-#         batch.total_weight = total_weight
-#         batch.max_possible = (total_weight * 1000) // unit_weight
-#         batch.save()
+        hs_pks = []
+        for i in honey_stocks or []:
+            honey_stock = HoneyStock.objects.get(id=int(i))
+            hs_pks.append(honey_stock.id)
+        batch.honey_stock.add(*hs_pks)
+        batch.save()
+
+        new_batch = Batch.objects.get(id=batch.id)     
+        new_batch.qr_pointer = f'https://{request.get_host()}/batch/{new_batch.batch_number}/details'
+        new_batch.save()
         
-#         new_batch = Batch.objects.get(id=batch.id)     
-#         new_batch.qr_pointer = f'https://{request.get_host()}/batch/{new_batch.batch_number}/details'
-#         new_batch.save()
+        sweetify.success(request, f'New batch #{new_batch.batch_number} created successfully')
+        return HttpResponseRedirect(reverse('batch_list'))
         
-#         messages.success(request, f'New batch #{new_batch.batch_number} created successfully', extra_tags=new_batch.batch_number)
-            
         
-#     source_containers = HoneyStock.objects.all()
-#     context = {
-#         'source_containers': source_containers,
-#         'brands': brands,
-#         'bottle_types': bottle_types,
-#         }
-#     return render(request, 'pages/batch_create.html', context)
+    # production = Production.objects.filter(~Q(status='Complete'))
+    honey_stock = HoneyStock.objects.all()
+    context = {
+        'honey_stock': honey_stock,
+        }
+    return render(request, 'pages/batch_create.html', context)
 
 
-# def batch_details(request, batch_number):
-#     batch = Batch.objects.get(batch_number=batch_number)
+def batch_edit(request, batch_number):
     
-#     honey_stock = batch.source_containers.all()
-    
-#     for i in honey_stock:
-#         i.net_weight = i.gross_weight - i.ibc_weight
-#         i.ht = ', '.join([h.type for h in i.honey_types.all()])
-    
-#     context = {'batch': batch,
-#                'honey_stock': honey_stock,
-#             }   
-#     return render(request,'pages/batch_details.html', context)
+    if request.method == 'POST':
+        print(request.POST)
+        date_format = '%d/%m/%Y'
+        batch = Batch.objects.get(batch_number=request.POST.get('batch-number'))
+        batch.batch_date = datetime.strptime(request.POST.get('batch-date'), date_format) 
+        batch.expiry_date = datetime.strptime(request.POST.get('expiry-date'), date_format)
+        batch.save()
 
-
-# def batch_edit(request, batch_number):
-    
-#     if request.method == 'POST':
-#         print(request.POST)
-#         date_format = '%d/%m/%Y'
-#         batch = Batch.objects.get(batch_number=request.POST.get('batch-number'))
-#         batch.batch_date = datetime.strptime(request.POST.get('batch-date'), date_format) 
-#         batch.expiry_date = datetime.strptime(request.POST.get('expiry-date'), date_format)
-#         src_containers = request.POST.getlist('source_containers[]')
-#         batch.brand = request.POST.get('brand')
-#         batch.bottle_type = request.POST.get('bottle-type')
-#         batch.unit_weight = int(request.POST.get('unit-weight'))
-#         batch.product_name = request.POST.get('product-name')
-#         batch.number_made  = request.POST.get('number-made')
-#         batch.batch_status = request.POST.get('batch-status')
-#         batch.max_possible = (batch.total_weight * 1000) // batch.unit_weight
-#         batch.save()
+        honey_stocks = request.POST.getlist('honey_stock[]')
+        hs = []
+        for i in honey_stocks:
+            honey_stock = HoneyStock.objects.get(id=int(i))
+            hs.append(honey_stock)
+        batch.honey_stock.set(hs)
+        batch.save()
         
+        sweetify.success(request, f'Batch #{batch.batch_number} updated successfully')
+        return HttpResponseRedirect(reverse('batch_list'))
  
-#     batch = Batch.objects.get(batch_number=batch_number)
-#     batch.number_made = batch.number_made if batch.number_made else 0
+    batch = Batch.objects.get(batch_number=batch_number)
     
-#     batch.batch_date = batch.batch_date.strftime("%d/%m/%Y")
-#     batch.expiry_date = batch.expiry_date.strftime("%d/%m/%Y")
-#     honey_stock = batch.source_containers.all()
-#     source_containers = HoneyStock.objects.all()
+    batch.batch_date = batch.batch_date.strftime("%d/%m/%Y")
+    batch.expiry_date = batch.expiry_date.strftime("%d/%m/%Y")
+    batch_honey_stock = batch.honey_stock.all()
+    honey_stock = HoneyStock.objects.all()
     
-#     for i in source_containers:
-#         if i in honey_stock:
-#             i.selected = True
-#         else:
-#             i.selected = False
     
-#     context = {
-#                 'batch': batch,
-#                 'source_containers': source_containers,
-#                 'brands': brands,
-#                 'bottle_types': bottle_types,
-#                 'batch_status' : [s[0] for s in BATCH_STATE]
-#             }
+    for i in honey_stock:
+        if i in batch_honey_stock:
+            i.selected = True
+        else:
+            i.selected = False
+        print(i,"selected:",i.selected)
     
-#     return render(request,'pages/batch_edit.html', context)
+    context = {
+                'batch': batch,
+                'honey_stock': honey_stock,
+                'batch_status' : [s[0] for s in BATCH_STATUS]
+            }
+    
+    return render(request,'pages/batch_edit.html', context)
 
+def batch_list(request):
+    
+    batches = Batch.objects.all()
+    count = batches.count()
+    context = {
+        'batches': batches,
+        'count': count
+    }
+    
+    return render(request, 'pages/batch_list.html', context)
+
+def batch_details(request, batch_number):
+    
+    batch = Batch.objects.get(batch_number=batch_number)
+    honey_stock = batch.honey_stock.all()
+    for h in honey_stock:
+        h.ht = ', '.join([a.type for a in h.honey_types.all() ])
+    context = {
+        'batch': batch,
+        'honey_stock' : honey_stock,
+    }
+    
+    return render(request, 'pages/batch_details.html', context)
 
 # # @login_required(login_url='/accounts/login-v3/')  
 def supplier_order_create(request):

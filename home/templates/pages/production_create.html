@@ -56,19 +56,68 @@
                   <input class="form-control" type="text" id="expiry-date" name="expiry-date"/>
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Honey Stocks</label>
+                  <label class="form-label">Source Containers</label>
                   <select
                   class="form-control"
-                  name="honey_stock[]"
-                  id="honey_stock"
+                  name="source_containers[]"
+                  id="source_containers"
                   placeholder=""
                   multiple
                   >
-                {% for h in honey_stock %}
-                  <option value="{{ h.id }}" {% if h.selected %} selected {% endif %}>{{ h }}</option>
+                {% for s in source_containers %}
+                  <option value="{{ s.id }}" >{{ s }}</option>
                 {% endfor %}
                 </select>
+
                 </div>
+                <div class="form-group">
+                  <label for="brand" class="form-label">Brand</label>
+                  <select
+                  class="form-control"
+                  data-trigger
+                  name="brand"
+                  id="brand"
+                >
+                  <option value="">Pick a brand</option>
+                  {% for b in brands %}
+                  <option value="{{ b }}">{{ b }}</option>
+                  {% endfor%}
+                </select>
+                </div>
+                <div class="form-group">
+                  <label for="bottle-type"  class="form-label">Bottle type</label>
+                  <select
+                  class="form-control"
+                  data-trigger
+                  name="bottle-type"
+                  id="bottle-type"
+                >
+                  <option value="">Pick a bottle type</option>
+                  {% for b in bottle_types %}
+                  <option value="{{ b }}">{{ b }}</option>
+                  {% endfor%}
+                </select>
+                </div>
+                <div class="form-group">
+                  <label for="unit-weight"  class="form-label">Unit weight</label>
+                <div class="row align-items-center">
+                  <div class="col-4">
+                    <div class="input-group">
+                    <input type="text" class="form-control" id="unit-weight" name="unit-weight" placeholder="Unit Weight" />
+                    <span class="input-group-text"> grams</span>
+                    </div>
+                  </div>
+                  <div class="col-8">
+                    <div id="unit-weight-slider" class="pc-nouislider--drag-danger"></div>
+                  </div>
+                </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Product name</label>
+                  <input name="product-name" id="product-name" type="text" class="form-control" placeholder="product name" />
+                </div>
+
               <div class="card-footer">
                 <button class="btn btn-primary me-2">Create batch</button>
                 <button type="reset" class="btn btn-light">Reset</button>
@@ -104,38 +153,44 @@
 <script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
 
 <script>
-      // (function () {
-      //   // init slider
-      //   var slider = document.getElementById('unit-weight-slider');
+      (function () {
+        // init slider
+        var slider = document.getElementById('unit-weight-slider');
 
-      //   noUiSlider.create(slider, {
-      //     start: [200],
-      //     step: 25,
-      //     range: {
-      //       min: [200],
-      //       max: [3000]
-      //     },
-      //     format: wNumb({
-      //       decimals: 0
-      //     })
-      //   });
+        noUiSlider.create(slider, {
+          start: [200],
+          step: 25,
+          range: {
+            min: [200],
+            max: [3000]
+          },
+          format: wNumb({
+            decimals: 0
+          })
+        });
 
-      //   // init slider input
-      //   var sliderInput = document.getElementById('unit-weight');
+        // init slider input
+        var sliderInput = document.getElementById('unit-weight');
 
-      //   slider.noUiSlider.on('update', function (values, handle) {
-      //     sliderInput.value = values[handle];
-      //   });
+        slider.noUiSlider.on('update', function (values, handle) {
+          sliderInput.value = values[handle];
+        });
 
-      //   sliderInput.addEventListener('change', function () {
-      //     slider.noUiSlider.set(this.value);
-      //   });
-      // })();
-
-
+        sliderInput.addEventListener('change', function () {
+          slider.noUiSlider.set(this.value);
+        });
+      })();
 
 
-var srccontainerbutton = new Choices(`#honey_stock`, {
+var branddropdown =  new Choices(`#brand`, {
+  searchPlaceholderValue: 'search for brand'
+});
+
+var bottletypedropdown =  new Choices(`#bottle-type`, {
+  searchPlaceholderValue: 'search for bottle type'
+});
+
+var srccontainerbutton = new Choices(`#source_containers`, {
   removeItemButton: true
 });
 
@@ -156,6 +211,24 @@ var today = new Date();
 d_today.setDate(today);
 today.setFullYear(today.getFullYear() + 5);
 d_expiry.setDate(today);
+
+
+{% if messages %}
+{% for message in messages %}
+Swal.fire({
+  position: 'top-end',
+  icon: 'success',
+  title: '{{message}}',
+  showConfirmButton: false,
+  timer: 3500,}).then(
+  function(result){
+    if (result.dismiss === swal.DismissReason.timer) {
+    window.location.href = "/batch-details/{{message.extra_tags}}";
+    }
+});
+{% endfor %}
+
+{% endif %}
 
 
 

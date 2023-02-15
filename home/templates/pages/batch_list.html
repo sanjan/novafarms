@@ -1,7 +1,12 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
-{% block title %} Home {% endblock title %}
-
+{% block title %} Batch List {% endblock title %}
+{% block extrastyle %}
+  <!-- [Page specific CSS] start -->
+    <!-- Animate.css -->
+  <link rel="stylesheet" href="{% static 'assets/css/plugins/animate.min.css' %}" />
+  <!-- [Page specific CSS] end -->
+{% endblock extrastyle %}
 {% block content %}
 
   <!-- [ Main Content ] start -->
@@ -38,8 +43,8 @@
                   </div>
                 </div>
               </div>
-              <span class="text-white d-block f-34 f-w-500 my-2">{{this_week_units}}<i class="ti ti-arrow-up-right-circle opacity-50"></i></span>
-              <p class="mb-0 opacity-50">This weeks production</p>
+              <span class="text-white d-block f-34 f-w-500 my-2">{{count}}<i class="ti ti-arrow-up-right-circle opacity-50"></i></span>
+              <p class="mb-0 opacity-50">Number of batches</p>
             </div>
           </div>
         </div>
@@ -53,61 +58,11 @@
         <div class="col-sm-12">
           <div class="card table-card">
             <div class="card-header">
-              <h5>Supplier Order List</h5>
-            </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                <table class="table table-hover" id="orders-table">
-                  <thead>
-                    <tr>
-                      <th>
-                        <div class="form-check">
-                          <input class="form-check-input" type="checkbox" />
-                        </div>
-                      </th>
-                      <th>ID</th>
-                      <th>Supplier</th>
-                      <th>Date</th>
-                      <th>Net Weight</th>
-                      <th>Unit Price</th>
-                      <th>Total</th>
-                      <th>Status</th>
-                      <th class="text-center">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for order in orders %}
-                    <tr>
-                      <td>
-                        <div class="form-check">
-                          <input class="form-check-input" type="checkbox" />
-                        </div>
-                      </td>
-                      <td>
-                      <h5 class="mb-0"><a href="{% url 'supplier_order_details' order.order_number %}">#{{order.order_number}}</a></h5>
-                      </td>
-                      <td>
-                        <h5 class="mb-0">{{order.supplier.name}}</h5>
-                      </td>
-                      <td>{{order.date}}</td>
-                      <td>{{order.net_weight}}</td>
-                      <td>${{order.unit_price}}</td>
-                      <td>${{order.total_price}}</td>
-                      <td><span class="badge bg-light-primary rounded-pill f-12">Processing</span> </td>
-                      <td class="text-center">
-                        <button type="button" class="btn btn-link-primary" onclick="window.location.href='{% url 'supplier_order_details' order.order_number %}';"><i class="ti ti-eye"></i></button>
-                        <button type="button" class="btn btn-link-secondary" onclick="window.location.href='{% url 'supplier_order_edit' order.order_number %}';"><i class="ti ti-pencil"></i></button>
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="card table-card">
-            <div class="card-header">
-              <h5>Batch List</h5>
+              <h5 class="card-header d-flex justify-content-between align-items-center">
+                Batch List
+                <a href="{% url 'batch_create' %}" class="btn btn-primary me-2">New Batch</a>  
+                <!-- Wrap with <div>...buttons...</div> if you have multiple buttons -->
+              </h5>
             </div>
             <div class="card-body">
               <div class="table-responsive">
@@ -122,9 +77,7 @@
                       <th>Batch Number</th>
                       <th>Batch Date</th>
                       <th>Expiry Date</th>
-                      <th>Brand</th>
-                      <th>Bottle Type</th>
-                      <th>Unit Weight</th>
+                      <th>Batch Weight</th>
                       <th>Status</th>
                       <th class="text-center">Actions</th>
                     </tr>
@@ -142,15 +95,10 @@
                       </td>
                       <td>{{batch.batch_date}}</td>
                       <td>{{batch.expiry_date}}</td>
-                      <td>
-                        <h5 class="mb-0">{{batch.brand}}</h5>
-                      </td>
-                      <td>{{batch.bottle_type}}</td>
-                      <td>{{batch.unit_weight}}g</td>
-                      <td><span class="badge bg-light-primary rounded-pill f-12">{{batch.batch_status}}</span> </td>
+                      <td>{{batch.weight}}kg</td>
+                      <td><span class="badge bg-light-primary rounded-pill f-12">{{batch.batch_status}}</span></td>
                       <td class="text-center">
-                        <button type="button" class="btn btn-link-primary" onclick="window.location.href='{% url 'batch_details' batch.batch_number %};"><i class="ti ti-eye"></i></button>
-                        <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='{% url 'batch_edit' batch.batch_number %};}}';"><i class="ti ti-pencil"></i></button>
+                        <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='{% url 'batch_edit' batch.batch_number %}';"><i class="ti ti-pencil"></i></button>
                       </td>
                     </tr>
                     {% endfor %}
@@ -170,7 +118,10 @@
 {% endblock content %}
 
 {% block extra_js %}
-
+<!-- Sweet Alert -->
+<script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
+{% load sweetify %}
+{% sweetify %}
     <!-- [Page Specific JS] start -->
     <script src="{% static 'assets/js/plugins/simple-datatables.js' %}"></script>
     <script>
