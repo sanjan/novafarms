@@ -55,6 +55,20 @@
                 <input class="form-control" type="text" id="expiry-date" name="expiry-date"  value="{{batch.expiry_date}}"/>
               </div>
               <div class="form-group">
+                <label for="batch-status" class="form-label">Status</label>
+                <select
+                class="form-control"
+                data-trigger
+                name="batch-status"
+                id="batch-status"
+              >
+                <option value="">Pick a state</option>
+                {% for b in batch_status %}
+                <option value="{{ b }}"  {% if batch.batch_status == b %} selected {% endif %} >{{ b }}</option>
+                {% endfor%}
+              </select>
+              </div>
+              <div class="form-group">
                 <label class="form-label">Honey Stocks</label>
                 <select
                 class="form-control"
@@ -104,6 +118,10 @@
   <script>
     var srccontainerbutton = new Choices(`#honey_stock`, {
       removeItemButton: true
+    });
+
+    var branddropdown =  new Choices(`#batch-status`, {
+      searchPlaceholderValue: 'search for status'
     });
 
     const d_today = new Datepicker(document.querySelector('#batch-date'), {

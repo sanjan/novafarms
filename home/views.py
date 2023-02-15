@@ -77,6 +77,7 @@ def batch_edit(request, batch_number):
         batch = Batch.objects.get(batch_number=request.POST.get('batch-number'))
         batch.batch_date = datetime.strptime(request.POST.get('batch-date'), date_format) 
         batch.expiry_date = datetime.strptime(request.POST.get('expiry-date'), date_format)
+        batch.batch_status = request.POST.get('batch-status')
         batch.save()
 
         honey_stocks = request.POST.getlist('honey_stock[]')

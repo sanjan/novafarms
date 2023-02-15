@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
-{% block title %} New Batch {% endblock title %}
+{% block title %} New Daily Production {% endblock title %}
 
 {% block extrastyle %}
   <!-- [Page specific CSS] start -->
@@ -23,11 +23,12 @@
           <div class="row align-items-center">
             <div class="col-md-12">
               <div class="page-header-title">
-                <h5 class="m-b-10">New Batch</h5>
+                <h5 class="m-b-10">New Daily Production</h5>
               </div>
               <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item" aria-current="page">New Batch</li>
+                <li class="breadcrumb-item"><a href="javascript: void(0)">Production</a></li>
+                <li class="breadcrumb-item" aria-current="page">New</li>
               </ul>
             </div>
           </div>
@@ -42,14 +43,14 @@
         <div class="col-sm-12">
           <div class="card">
               <div class="card-header">
-                <h5>New Batch</h5>
+                <h5>New Production</h5>
               </div>
               <div class="card-body">
                 <form method="post">
                   {% csrf_token %}
                 <div class="form-group">
-                  <label for="batch-date" class="col-form-label">Batch Date</label>
-                  <input class="form-control" type="text" id="batch-date" name="batch-date"/>
+                  <label for="production-date" class="col-form-label">Production Date</label>
+                  <input class="form-control" type="text" id="production-date" name="production-date"/>
                 </div>
                 <div class="form-group">
                   <label for="expiry-date" class="col-form-label">Expiry Date</label>
@@ -119,7 +120,7 @@
                 </div>
 
               <div class="card-footer">
-                <button class="btn btn-primary me-2">Create batch</button>
+                <button class="btn btn-primary me-2">Create production</button>
                 <button type="reset" class="btn btn-light">Reset</button>
               </div>
             </div>
@@ -194,7 +195,7 @@ var srccontainerbutton = new Choices(`#source_containers`, {
   removeItemButton: true
 });
 
-const d_today = new Datepicker(document.querySelector('#batch-date'), {
+const d_today = new Datepicker(document.querySelector('#production-date'), {
   buttonClass: 'btn',
   todayHighlight: true,
   autohide: true,
@@ -211,24 +212,6 @@ var today = new Date();
 d_today.setDate(today);
 today.setFullYear(today.getFullYear() + 5);
 d_expiry.setDate(today);
-
-
-{% if messages %}
-{% for message in messages %}
-Swal.fire({
-  position: 'top-end',
-  icon: 'success',
-  title: '{{message}}',
-  showConfirmButton: false,
-  timer: 3500,}).then(
-  function(result){
-    if (result.dismiss === swal.DismissReason.timer) {
-    window.location.href = "/batch-details/{{message.extra_tags}}";
-    }
-});
-{% endfor %}
-
-{% endif %}
 
 
 
