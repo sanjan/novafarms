@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
-{% block title %} Batch List {% endblock title %}
+{% block title %} Daily Production {% endblock title %}
 
 {% block content %}
 
@@ -39,7 +39,7 @@
                 </div>
               </div>
               <span class="text-white d-block f-34 f-w-500 my-2">{{count}}<i class="ti ti-arrow-up-right-circle opacity-50"></i></span>
-              <p class="mb-0 opacity-50">Number of batches</p>
+              <p class="mb-0 opacity-50">Number produced</p>
             </div>
           </div>
         </div>
@@ -54,14 +54,14 @@
           <div class="card table-card">
             <div class="card-header">
               <h5 class="card-header d-flex justify-content-between align-items-center">
-                Batch List
-                <a href="{% url 'batch_create' %}" class="btn btn-primary me-2">New Batch</a>  
+                Daily Production
+                <a href="{% url 'production_create' %}" class="btn btn-primary me-2">New Production</a>  
                 <!-- Wrap with <div>...buttons...</div> if you have multiple buttons -->
               </h5>
             </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-hover" id="batches-table">
+                <table class="table table-hover" id="productions-table">
                   <thead>
                     <tr>
                       <th>
@@ -69,15 +69,17 @@
                           <input class="form-check-input" type="checkbox" />
                         </div>
                       </th>
-                      <th>Batch Number</th>
-                      <th>Batch Date</th>
-                      <th>Expiry Date</th>
+                      <th>Production Code</th>
+                      <th>Packing Date</th>
+                      <th>Product</th>
+                      <th>Number Requested</th>
+                      <th>Number Made</th>
                       <th>Status</th>
                       <th class="text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {% for batch in batches %}
+                    {% for production in productions %}
                     <tr>
                       <td>
                         <div class="form-check">
@@ -85,13 +87,15 @@
                         </div>
                       </td>
                       <td>
-                      <h5 class="mb-0"><a href="{% url 'batch_edit' batch.batch_number %}">#{{batch.batch_number}}</a></h5>
+                      <h5 class="mb-0"><a href="{% url 'production_edit' production.production_code %}">#{{production.production_code}}</a></h5>
                       </td>
-                      <td>{{batch.batch_date}}</td>
-                      <td>{{batch.expiry_date}}</td>
-                      <td><span class="badge bg-light-primary rounded-pill f-12">{{batch.batch_status}}</span></td>
+                      <td>{{production.packing_date}}</td>
+                      <td>{{production.order_item.product.name}}</td>
+                      <td>{{production.requested_units}}</td>
+                      <td>{{production.units_made}}</td>
+                      <td><span class="badge bg-light-primary rounded-pill f-12">{{production.status}}</span></td>
                       <td class="text-center">
-                        <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='{% url 'batch_edit' batch.batch_number %}';"><i class="ti ti-pencil"></i></button>
+                        <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='{% url 'production_edit' production.production_code %}';"><i class="ti ti-pencil"></i></button>
                       </td>
                     </tr>
                     {% endfor %}
@@ -114,14 +118,14 @@
 
     <!-- [Page Specific JS] start -->
     <script src="{% static 'assets/js/plugins/simple-datatables.js' %}"></script>
+              <!-- Sweet Alert -->
+  <script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
+  {% load sweetify %}
+  {% sweetify %}
     <script>
-      const ordersTable = new simpleDatatables.DataTable('#orders-table', {
+      const productionesTable = new simpleDatatables.DataTable('#productions-table', {
         sortable: false,
-        perPage: 5
-      });
-      const batchesTable = new simpleDatatables.DataTable('#batches-table', {
-        sortable: false,
-        perPage: 5
+        perPage:10
       });
     </script>
     <!-- [Page Specific JS] end -->

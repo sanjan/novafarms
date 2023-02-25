@@ -1,5 +1,6 @@
-{% extends 'layouts/base.html' %} {% load static %} {% block title %} Batch
-Details {% endblock title %} {% block content %}
+{% extends 'layouts/base.html' %} {% load static %}
+{% block title %} Production Details |{% endblock title %}
+{% block content %}
 
 <!-- [ Main Content ] start -->
 <div class="pc-container">
@@ -10,14 +11,14 @@ Details {% endblock title %} {% block content %}
         <div class="row align-items-center">
           <div class="col-md-12">
             <div class="page-header-title">
-              <h5 class="m-b-10">Batch Details</h5>
+              <h5 class="m-b-10">Production Details</h5>
             </div>
             <ul class="breadcrumb">
               <li class="breadcrumb-item"><a href="/">Home</a></li>
               <li class="breadcrumb-item">
-                <a href="javascript: void(0)">Internal</a>
+                <a href="{% url 'production_list' %}">Production</a>
               </li>
-              <li class="breadcrumb-item" aria-current="page">Batch Details</li>
+              <li class="breadcrumb-item" aria-current="page">Production Details</li>
             </ul>
           </div>
         </div>

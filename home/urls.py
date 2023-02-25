@@ -35,10 +35,10 @@ urlpatterns = [
     # path('inventory/<int:inventory_id>/details', views.inventory_details, name='inventory_details'),
     # path('inventory/<int:inventory_id>/edit', views.inventory_edit, name='inventory_edit'),
     
-    # path('production/list', views.production_list, name='production_list'),
+    path('production/list', views.production_list, name='production_list'),
     path('production/create', views.production_create, name='production_create'),
-    # path('production/<str:production_number>/details', views.production_details, name='production_details'),
-    # path('production/<str:production_number>/edit', views.production_edit, name='production_edit'),
+    # path('production/<str:production_code>/details', views.production_details, name='production_details'),
+    path('production/<str:production_code>/edit', views.production_edit, name='production_edit'),
     
     
 ]

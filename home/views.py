@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import Supplier, SupplierOrder, Customer, CustomerOrder, HoneyStock, HoneyType, Batch, Production, Brand, Pallet, Container, Lid, Carton, Label, TopInsert, PAYMENT_TERMS, PRODUCTION_STATUS, BATCH_STATUS
+from .models import Supplier, SupplierOrder, Customer, CustomerOrder, CustomerOrderItems, HoneyStock, HoneyType, Batch, Product, Production, Brand, Pallet, Container, Lid, Carton, Label, TopInsert, PAYMENT_TERMS, PRODUCTION_STATUS, BATCH_STATUS
 from .forms import SupplierForm, CustomerForm
 from decimal import Decimal
 from datetime import datetime
@@ -13,9 +13,6 @@ from django.db.models import Q
 
 # Create your views here.
 # @login_required(login_url='/accounts/login-v3/') 
-
-brands =  ['Aldi', 'Costco', 'Fairprice', 'Panda Honey']
-bottle_types = ['Squeeze', 'Jar', 'Pail']
 
 def index(request):
     orders = SupplierOrder.objects.all()
@@ -330,27 +327,112 @@ def customer_edit(request, customer_id):
     return render(request, 'pages/customer_edit.html', context)
 
 def production_create(request):
-    orders = CustomerOrder.objects.all()
-    brands = Brand.objects.all()
+    if request.method == 'POST':
+        date_format = '%d/%m/%Y'
+        packing_date = datetime.strptime(request.POST.get('packing-date'), date_format)
+        requested_units = request.POST.get('requested-units')
+        order_item_id = request.POST.get('order')
+        pallet = request.POST.get('pallet')
+        top_insert = request.POST.get('top-insert')
+        batch_id = request.POST.get('batch')
+
+        
+        prd = Production.objects.create(
+            packing_date = packing_date,
+            pallet = Pallet.objects.get(id=pallet),
+            top_insert = TopInsert.objects.get(id=top_insert),
+            requested_units = requested_units,
+        )
+        
+        if batch_id:
+            prd.batch = Batch.objects.get(id=int(batch_id))
+        if order_item_id:
+            prd.order_item = CustomerOrderItems.get(id=int(order_item_id))
+        prd.save()
+        
+        sweetify.success(request, f'Daily production set #{prd.production_code} created successfully')
+        return HttpResponseRedirect(reverse('production_list'))
+         
+    order_items = CustomerOrderItems.objects.all()
     pallets = Pallet.objects.all()
-    containers = Container.objects.all()
-    lids = Lid.objects.all()
-    cartons = Carton.objects.all()
-    labels = Label.objects.all()
     top_inserts = TopInsert.objects.all()
     batches = Batch.objects.filter((~Q(batch_status='Used')))
     
     context = {
-        'orders' : orders,
-        'brands' : brands,
+        'order_items' : order_items,
         'pallets' : pallets,
-        'containers' : containers,
-        'lids' : lids,
-        'cartons' : cartons,
-        'labels' : labels,
         'top_inserts' : top_inserts,
         'batches': batches,
     }
     
     return render(request,'pages/production_create.html', context)
+
+def production_edit(request, production_code):
+    
+    if request.method == 'POST':
+        print(request.POST)
+        production = Production.objects.get(production_code=request.POST.get('production-code'))
+        date_format = '%d/%m/%Y'
+        production.packing_date = datetime.strptime(request.POST.get('packing-date'), date_format)
+        production.requested_units = int(request.POST.get('requested-units'))
+        production.units_made =  int(request.POST.get('units-made'))
+    
+        production.save()
+        
+        order_item_id = request.POST.get('order')
+        pallet_id = request.POST.get('pallet')
+        top_insert_id = request.POST.get('top-insert')
+        batch_id = request.POST.get('batch')
+        
+        if order_item_id:
+            production.order_item = CustomerOrderItems.get(id=order_item_id)
+        if pallet_id:
+            production.pallet = Pallet.objects.get(id=pallet_id)
+        if top_insert_id:
+            production.top_insert = TopInsert.objects.get(id=top_insert_id)
+        if batch_id:
+            production.batch = Batch.objects.get(id=batch_id)
+        
+        if production.units_made == 0:
+            production.status = 'New'
+        elif production.units_made > 0 and production.units_made < production.requested_units:
+            production.status = 'Processing'
+        elif production.units_made == production.requested_units:
+            production.status = 'Complete'
+        
+        if not request.POST.get('prod-status'):
+            production.status = 'Paused'
+        
+        production.save()
+        
+        sweetify.success(request, f'Daily production set #{production.production_code} updated successfully')
+        return HttpResponseRedirect(reverse('production_list'))
+            
+        
+        
+    production = Production.objects.get(production_code=production_code)
+    production.packing_date = production.packing_date.strftime("%d/%m/%Y")
+    order_items = CustomerOrderItems.objects.all()
+    pallets = Pallet.objects.all()
+    top_inserts = TopInsert.objects.all()
+    batches = Batch.objects.filter((~Q(batch_status='Used')))
+
+    context = {
+        'production' : production,
+        'order_items' : order_items,
+        'pallets' : pallets,
+        'top_inserts' : top_inserts,
+        'batches': batches,
+    }
+    
+    return render(request,'pages/production_edit.html', context)
+
+def production_list(request):
+    productions = Production.objects.all() if Production.objects else []
+    
+    context = {
+        'productions': productions
+    }
+    
+    return render(request,'pages/production_list.html', context)
     
