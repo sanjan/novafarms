@@ -58,7 +58,7 @@
                 >
                   <option value="">Select Customer</option>
                   {% for b in customers %}
-                  <option value="{{ b.id }}" {% if b.name == order.customer.name %} selected {% endif %}>{{ b.name }}</option>
+                  <option value="{{ b.id }}" {% if b.id == order.customer.id %} selected {% endif %}>{{ b.name }}</option>
                   {% endfor%}
                 </select>
                 </div>

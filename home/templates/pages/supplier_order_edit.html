@@ -1,12 +1,13 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
-{% block title %} Update Order {{order.order_number}} {% endblock title %}
-
+{% block title %} Update Supplier Order |{% endblock title %}
 {% block extrastyle %}
   <!-- [Page specific CSS] start -->
-  <!-- Bootstrap DatePicker -->
-  <link rel="stylesheet" href="{% static 'assets/css/plugins/datepicker-bs5.min.css' %}" />
-  <link rel="stylesheet" href="{% static 'assets/css/plugins/nouislider.min.css' %}" />
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="{% static 'assets/css/plugins/animate.min.css' %}" />
+
+      <!-- Bootstrap DatePicker -->
+      <link rel="stylesheet" href="{% static 'assets/css/plugins/datepicker-bs5.min.css' %}" />
   <!-- [Page specific CSS] end -->
 {% endblock extrastyle %}
 
@@ -25,6 +26,8 @@
               </div>
               <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/">Supplier</a></li>
+                <li class="breadcrumb-item"><a href="/">Orders</a></li>
                 <li class="breadcrumb-item" aria-current="page">Update Supplier Order</li>
               </ul>
             </div>
@@ -38,52 +41,158 @@
       <div class="row">
         <!-- [ sample-page ] start -->
         <div class="col-sm-12">
-          <div class="card">
+            <div class="card">
               <div class="card-header">
-                <h5>Update Order #{{order.order_number}}</h5>
+                <h5>Update Supplier Order</h5>
               </div>
               <div class="card-body">
                 <form method="post">
                   {% csrf_token %}
                   <input type="hidden" id="order-number" name="order-number" value="{{order.order_number}}">
                 <div class="form-group">
-                  <label for="order-date" class="col-form-label">Order Date</label>
-                  <input class="form-control" type="text" id="order-date" value="{{ order.date }}" name="order-date"/>
-                </div>
-                <div class="form-group">
-                  <label for="supplier" class="form-label">Supplier</label>
+                  <label for="supplier"  class="form-label">Supplier</label>
                   <select
                   class="form-control"
                   data-trigger
                   name="supplier"
                   id="supplier"
                 >
-                  <option value="">Pick a supplier</option>
+                  <option value="">Select Supplier</option>
                   {% for b in suppliers %}
-                  <option value="{{ b.id }}" {% if b.name == order.supplier.name %} selected {% endif %}>{{ b.name }}</option>
+                  <option value="{{ b.id }}"  {% if b.id == order.supplier.id %} selected {% endif %}>{{ b.name }}</option>
                   {% endfor%}
                 </select>
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Unit Price</label>
-                  <input name="unit-price" id="unit-price" type="number" class="form-control" placeholder="0.00" step="0.25" value="{{order.unit_price}}"/>
+                  <label for="order-date" class="col-form-label">Order Date</label>
+                  <input class="form-control" type="text" id="order-date" name="order-date" value="{{ order.date }}"/>
                 </div>
                 <div class="form-group">
-                  <label class="form-label" for="payment-term">Payment terms:</label>
-                  <select class="form-select" name="payment-term" id="payment-term">
+                  <label class="form-label">Unit Price</label>
+                  <input name="unit-price" type="number" class="form-control" placeholder="0.00" step="0.01" value="{{order.unit_price}}"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="paymentterm">Payment terms:</label>
+                  <select class="form-select" name="payment-term">
                     {% for p in payment_terms %}
-                      <option value="{{ p }}" {% if p == order.payment_term %} selected {% endif %} >{{ p }}</option>
+                      <option value="{{ p }}" {% if p == order.payment_term %} selected {% endif %}>{{ p }}</option>
                     {% endfor %}
                   </select>
                 </div>
-
-
-              <div class="card-footer">
-                <button class="btn btn-primary me-2">Update order</button>
-                <a href="/order-details/{{order.order_number}}" class="btn btn-secondary me-2">Cancel</a>
+                <!-- order items -->
+                <div class="order-items">
+                  {% for item in order_items %}
+                  <div class="order-items-row row">
+                    <div class="col-md-1">
+                      <div class="form-group">
+                        <label class="form-label">Item</label>
+                        <input name="item_numbers[]" id="item_number_{{forloop.counter}}" type="number" class="form-control" value="{{forloop.counter}}" disabled/>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">Container Weight</label>
+                        <input name="container_weights[]" id="container_weight_{{forloop.counter}}" type="number" class="form-control" placeholder="0.00" step="0.01" value="{{item.ibc_weight}}"/>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="form-label">Gross Weight</label>
+                        <input name="gross_weights[]" id="gross_weight_{{forloop.counter}}" type="number" class="form-control" placeholder="0.00" step="0.01" value="{{item.gross_weight}}"/>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                    <div class="form-group">
+                      <label class="form-label">Honey Types</label>
+              
+                        <select
+                          class="form-control"
+                          name="honey_types_{{forloop.counter}}[]"
+                          id="honey_types_{{forloop.counter}}"
+                          placeholder=""
+                          multiple
+                        >
+                        {% for h in honey_types %}
+                          <option value="{{ h.type }}" {% if h.type in item.ht %} selected {% endif %} >{{ h.type }}</option>
+                        {% endfor %}
+                        </select>
+         
+                    </div>
+                    </div>
+                    <div class="col-md-1">
+                      <div class="form-group">
+                      <label class="form-label">Add</label>
+                      <button type="button" class="btn btn-icon btn-primary  form-control add_node_btn_frm_field"><i class="ti ti-circle-plus"></i></button>
+                    </div>
+                    </div>
+                    <div class="col-md-1">
+                      <div class="form-group">
+                      <label class="form-label">Remove</label>
+                      <button type="button" class="btn btn-icon btn-secondary form-control remove_node_btn_frm_field  {% if forloop.counter == 1 %} disabled {% endif %}"><i class="ti ti-trash"></i></button>
+                    </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% if not order_items %}
+                <div class="order-items-row row">
+                  <div class="col-md-1">
+                    <div class="form-group">
+                      <label class="form-label">Item</label>
+                      <input name="item_numbers[]" id="item_number_1" type="number" class="form-control" value="1" disabled/>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label class="form-label">Container Weight</label>
+                      <input name="container_weights[]" id="container_weight_1" type="number" class="form-control" placeholder="0.00" step="0.01"/>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label class="form-label">Gross Weight</label>
+                      <input name="gross_weights[]" id="gross_weight_1" type="number" class="form-control" placeholder="0.00" step="0.01"/>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="form-label">Honey Types</label>
+            
+                      <select
+                        class="form-control"
+                        name="honey_types_1[]"
+                        id="honey_types_1"
+                        placeholder=""
+                        multiple
+                      >
+                      {% for h in honey_types %}
+                        <option value="{{ h.type }}" >{{ h.type }}</option>
+                      {% endfor %}
+                      </select>
+       
+                  </div>
+                  </div>
+                  <div class="col-md-1">
+                    <div class="form-group">
+                    <label class="form-label">Add</label>
+                    <button type="button" class="btn btn-icon btn-primary  form-control add_node_btn_frm_field"><i class="ti ti-circle-plus"></i></button>
+                  </div>
+                  </div>
+                  <div class="col-md-1">
+                    <div class="form-group">
+                    <label class="form-label">Remove</label>
+                    <button type="button" class="btn btn-icon btn-secondary form-control remove_node_btn_frm_field disabled"><i class="ti ti-trash"></i></button>
+                  </div>
+                  </div>
               </div>
-            </div>
+                {% endif %}
+              </div>
+              <div class="card-footer">
+                <button class="btn btn-primary me-2">Submit</button>
+                <button type="reset" class="btn btn-light">Reset</button>
+              </div>
             </form>
+            </div>
+           
           </div>
         </div>
         <!-- [ sample-page ] end -->
@@ -102,17 +211,96 @@
 
 <script src="{% static 'assets/js/plugins/choices.min.js' %}"></script>
 
+
+  <!-- Sweet Alert -->
+  <script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
+
   <!-- DatePicker js -->
   <script src="{% static 'assets/js/plugins/datepicker-full.min.js' %}"></script>
-
-
 <script>
 
+  $(document).ready(function(){ $("body").on("click",".add_node_btn_frm_field", function (){ 
+    console.log("clicked"); 
+    var index = $(".order-items").find(".order-items-row").length + 1; 
+    $(".order-items").append(`
+  <div class="order-items-row row">
+    <div class="col-md-1">
+      <div class="form-group">
+        <label class="form-label">Item</label>
+        <input name="item_numbers[]" id="item_number_${index}" type="number" class="form-control" value="${index}" disabled/>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <label class="form-label">Container Weight</label>
+        <input name="container_weights[]" id="container_weight_${index}" type="number" class="form-control" placeholder="0.00" step="0.01"/>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <label class="form-label">Gross Weight</label>
+        <input name="gross_weights[]" id="gross_weight_${index}" type="number" class="form-control" placeholder="0.00" step="0.01"/>
+      </div>
+    </div>
+    <div class="col-md-3">
+    <div class="form-group">
+      <label class="form-label">Honey Types</label>
 
-var supplierdd =  new Choices(`#supplier`, {
-  searchPlaceholderValue: 'search for supplier'
+        <select
+          class="form-control"
+          name="honey_types_${index}[]"
+          id="honey_types_${index}"
+          placeholder=""
+          multiple
+        >
+        {% for h in honey_types %}
+          <option value="{{ h.type }}" >{{ h.type }}</option>
+        {% endfor %}
+        </select>
+
+    </div>
+    </div>
+    <div class="col-md-1">
+      <div class="form-group">
+      <label class="form-label">Add</label>
+      <button type="button" class="btn btn-icon btn-primary  form-control add_node_btn_frm_field"><i class="ti ti-circle-plus"></i></button>
+    </div>
+    </div>
+    <div class="col-md-1">
+      <div class="form-group">
+      <label class="form-label">Remove</label>
+      <button type="button" class="btn btn-icon btn-secondary form-control remove_node_btn_frm_field "><i class="ti ti-trash"></i></button>
+    </div>
+    </div>
+</div>
+`); 
+$(".order-items").find(".remove_node_btn_frm_field:not(:first)").prop("disabled", false); 
+$(".order-items").find(".remove_node_btn_frm_field").first().prop("disabled", true);
+
+var multipleCancelButton = new Choices(`#honey_types_${index}`, {
+  removeItemButton: true
+});
+}); });
+
+$(document).ready(function () {
+  //===== delete the form fieed row
+  $("body").on("click", ".remove_node_btn_frm_field", function () {
+    $(this).closest(".order-items-row").remove();
+    console.log("success");
+  });
 });
 
+{% for item in order_items %}
+var multipleCancelButton = new Choices(`#honey_types_{{forloop.counter}}`, {
+  removeItemButton: true
+});
+{% endfor %}
+
+var supplierdd = new Choices(`#supplier`,
+{
+  searchPlaceholderValue: 'search for supplier'
+}
+);
 
 const d_today = new Datepicker(document.querySelector('#order-date'), {
   buttonClass: 'btn',
@@ -120,9 +308,6 @@ const d_today = new Datepicker(document.querySelector('#order-date'), {
   autohide: true,
   format: 'dd/mm/yyyy'
 });
-
-
-
 
 </script>
 

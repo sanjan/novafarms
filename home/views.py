@@ -217,16 +217,41 @@ def supplier_order_edit(request, order_number):
         order.unit_price = Decimal(request.POST.get('unit-price'))
         order.payment_term = request.POST.get('payment-term')
         order.save()
-        sweetify.success(request, 'Order successfully updated!')
+        
+        HoneyStock.objects.filter(order=order).delete()
+        
+        container_weights = request.POST.getlist('container_weights[]')
+        gross_weights = request.POST.getlist('gross_weights[]')
+        for i in range(len(container_weights)):
+            ht_pks = []
+            honey_types = request.POST.getlist(f'honey_types_{i+1}[]')
+            for ht in honey_types:
+                honey_type = HoneyType.objects.get(type=ht)
+                ht_pks.append(honey_type.id)
+            honey_stock_item = HoneyStock.objects.create(
+                order = order,
+                ibc_weight = Decimal(container_weights[i]),
+                gross_weight = Decimal(gross_weights[i]),
+            )
+            honey_stock_item.honey_types.add(*ht_pks)
+            honey_stock_item.save()
+        
+        order.save()
+        
+        sweetify.success(request, f'Supplier order #{order.order_number} successfully updated!')
         return HttpResponseRedirect(reverse('supplier_orders'))
         
 
     order = SupplierOrder.objects.get(order_number=order_number)
+    order_items = HoneyStock.objects.filter(order=order)
+    for i in order_items:
+        i.ht = [h.type for h in i.honey_types.all()]
     order.date = order.date.strftime("%d/%m/%Y")
     honey_types = HoneyType.objects.all()
     suppliers = Supplier.objects.all()
     context = {
                 'order': order,
+                'order_items': order_items,
                 'honey_types': honey_types,
                 'suppliers': suppliers,
                 'payment_terms': [p[0] for p in SUPPLIER_PAYMENT_TERMS]
