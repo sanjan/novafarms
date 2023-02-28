@@ -167,7 +167,7 @@ def supplier_order_create(request):
         new_order = SupplierOrder.objects.get(id=order.id)        
         new_order.qr_pointer = f'https://{request.get_host()}/supplier/order/{new_order.order_number}/details'
         new_order.save()
-        sweetify.success(request, f'Supplier order #{new_order.order_number} created successfully', extra_tags=new_order.order_number)
+        sweetify.success(request, f'Supplier order #{new_order.order_number} created successfully')
         return HttpResponseRedirect(reverse('supplier_orders'))
 
     honey_types = HoneyType.objects.all()
@@ -582,7 +582,7 @@ def customer_order_create(request):
         new_order = CustomerOrder.objects.get(id=order.id)        
         new_order.qr_pointer = f'https://{request.get_host()}/customer/order/{new_order.order_number}/details'
         new_order.save()
-        sweetify.success(request, f'Customer order #{new_order.order_number} created successfully', extra_tags=new_order.order_number)
+        sweetify.success(request, f'Customer order #{new_order.order_number} created successfully')
         return HttpResponseRedirect(reverse('customer_orders'))
 
     products = Product.objects.all()
@@ -597,7 +597,62 @@ def customer_order_create(request):
 
 
 def customer_order_details(request, order_number):
-    return None
+    order = CustomerOrder.objects.get(order_number=order_number)
+    order_items = CustomerOrderItem.objects.filter(order=order)
+
+    context = {'order': order,
+               'order_items': order_items
+          }
+    
+    return render(request,'pages/customer_order_details.html', context)
 
 def customer_order_edit(request, order_number):
-    return None
+    
+    if request.method == 'POST':
+        order = CustomerOrder.objects.get(order_number=request.POST.get('order-number'))
+        order.customer = Customer.objects.get(id=request.POST.get('customer'))
+        order.payment_term = request.POST.get('payment-term')        
+        date_format = '%d/%m/%Y'
+        order.date = datetime.strptime(request.POST.get('order-date'), date_format)
+        order.status = request.POST.get('order-status')
+        order.save()
+        
+        CustomerOrderItem.objects.filter(order=order).delete()
+        
+        product_ids = request.POST.getlist('product-ids[]')
+        quantities = request.POST.getlist('quantities[]')
+        unit_prices = request.POST.getlist('unit-prices[]')
+        
+        for i in range(len(product_ids)):
+            customer_order_item = CustomerOrderItem.objects.create(
+                order = order,
+                product = Product.objects.get(id=product_ids[i]),
+                quantity = int(quantities[i]),
+                unit_price = Decimal(unit_prices[i]),
+                sub_total_price = Decimal( int(quantities[i]) * Decimal(unit_prices[i]))
+            )
+
+            customer_order_item.save()
+        
+        order.save()
+        
+        
+        
+        sweetify.success(request, f'Customer order #{order.order_number} updated successfully')
+        return HttpResponseRedirect(reverse('customer_orders'))
+        
+        
+    order = CustomerOrder.objects.get(order_number=order_number)
+    order.date = order.date.strftime("%d/%m/%Y")
+    order_items = CustomerOrderItem.objects.filter(order=order)
+    products = Product.objects.all()
+    customers = Customer.objects.all()
+    context = {'order': order,
+               'order_items': order_items,
+               'products': products,
+                'customers': customers,
+                'payment_terms': [p[0] for p in CUSTOMER_PAYMENT_TERMS],
+                'order_status': [p[0] for p in ORDER_STATUS],
+          }
+    
+    return render(request,'pages/customer_order_edit.html', context)

@@ -18,7 +18,7 @@
               </div>
               <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item"><a href="javascript: void(0)">Supplier</a></li>
+                <li class="breadcrumb-item"><a href="javascript: void(0)">Customer</a></li>
                 <li class="breadcrumb-item" aria-current="page">Order Details</li>
               </ul>
             </div>
@@ -82,14 +82,14 @@
                       <div class="row">
                         <div class="col-sm-6">
                   
-                          <h5 class="mb-0">From: {{order.supplier.name}}</h5>
+                          <h5 class="mb-0">From: {{order.customer.name}}</h5>
                           <br/>
                           <h5 class="mb-0"> Order: #{{order.order_number | upper}} Placed on {{ order.date }}</h5>
                         </div>
                         <div class="col-sm-6 text-sm-end">
                          
                    
-                            <a href="{% url 'supplier_order_edit' order.order_number %}" class="btn btn-primary me-2">Modify Order</a>
+                            <a href="{% url 'customer_order_edit' order.order_number %}" class="btn btn-primary me-2">Modify Order</a>
                           
                         </div>
                       </div>
@@ -98,10 +98,10 @@
                       <ul class="list-inline">
     
                         <li class="list-inline-item"
-                          ><i class="material-icons-two-tone opacity-75 me-1 f-16">phone_android</i> {{ order.supplier.contact_number }}</li
+                          ><i class="material-icons-two-tone opacity-75 me-1 f-16">phone_android</i> {{ order.customer.contact_number }}</li
                         >
                         <li class="list-inline-item"
-                          ><i class="material-icons-two-tone opacity-75 me-1 f-16">email</i> {{ order.supplier.email }}</li
+                          ><i class="material-icons-two-tone opacity-75 me-1 f-16">email</i> {{ order.customer.email }}</li
                         >
                       </ul>
                       <hr class="my-4" />
@@ -116,10 +116,10 @@
                         </div>
                         <div class="col-md-4">
                           <h4 class="mb-2">Supplier Number</h4>
-                          <span class="badge text-secondary border border-secondary rounded-pill f-12 align-baseline mb-1">{{order.supplier.supplier_number}}</span> 
+                          <span class="badge text-secondary border border-secondary rounded-pill f-12 align-baseline mb-1">{{order.customer.customer_number}}</span> 
                           <span class="text-muted f-14"></span>
                           <h4 class="mb-2">IBC Identification</h4>
-                          <span class="badge text-secondary border border-secondary rounded-pill f-12 align-baseline mb-1">{{order.supplier.ibc_identification}}</span>
+                          <span class="badge text-secondary border border-secondary rounded-pill f-12 align-baseline mb-1">{{order.customer.ibc_identification}}</span>
                         </div>
                         <div class="col-md-4">
                           <h4 class="mb-2">Order QR Code</h4>
@@ -130,17 +130,17 @@
                       <div class="row">
                         <div class="col-md-4">
                           <h4 class="mb-3">Billing address</h4>
-                          <p class="mb-1"><b>Address :</b> {% if order.supplier.unit_number %}{{order.supplier.unit_number}}{% endif %} {{order.supplier.street_number}} {{order.supplier.address_line_1}} {{order.supplier.address_line_2}}</p>
-                          <p class="mb-1"><b>Suburb :</b> {{order.supplier.suburb}}</p>
-                          <p class="mb-1"><b>State :</b> {{order.supplier.state}}</p>
-                          <p><b>Post Code :</b> {{order.supplier.post_code}}</p>
+                          <p class="mb-1"><b>Address :</b> {% if order.customer.unit_number %}{{order.customer.unit_number}}{% endif %} {{order.customer.street_number}} {{order.customer.address_line_1}} {{order.customer.address_line_2}}</p>
+                          <p class="mb-1"><b>Suburb :</b> {{order.customer.suburb}}</p>
+                          <p class="mb-1"><b>State :</b> {{order.customer.state}}</p>
+                          <p><b>Post Code :</b> {{order.customer.post_code}}</p>
                         </div>
                         <div class="col-md-4">
                           <h4 class="mb-3">Shipping address</h4>
-                          <p class="mb-1"><b>Address :</b> {% if order.supplier.unit_number %}{{order.supplier.unit_number}}{% endif %} {{order.supplier.street_number}} {{order.supplier.address_line_1}} {{order.supplier.address_line_2}}</p>
-                          <p class="mb-1"><b>Suburb :</b> {{order.supplier.suburb}}</p>
-                          <p class="mb-1"><b>State :</b> {{order.supplier.state}}</p>
-                          <p><b>Post Code :</b> {{order.supplier.post_code}}</p>
+                          <p class="mb-1"><b>Address :</b> {% if order.customer.unit_number %}{{order.customer.unit_number}}{% endif %} {{order.customer.street_number}} {{order.customer.address_line_1}} {{order.customer.address_line_2}}</p>
+                          <p class="mb-1"><b>Suburb :</b> {{order.customer.suburb}}</p>
+                          <p class="mb-1"><b>State :</b> {{order.customer.state}}</p>
+                          <p><b>Post Code :</b> {{order.customer.post_code}}</p>
                         </div>
                       </div>
                     </div>
@@ -154,26 +154,26 @@
                         <table class="table mb-0">
                           <thead>
                             <tr>
-                              <th>Stock ID</th>
+                              <th>Brand</th>
                               <th>Description</th>
-                              <th class="text-end">IBC/Container Weight</th>
-                              <th class="text-end">Gross Weight</th>
-                              <th class="text-end">Net Weight</th>
+                              <th class="text-end">Quantity</th>
+                              <th class="text-end">Unit Price</th>
+                              <th class="text-end">Sub Total</th>
                               <th class="text-end"></th>
                             </tr>
                           </thead>
                           <tbody>
-                            {% for item in honey_stock%}
+                            {% for item in order_items%}
                             <tr>
-                             <td>{{item.stock_id}}</td>
+                             <td>{{item.product.brand}}</td>
                               <td>
                                 <div>
-                                  <h5 class="mb-1">{{ item.ht }}</h5>
+                                  <h5 class="mb-1">{{ item.product.name }}</h5>
                                 </div>
                               </td>
-                              <td class="text-end">{{item.ibc_weight}}</td>
-                              <td class="text-end">{{item.gross_weight}}</td>
-                              <td class="text-end">{{item.net_weight}}</td>
+                              <td class="text-end">{{item.quantity}}</td>
+                              <td class="text-end">${{item.unit_price}}</td>
+                              <td class="text-end">${{item.sub_total_price}}</td>
                               <td class="text-end"
                                 ><button type="button" class="btn btn-link-danger"><i class="ti ti-trash"></i></button
                               ></td>
@@ -267,11 +267,11 @@
                       </div>
                       <div class="row mb-3">
                         <div class="col-md-6">
-                          <h4 class="mb-2"><b>Customer : {{ order.supplier.name}}</b></h4>
-                          <p class="text-muted mb-1">{% if order.supplier.unit_number %}{{order.supplier.unit_number}}{% endif %} {{order.supplier.street_number}} {{order.supplier.address_line_1}}</p>
-                          <p class="text-muted mb-1"> {{order.supplier.suburb}}  {{order.supplier.state}}  {{order.supplier.post_code}}</p>
-                          <p class="text-muted mb-1"> {{order.supplier.contact_number}}</p>
-                          <p class="text-muted mb-1"><a href="mailto:demo@company.com"> {{order.supplier.email}}</a></p>
+                          <h4 class="mb-2"><b>Customer : {{ order.customer.name}}</b></h4>
+                          <p class="text-muted mb-1">{% if order.customer.unit_number %}{{order.customer.unit_number}}{% endif %} {{order.customer.street_number}} {{order.customer.address_line_1}}</p>
+                          <p class="text-muted mb-1"> {{order.customer.suburb}}  {{order.customer.state}}  {{order.customer.post_code}}</p>
+                          <p class="text-muted mb-1"> {{order.customer.contact_number}}</p>
+                          <p class="text-muted mb-1"><a href="mailto:demo@company.com"> {{order.customer.email}}</a></p>
                         </div>
                         <div class="col-md-6">
                           <h4 class="mb-2"><b>Order Details :</b></h4>
