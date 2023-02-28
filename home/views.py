@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import Supplier, SupplierOrder, Customer, CustomerOrder, CustomerOrderItems, HoneyStock, HoneyType, Batch, Product, Production, Brand, Pallet, Container, Lid, Carton, Label, TopInsert, PAYMENT_TERMS, PRODUCTION_STATUS, BATCH_STATUS
+from .models import Supplier, SupplierOrder, Customer, CustomerOrder, CustomerOrderItem, HoneyStock, HoneyType, Batch, Product, Production, Brand, Pallet, Container, Lid, Carton, Label, TopInsert, SUPPLIER_PAYMENT_TERMS, CUSTOMER_PAYMENT_TERMS, PRODUCTION_STATUS, BATCH_STATUS, ORDER_STATUS
 from .forms import SupplierForm, CustomerForm
 from decimal import Decimal
 from datetime import datetime
@@ -175,7 +175,7 @@ def supplier_order_create(request):
     context = {
         'honey_types': honey_types,
         'suppliers': suppliers,
-        'payment_terms': [p[0] for p in PAYMENT_TERMS]
+        'payment_terms': [p[0] for p in SUPPLIER_PAYMENT_TERMS]
         }
     
     return render(request, 'pages/supplier_order_create.html', context)
@@ -229,7 +229,7 @@ def supplier_order_edit(request, order_number):
                 'order': order,
                 'honey_types': honey_types,
                 'suppliers': suppliers,
-                'payment_terms': [p[0] for p in PAYMENT_TERMS]
+                'payment_terms': [p[0] for p in SUPPLIER_PAYMENT_TERMS]
             }
     
     return render(request,'pages/supplier_order_edit.html', context)
@@ -436,7 +436,6 @@ def production_list(request):
     
     return render(request,'pages/production_list.html', context)
 
-
 def products(request):
     
     products = Product.objects.all() if Product.objects else []
@@ -539,3 +538,66 @@ def product_edit(request, product_id):
 def product_details(request, product_id):
     context = {}
     return render(request, 'pages/product_details.html', context)
+
+def customer_orders(request):
+    customer_orders = CustomerOrder.objects.all()
+    
+    count = customer_orders.count()
+    context = {
+        'customer_orders': customer_orders,
+        'count': count
+    }
+    
+    return render(request, 'pages/customer_order_list.html', context)
+
+def customer_order_create(request):
+    if request.method == 'POST':
+        customer = Customer.objects.get(id=request.POST.get('customer'))
+        payment_term = request.POST.get('payment-term')        
+        date_format = '%d/%m/%Y'
+        date = datetime.strptime(request.POST.get('order-date'), date_format)
+        
+        order = CustomerOrder.objects.create(
+            customer = customer,
+            payment_term = payment_term,
+            date = date,
+        )
+        
+        product_ids = request.POST.getlist('product-ids[]')
+        quantities = request.POST.getlist('quantities[]')
+        unit_prices = request.POST.getlist('unit-prices[]')
+        
+        for i in range(len(product_ids)):
+            customer_order_item = CustomerOrderItem.objects.create(
+                order = order,
+                product = Product.objects.get(id=product_ids[i]),
+                quantity = int(quantities[i]),
+                unit_price = Decimal(unit_prices[i]),
+                sub_total_price = Decimal( int(quantities[i]) * Decimal(unit_prices[i]))
+            )
+
+            customer_order_item.save()
+        
+        order.save()
+        new_order = CustomerOrder.objects.get(id=order.id)        
+        new_order.qr_pointer = f'https://{request.get_host()}/customer/order/{new_order.order_number}/details'
+        new_order.save()
+        sweetify.success(request, f'Customer order #{new_order.order_number} created successfully', extra_tags=new_order.order_number)
+        return HttpResponseRedirect(reverse('customer_orders'))
+
+    products = Product.objects.all()
+    customers = Customer.objects.all()
+    context = {
+        'products': products,
+        'customers': customers,
+        'payment_terms': [p[0] for p in CUSTOMER_PAYMENT_TERMS]
+        }
+    
+    return render(request, 'pages/customer_order_create.html', context)
+
+
+def customer_order_details(request, order_number):
+    return None
+
+def customer_order_edit(request, order_number):
+    return None

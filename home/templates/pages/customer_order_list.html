@@ -1,0 +1,142 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %} Home {% endblock title %}
+
+{% block content %}
+
+  <!-- [ Main Content ] start -->
+  <div class="pc-container">
+    <div class="pc-content">
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <!-- [ sample-page ] start -->
+        <div class="col-xl-4 col-md-6">
+          <div class="card bg-secondary-dark dashnum-card text-white overflow-hidden">
+            <span class="round small"></span>
+            <span class="round big"></span>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <div class="avtar avtar-lg">
+                    <i class="text-white ti ti-credit-card"></i>
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <div class="btn-group">
+                    <a
+                      type="button"
+                      class="avtar bg-secondary dropdown-toggle arrow-none"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <i class="ti ti-dots"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><button class="dropdown-item" type="button">Import Card</button></li>
+                      <li><button class="dropdown-item" type="button">Export</button></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <span class="text-white d-block f-34 f-w-500 my-2">{{count}}<i class="ti ti-arrow-up-right-circle opacity-50"></i></span>
+              <p class="mb-0 opacity-50">Current orders</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- [ breadcrumb ] start -->
+
+      <!-- [ breadcrumb ] end -->
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <!-- [ sample-page ] start -->
+        <div class="col-sm-12">
+          <div class="card table-card">
+            <div class="card-header">
+              <h5 class="card-header d-flex justify-content-between align-items-center">
+                Customer Orders
+                <a href="{% url 'customer_order_create' %}" class="btn btn-primary me-2">New Customer Order</a>  
+                <!-- Wrap with <div>...buttons...</div> if you have multiple buttons -->
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover" id="orders-table">
+                  <thead>
+                    <tr>
+                      <th>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" />
+                        </div>
+                      </th>
+                      <th>ID</th>
+                      <th>Customer</th>
+                      <th>Date</th>
+                      <th>Total</th>
+                      <th>Payment Term</th>
+                      <th>Status</th>
+                      <th class="text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for order in customer_orders %}
+                    <tr>
+                      <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" />
+                        </div>
+                      </td>
+                      <td>
+                      <h5 class="mb-0"><a href="{% url 'customer_order_details' order.order_number %}">#{{order.order_number}}</a></h5>
+                      </td>
+                      <td>
+                        <h5 class="mb-0">{{order.customer.name}}</h5>
+                      </td>
+                      <td>{{order.date}}</td>
+                      <td>${{order.total_price}}</td>
+                      <td>{{order.payment_term}}</td>
+                      <td><span class="badge bg-light-primary rounded-pill f-12">{{order.status}}</span> </td>
+                      <td class="text-center">
+                        <button type="button" class="btn btn-link-primary" onclick=""><i class="ti ti-eye"></i></button>
+                        <button type="button" class="btn btn-link-secondary" onclick=""><i class="ti ti-pencil"></i></button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ sample-page ] end -->
+      </div>
+      <!-- [ Main Content ] end -->
+    </div>
+  </div>
+  <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+{% block extra_js %}
+
+    <!-- [Page Specific JS] start -->
+          <!-- Sweet Alert -->
+  <script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
+  {% load sweetify %}
+  {% sweetify %}
+    <script src="{% static 'assets/js/plugins/simple-datatables.js' %}"></script>
+    <script>
+      const ordersTable = new simpleDatatables.DataTable('#orders-table', {
+        sortable: false,
+        perPage: 5
+      });
+      const batchesTable = new simpleDatatables.DataTable('#batches-table', {
+        sortable: false,
+        perPage: 5
+      });
+    </script>
+    <!-- [Page Specific JS] end -->
+
+{% endblock extra_js %}
+
+

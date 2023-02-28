@@ -10,10 +10,10 @@ urlpatterns = [
     path('batch/<str:batch_number>/details', views.batch_details, name='batch_details'),
     path('batch/<str:batch_number>/edit', views.batch_edit, name='batch_edit'),
     
-    # path('customer/order/list', views.customer_orders, name='customer_orders'),
-    # path('customer/order/create', views.customer_order_create, name='customer_order_create'),
-    # path('customer/order/<str:order_number>/details', views.customer_order_details, name='customer_order_details'),
-    # path('customer/order/<str:order_number>/edit', views.customer_order_edit, name='customer_order_edit'),
+    path('customer/order/list', views.customer_orders, name='customer_orders'),
+    path('customer/order/create', views.customer_order_create, name='customer_order_create'),
+    path('customer/order/<str:order_number>/details', views.customer_order_details, name='customer_order_details'),
+    path('customer/order/<str:order_number>/edit', views.customer_order_edit, name='customer_order_edit'),
     
     path('customers', views.customers, name='customers'),   
     path('customer/create', views.customer_create, name='customer_create'),

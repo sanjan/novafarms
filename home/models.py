@@ -40,11 +40,16 @@ BATCH_STATUS = (
     ('Used', 'Used'),
 )
 
-PAYMENT_TERMS = (
+SUPPLIER_PAYMENT_TERMS = (
     ('Immediate', 'Immediate'),
     ('30 Days', '30 Days'),
 )
 
+CUSTOMER_PAYMENT_TERMS = (
+    ('50% Deposit', '50% Deposit'),
+    ('Full Payment', 'Full Payment'),
+    ('Lead Time', 'Lead Time'),
+)
 HONEY_CONTAINER_TYPES = (
     ('Jar','Jar'),
     ('Squeeze Bottle','Squeeze Bottle'),
@@ -172,11 +177,11 @@ class Customer(models.Model):
 class CustomerOrder(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     order_number = ShortUUIDField(length=16,max_length=16,prefix="co_",alphabet="abcdefhkmnrstuvwxz123456789_",)
-    product_name = models.ForeignKey(Product, null=True, blank=True, on_delete=models.PROTECT)
     total_price = models.DecimalField(default=0.00, decimal_places=2, editable=False,max_digits=10)
     total_units = models.IntegerField(default=0)
-    payment_term = models.CharField(max_length=20, choices=PAYMENT_TERMS)
+    payment_term = models.CharField(max_length=20, choices=CUSTOMER_PAYMENT_TERMS)
     date = models.DateField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=ORDER_STATUS, default='New')
     qrcode = models.ImageField(upload_to='customer_order_qr_codes',blank=True,null=True)
     qr_pointer = models.CharField(max_length=300, unique=True, null=True, blank=True)
     class Meta:
@@ -203,7 +208,7 @@ class CustomerOrder(models.Model):
 
         super().save(*args, **kwargs)
 
-class CustomerOrderItems(models.Model):
+class CustomerOrderItem(models.Model):
     
      order = models.ForeignKey(CustomerOrder, on_delete=models.CASCADE, related_name='order_items',)
      order_item_number = ShortUUIDField(length=12,max_length=12,prefix="oi_",alphabet="abcdefhkmnrstuvwxz123456789")
@@ -223,7 +228,7 @@ class Pallet(models.Model):
     length = models.IntegerField(default=0)
     quantity =  models.IntegerField(default=0)
     capacity_cartons = models.IntegerField(default=0)
-    layout = models.FileField(upload_to='pallet_layouts/',blank=True,null=True)
+    layout = models.FileField(upload_to='pallet_layouts',blank=True,null=True)
     last_updated =  models.DateField(auto_now=True)
     
     def __str__(self) -> str:
@@ -262,7 +267,7 @@ class SupplierOrder(models.Model):
     unit_price = models.DecimalField(default=0.00, decimal_places=2, max_digits=10 )
     total_weight_price = models.DecimalField(default=0.00, decimal_places=2, editable=False,max_digits=10)
     total_price = models.DecimalField(default=0.00, decimal_places=2, editable=False,max_digits=10)
-    payment_term = models.CharField(max_length=20, choices=PAYMENT_TERMS)
+    payment_term = models.CharField(max_length=20, choices=SUPPLIER_PAYMENT_TERMS)
     date = models.DateField(auto_now_add=True)
     qrcode = models.ImageField(upload_to='supplier_order_qr_codes',blank=True,null=True)
     qr_pointer = models.CharField(max_length=300, unique=True, null=True, blank=True)
@@ -380,7 +385,7 @@ class Batch(models.Model):
 class Production(models.Model):
     packing_date = models.DateField(default=timezone.now)
     production_code = ShortUUIDField(length=16,max_length=16,prefix="p_",alphabet="abcdefhkmnrstuvwxz123456789_",)
-    order_item = models.ForeignKey(CustomerOrderItems, on_delete=models.PROTECT, related_name='order_item', null=True, blank=True)
+    order_item = models.ForeignKey(CustomerOrderItem, on_delete=models.PROTECT, related_name='order_item', null=True, blank=True)
     pallet = models.ForeignKey(Pallet, on_delete=models.PROTECT, null=True, blank=True)
     top_insert = models.ForeignKey(TopInsert, on_delete=models.PROTECT, null=True, blank=True)
     units_made =  models.IntegerField(default=0)
