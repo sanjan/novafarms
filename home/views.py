@@ -431,8 +431,111 @@ def production_list(request):
     productions = Production.objects.all() if Production.objects else []
     
     context = {
-        'productions': productions
+        'productions': productions,
     }
     
     return render(request,'pages/production_list.html', context)
+
+
+def products(request):
     
+    products = Product.objects.all() if Product.objects else []
+    
+    context = {
+        'products' : products,
+    }
+    
+    return render(request, 'pages/product_list.html', context)
+
+def product_create(request):
+    
+    if request.method == 'POST':
+        print(request.POST, request.FILES)
+        product_name = request.POST.get('product-name')
+        brand = request.POST.get('brand')
+        container = request.POST.get('container')
+        lid  = request.POST.get('lid')
+        label = request.POST.get('label')
+        carton = request.POST.get('carton')
+        unit_weight = request.POST.get('unit-weight') or 0
+        image = request.FILES.get('product-image')
+        
+        product = Product.objects.create(
+            name = product_name,
+            brand = Brand.objects.get(id=brand),
+            container = Container.objects.get(id=container),
+            lid = Lid.objects.get(id=lid),
+            label = Label.objects.get(id=label),
+            carton = Carton.objects.get(id=carton),
+            unit_weight = int(unit_weight),
+            image = image,
+        )
+        
+        sweetify.success(request, f'Product #{product.id} created successfully')
+        return HttpResponseRedirect(reverse('products'))
+        
+        
+    
+    brands = Brand.objects.all()
+    containers = Container.objects.all()
+    lids = Lid.objects.all()
+    labels = Label.objects.all()
+    cartons = Carton.objects.all()
+    
+    context = {
+        'brands': brands,
+        'containers': containers,
+        'lids': lids,
+        'labels': labels,
+        'cartons': cartons,
+    }
+    return render(request, 'pages/product_create.html', context)
+
+def product_edit(request, product_id):
+    
+    if request.method == 'POST':
+        print(request.POST, request.FILES)
+        product_id=request.POST.get('product-id')
+        product_name = request.POST.get('product-name')
+        brand = request.POST.get('brand')
+        container = request.POST.get('container')
+        lid  = request.POST.get('lid')
+        label = request.POST.get('label')
+        carton = request.POST.get('carton')
+        unit_weight = request.POST.get('unit-weight') or 0
+        image = request.FILES.get('product-image')
+
+        product = Product.objects.get(id=product_id)
+        product.name = product_name
+        product.brand = Brand.objects.get(id=brand)
+        product.container = Container.objects.get(id=container)
+        product.lid = Lid.objects.get(id=lid)
+        product.label = Label.objects.get(id=label)
+        product.carton = Carton.objects.get(id=carton)
+        product.unit_weight = int(unit_weight)
+        if image:
+            product.image = image
+        product.save()
+        
+        sweetify.success(request, f'Product #{product.id} updated successfully')
+        return HttpResponseRedirect(reverse('products'))    
+    
+    product = Product.objects.get(id=product_id)
+    brands = Brand.objects.all()
+    containers = Container.objects.all()
+    lids = Lid.objects.all()
+    labels = Label.objects.all()
+    cartons = Carton.objects.all()
+    context = {
+        'product': product,
+        'brands': brands,
+        'containers': containers,
+        'lids': lids,
+        'labels': labels,
+        'cartons': cartons,
+    }
+    return render(request, 'pages/product_edit.html', context)
+
+def product_details(request, product_id):
+    context = {}
+    return render(request, 'pages/product_details.html', context)

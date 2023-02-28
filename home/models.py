@@ -112,6 +112,7 @@ class Container(models.Model):
     quantity =  models.IntegerField(default=0)
     capacity =  models.IntegerField(default=0)
     color = models.CharField(max_length=20, choices=LID_CONTAINER_COLORS)
+    image = models.ImageField(upload_to='container_images',blank=True,null=True)
     last_updated =  models.DateField(auto_now=True)
     
     def __str__(self) -> str:
@@ -121,6 +122,7 @@ class Lid(models.Model):
     type = models.CharField(max_length=20, choices=LID_TYPES)
     quantity =  models.IntegerField(default=0)
     color = models.CharField(max_length=20, choices=LID_CONTAINER_COLORS)
+    image = models.ImageField(upload_to='lid_images',blank=True,null=True)
     last_updated =  models.DateField(auto_now=True)
 
     def __str__(self) -> str:
@@ -129,6 +131,7 @@ class Label(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
     color = models.CharField(max_length=20, null=True)
     quantity =  models.IntegerField(default=0)
+    image = models.ImageField(upload_to='label_images',blank=True,null=True)
     last_updated =  models.DateField(auto_now=True)
     
     def __str__(self) -> str:
@@ -142,6 +145,7 @@ class Product(models.Model):
     label = models.ForeignKey(Label,null=True, blank=True, on_delete=models.PROTECT)
     carton  = models.ForeignKey(Carton, null=True, blank=True, on_delete=models.PROTECT)
     unit_weight = models.IntegerField(default=0)
+    image = models.ImageField(upload_to='product_images',blank=True,null=True)
     
     def __str__(self) -> str:
         ct = self.container.type if self.container else ''

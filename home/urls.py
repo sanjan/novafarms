@@ -30,10 +30,10 @@ urlpatterns = [
     # path('supplier/<int:supplier_id>/details', views.supplier_details, name='supplier_details'),
     path('supplier/<int:supplier_id>/edit', views.supplier_edit, name='supplier_edit'),
     
-    # path('inventory', views.inventory, name='inventory'),
-    # path('inventory/create', views.inventory_create, name='inventory_create'),
-    # path('inventory/<int:inventory_id>/details', views.inventory_details, name='inventory_details'),
-    # path('inventory/<int:inventory_id>/edit', views.inventory_edit, name='inventory_edit'),
+    path('products', views.products, name='products'),
+    path('product/create', views.product_create, name='product_create'),
+    path('product/<int:product_id>/details', views.product_details, name='product_details'),
+    path('product/<int:product_id>/edit', views.product_edit, name='product_edit'),
     
     path('production/list', views.production_list, name='production_list'),
     path('production/create', views.production_create, name='production_create'),

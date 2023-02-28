@@ -37,7 +37,7 @@
               <li class="breadcrumb-item">
                 <a href="javascript: void(0)">Product</a>
               </li>
-              <li class="breadcrumb-item" aria-current="page">New</li>
+              <li class="breadcrumb-item" aria-current="page">Update</li>
             </ul>
           </div>
         </div>
@@ -51,12 +51,12 @@
       <div class="col-sm-12">
         <div class="card">
           <div class="card-header">
-            <h5>New Product</h5>
+            <h5>Update Product</h5>
           </div>
           <div class="card-body">
             <form method="post" enctype="multipart/form-data" >
               {% csrf_token %}
-
+              <input type="hidden" id="product-id" name="product-id" value="{{product.id}}">
               <div class="form-group">
                 <label for="product-name" class="col-form-label">Product Name</label>
                 <input
@@ -64,6 +64,7 @@
                   type="text"
                   id="product-name"
                   name="product-name"
+                  value="{{product.name}}"
                 />
               </div>
 
@@ -79,7 +80,7 @@
                     Pick a brand
                   </option>
                   {% for b in brands %}
-                  <option value="{{ b.id }}">{{ b.name }}</option>
+                  <option value="{{ b.id }}"  {% if b.id == product.brand.id %} selected {% endif %} >{{ b.name }}</option>
                   {% endfor%}
                 </select>
               </div>
@@ -96,7 +97,7 @@
                     Pick a container
                   </option>
                   {% for c in containers %}
-                  <option value="{{ c.id }}">{{ c }}</option>
+                  <option value="{{ c.id }}" {% if c.id == product.container.id %} selected {% endif %}>{{ c }}</option>
                   {% endfor%}
                 </select>
               </div>
@@ -113,7 +114,7 @@
                     Pick a lid
                   </option>
                   {% for c in lids %}
-                  <option value="{{ c.id }}">{{ c }}</option>
+                  <option value="{{ c.id }}" {% if c.id == product.lid.id %} selected {% endif %}>{{ c }}</option>
                   {% endfor%}
                 </select>
               </div>
@@ -130,7 +131,7 @@
                     Pick a label
                   </option>
                   {% for c in labels %}
-                  <option value="{{ c.id }}">{{ c }}</option>
+                  <option value="{{ c.id }}" {% if c.id == product.label.id %} selected {% endif %}>{{ c }}</option>
                   {% endfor%}
                 </select>
               </div>
@@ -147,7 +148,7 @@
                     Pick a carton
                   </option>
                   {% for c in cartons %}
-                  <option value="{{ c.id }}">{{ c }}</option>
+                  <option value="{{ c.id }}" {% if c.id == product.carton.id %} selected {% endif %}>{{ c }}</option>
                   {% endfor%}
                 </select>
               </div>
@@ -163,6 +164,7 @@
                         id="unit-weight"
                         name="unit-weight"
                         placeholder="Unit Weight"
+                        value="{{product.unit_weight}}"
                       />
                       <span class="input-group-text"> grams</span>
                     </div>
@@ -219,7 +221,7 @@
     var slider = document.getElementById('unit-weight-slider');
 
     noUiSlider.create(slider, {
-      start: [200],
+      start: [{{product.unit_weight}}],
       step: 25,
       range: {
         min: [200],
