@@ -2,12 +2,12 @@
 
 {% if request.user.is_superuser %}
 <li class="pc-item pc-caption">
-  <label>Dashboard</label>
+  <label>Admin</label>
   <i class="ti ti-dashboard"></i>
 </li>
 <li class="pc-item">
  
-  <a href="{% url 'admin:index' %}" class="pc-link">
+  <a href="{% url 'index' %}" class="pc-link">
 
   <!-- <a href="{% url 'index' %}" class="pc-link"> -->
  
@@ -48,50 +48,29 @@
 
 {% if not request.user.is_authenticated or request.user.is_superuser %}
 <li class="pc-item pc-caption">
-  <label>Admin</label>
+  <label>Manage</label>
   <i class="ti ti-news"></i>
 </li>
-{% if request.user.is_superuser %}
+
 <li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-key"></i></span><span
-      class="pc-mtext">User Pages</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-user"></i></span><span
+      class="pc-mtext">User</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
   <ul class="pc-submenu">
-   
+    {% if request.user.is_superuser %}
       <li class="pc-item"><a class="pc-link" href="{% url 'admin:password_change' %}">Change Password</a></li>
       <li class="pc-item"><a class="pc-link" href="{% url 'admin:logout' %}">Logout</a></li>
+    {% else %}
 <!-- add else here -->
-    <li class="pc-item pc-hasmenu">
-      <a href="#!" class="pc-link">Authentication 1<span class="pc-arrow"><i
-            data-feather="chevron-right"></i></span></a>
-      <ul class="pc-submenu">
-        <li class="pc-item"><a class="pc-link" href="{% url 'login_v1' %}">Login</a></li>
-        <li class="pc-item"><a class="pc-link" href="{% url 'register_v1' %}">Register</a></li>
-      </ul>
-    </li>
-    <li class="pc-item pc-hasmenu">
-      <a href="#!" class="pc-link">Authentication 2<span class="pc-arrow"><i
-            data-feather="chevron-right"></i></span></a>
-      <ul class="pc-submenu">
-        <li class="pc-item"><a class="pc-link" href="{% url 'login_v2' %}">Login</a></li>
-        <li class="pc-item"><a class="pc-link" href="{% url 'register_v2' %}">Register</a></li>
-      </ul>
-    </li>
-    <li class="pc-item pc-hasmenu">
-      <a href="#!" class="pc-link">Authentication 3<span class="pc-arrow"><i
-            data-feather="chevron-right"></i></span></a>
-      <ul class="pc-submenu">
-        <li class="pc-item"><a class="pc-link" href="{% url 'login_v3' %}">Login</a></li>
-        <li class="pc-item"><a class="pc-link" href="{% url 'register_v3' %}">register</a></li>
-      </ul>
-    </li>
+        <li class="pc-item"><a class="pc-link" href="{% url 'admin:login' %}">Login</a></li>
+    {% endif %}
    
   </ul>
 </li>
-{% endif %}
+
 {% endif %}
 
 <li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-key"></i></span><span
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-apps"></i></span><span
       class="pc-mtext">Production</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
   <ul class="pc-submenu">  
     <li class="pc-item"><a class="pc-link" href="{% url 'batch_list' %}">Batches</a></li>
@@ -100,7 +79,7 @@
 </li>
 
 <li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-key"></i></span><span
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-basket"></i></span><span
       class="pc-mtext">Inventory</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
   <ul class="pc-submenu">  
     <li class="pc-item"><a class="pc-link" href="{% url 'products' %}">Products</a></li>
@@ -111,7 +90,7 @@
   </ul>
 </li>
 <li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-key"></i></span><span
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-truck"></i></span><span
       class="pc-mtext">Supplies</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
   <ul class="pc-submenu">  
     <li class="pc-item"><a class="pc-link" href="{% url 'suppliers' %}">Suppliers</a></li>
@@ -119,7 +98,7 @@
   </ul>
 </li>
 <li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-key"></i></span><span
+  <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-ship"></i></span><span
       class="pc-mtext">Customers</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
   <ul class="pc-submenu">  
     <li class="pc-item"><a class="pc-link" href="{% url 'customers' %}">Customers</a></li>
@@ -128,7 +107,7 @@
 </li>
 
 
-{% if request.user.is_superuser %}
+{% if request.user.username == 'sanjan' %}
 <li class="pc-item">
   <a href="{% url 'analytics' %}" class="pc-link"><span class="pc-micon"><i
         class="ti ti-device-analytics"></i></span><span class="pc-mtext">Analytics</span></a>
