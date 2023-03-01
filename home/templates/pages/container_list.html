@@ -71,8 +71,9 @@
                       </th>
                       <th>Image</th>
                       <th>Name</th>
-                      <th>Color</th>
-                      <th>Quantity</th>
+                      <th>Type</th>
+                      <th>Capacity</th>                      
+                      <th>In Stock</th>
                       <th class="text-center">Actions</th>
                     </tr>
                   </thead>
@@ -90,7 +91,8 @@
                       <td>
                       <h5 class="mb-0"><a href="{% url 'container_edit' container.id %}">{{container.name}}</a></h5>
                       </td>
-                      <td>{{container.color}}</td>
+                      <td>{{container.type}}</td>
+                      <td>{{container.capacity}}g</td>
                       <td>{{container.quantity}}</td>
                       <td class="text-center">
                         <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='{% url 'container_edit' container.id %}';"><i class="ti ti-pencil"></i></button>

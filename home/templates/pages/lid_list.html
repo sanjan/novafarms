@@ -71,6 +71,7 @@
                       </th>
                       <th>Image</th>
                       <th>Name</th>
+                      <th>Type</th>
                       <th>Color</th>
                       <th>Quantity</th>
                       <th class="text-center">Actions</th>
@@ -90,6 +91,7 @@
                       <td>
                       <h5 class="mb-0"><a href="{% url 'lid_edit' lid.id %}">{{lid.name}}</a></h5>
                       </td>
+                      <td>{{lid.type}}</td>
                       <td>{{lid.color}}</td>
                       <td>{{lid.quantity}}</td>
                       <td class="text-center">

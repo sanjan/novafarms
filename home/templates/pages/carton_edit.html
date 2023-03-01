@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
-{% block title %}Labels |{% endblock title %}
+{% block title %}Cartons |{% endblock title %}
 {% block extrastyle %}
     <!-- [Page specific CSS] start -->
 
@@ -17,13 +17,13 @@
           <div class="row align-items-center">
             <div class="col-md-12">
               <div class="page-header-title">
-                <h5 class="m-b-10">Edit Label</h5>
+                <h5 class="m-b-10">Edit Carton</h5>
               </div>
               <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
                 <li class="breadcrumb-item"><a href="javascript: void(0)">Inventory</a></li>
-                <li class="breadcrumb-item"><a href="javascript: void(0)">Labels</a></li>
-                <li class="breadcrumb-item" aria-current="page">Edit Label</li>
+                <li class="breadcrumb-item"><a href="javascript: void(0)">Cartons</a></li>
+                <li class="breadcrumb-item" aria-current="page">Edit Carton</li>
               </ul>
             </div>
           </div>
@@ -42,16 +42,16 @@
                 <div class="card-body">
                   <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="hidden" id="label-id" name="label-id" value="{{label.id}}">
+                    <input type="hidden" id="carton-id" name="carton-id" value="{{carton.id}}">
                   <div class="row">
 
 
                     <div class="col-md-5">
                       <div class="sticky-md-top product-sticky">
-                        <div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                        <div id="carouselExampleCaptions" class="carousel scartone carousel-fade" data-bs-ride="carousel">
                           <div class="carousel-inner">
                             <div class="carousel-item active">
-                              <img src="{{label.image.url}}" class="d-block w-100 rounded" alt="Product images" />
+                              <img src="{{carton.image.url}}" class="d-block w-100 rounded" alt="Product images" />
                             </div>
                           </div>
                         </div>
@@ -66,39 +66,32 @@
                         </div>
                       </div>
                       <div class="form-group">
-                        {% if label.quantity >= 10000 %}
+                        {% if carton.quantity >= 10000 %}
                         <span class="badge bg-light-success f-14">In stock</span>
                         {% else %}
                         <span class="badge bg-light-danger f-14">Low stock</span>
                         {% endif %}
                       </div>
                       <div class="form-group">
-                        <input class="mb-3 form-control form-control-lg" type="text" name="label-name" id="label-name" placeholder="label name" value="{{label.name}}"/>
+                        <input class="mb-3 form-control form-control-lg" type="text" name="carton-name" id="carton-name" placeholder="carton name" value="{{carton.name}}"/>
                       </div>
                       <hr class="my-3" />
+
                       <div class="form-group row">
-                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Color <span class="text-danger">*</span></label>
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Capacity (units) <span class="text-danger">*</span></label>
                         <div class="col-lg-6 col-md-12 col-sm-12">
-                        <input
-                        type="color"
-                        class="form-control form-control-color"
-                        id="label-color"
-                        name="label-color"
-                        value="{{label.color}}"
-                        title="Choose label color"
-                      />
-                      </div>
-                      </div>
-                      <div class="form-group row">
-                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Brand <span class="text-danger">*</span></label>
-                        <div class="col-lg-6 col-md-12 col-sm-12">
-                          <select class="form-select" aria-label="Default select example" name="brand" id="brand">
-                            {% for b in brands %}
-                            <option value="{{ b.id }}" {% if b.id == label.brand.id %} selected {% endif %}>{{ b.name }}</option>
-                            {% endfor %}
-                          </select>
+                            <input
+                              class="form-control"
+                              type="number"
+                              id="capacity"
+                              name="capacity"
+                              value="{{carton.capacity}}"
+                              step="1"
+                            />
+
                         </div>
                       </div>
+
                       <div class="form-group row">
                         <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Quantity <span class="text-danger">*</span></label>
                         <div class="col-lg-6 col-md-12 col-sm-12">
@@ -111,7 +104,7 @@
                               type="text"
                               id="quantity"
                               name="quantity"
-                              value="{{label.quantity}}"
+                              value="{{carton.quantity}}"
                             />
                             <button type="button" id="increase" onclick="increaseValue('quantity')" class="btn btn-link-dark"
                               ><i class="ti ti-plus"></i
@@ -122,7 +115,7 @@
                       <div class="form-group row">
                         <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Image <span class="text-danger">*</span></label>
                         <div class="col-lg-6 col-md-12 col-sm-12">
-                        <input type="file" class="form-control" name="label-image" id="label-image" accept="image/*" />
+                        <input type="file" class="form-control" name="carton-image" id="carton-image" accept="image/*" />
                        </div>
                       </div>
                       <hr class="my-3" />

@@ -71,7 +71,7 @@
                       </th>
                       <th>Image</th>
                       <th>Name</th>
-                      <th>Color</th>
+                      <th>Capacity</th>
                       <th>Quantity</th>
                       <th class="text-center">Actions</th>
                     </tr>
@@ -90,7 +90,7 @@
                       <td>
                       <h5 class="mb-0"><a href="{% url 'carton_edit' carton.id %}">{{carton.name}}</a></h5>
                       </td>
-                      <td>{{carton.color}}</td>
+                      <td>{{carton.capacity}}</td>
                       <td>{{carton.quantity}}</td>
                       <td class="text-center">
                         <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='{% url 'carton_edit' carton.id %}';"><i class="ti ti-pencil"></i></button>

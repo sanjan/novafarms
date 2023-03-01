@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import Supplier, SupplierOrder, Customer, CustomerOrder, CustomerOrderItem, HoneyStock, HoneyType, Batch, Product, Production, Brand, Pallet, Container, Lid, Carton, Label, TopInsert, SUPPLIER_PAYMENT_TERMS, CUSTOMER_PAYMENT_TERMS, PRODUCTION_STATUS, BATCH_STATUS, ORDER_STATUS
+from .models import (Supplier, SupplierOrder, Customer, CustomerOrder, CustomerOrderItem, HoneyStock, 
+HoneyType, Batch, Product, Production, Brand, Pallet, Container, Lid, Carton, Label, TopInsert,  
+SUPPLIER_PAYMENT_TERMS, CUSTOMER_PAYMENT_TERMS, BATCH_STATUS, ORDER_STATUS, HONEY_CONTAINER_TYPES, 
+LID_TYPES, LID_CONTAINER_COLORS)
 from .forms import SupplierForm, CustomerForm
 from decimal import Decimal
 from datetime import datetime
@@ -721,6 +724,9 @@ def label_edit(request, label_id):
         label.quantity = int(request.POST.get('quantity'))
         label.color = request.POST.get('label-color')
         label.brand = Brand.objects.get(id=request.POST.get('brand'))
+        image = request.FILES.get('label-image')
+        if image:
+            label.image = image
         label.save()
         
         sweetify.success(request, f'Label {label.name} updated successfully')
@@ -750,7 +756,32 @@ def container_create(request):
     pass
 
 def container_edit(request, container_id):
-    pass
+    if request.method == 'POST':
+        print(request.POST)
+        container = Container.objects.get(id=request.POST.get('container-id'))
+        container.name = request.POST.get('container-name')
+        container.quantity = int(request.POST.get('quantity'))
+        container.color = request.POST.get('container-color')
+        container.type = request.POST.get('container-type')
+        container.capacity = int(request.POST.get('capacity'))
+        image = request.FILES.get('container-image')
+        if image:
+            container.image = image
+        container.save()
+        
+        sweetify.success(request, f'Container {container.name} updated successfully')
+        return HttpResponseRedirect(reverse('containers'))
+        
+        
+    container = Container.objects.get(id=container_id)
+
+    context = {
+        'container_colors': [p[0] for p in LID_CONTAINER_COLORS],
+        'container_types': [p[0] for p in HONEY_CONTAINER_TYPES],
+        'container' : container,
+    }
+    
+    return render(request, 'pages/container_edit.html', context)
 
 
 def lids(request):
@@ -767,7 +798,31 @@ def lid_create(request):
     pass
 
 def lid_edit(request, lid_id):
-    pass
+    if request.method == 'POST':
+        print(request.POST)
+        lid = Lid.objects.get(id=request.POST.get('lid-id'))
+        lid.name = request.POST.get('lid-name')
+        lid.quantity = int(request.POST.get('quantity'))
+        lid.color = request.POST.get('lid-color')
+        lid.type = request.POST.get('lid-type')
+        image = request.FILES.get('lid-image')
+        if image:
+            lid.image = image
+        lid.save()
+        
+        sweetify.success(request, f'Lid {lid.name} updated successfully')
+        return HttpResponseRedirect(reverse('lids'))
+        
+        
+    lid = Lid.objects.get(id=lid_id)
+
+    context = {
+        'lid_colors': [p[0] for p in LID_CONTAINER_COLORS],
+        'lid_types': [p[0] for p in LID_TYPES],
+        'lid' : lid,
+    }
+    
+    return render(request, 'pages/lid_edit.html', context)
 
 
 def cartons(request):
@@ -783,4 +838,25 @@ def cartons(request):
 def carton_create(request):
     pass
 def carton_edit(request, carton_id):
-    pass
+    if request.method == 'POST':
+        print(request.POST)
+        carton = Carton.objects.get(id=request.POST.get('carton-id'))
+        carton.name = request.POST.get('carton-name')
+        carton.quantity = int(request.POST.get('quantity'))
+        carton.capacity = int(request.POST.get('capacity'))
+        image = request.FILES.get('carton-image')
+        if image:
+            carton.image = image
+        carton.save()
+        
+        sweetify.success(request, f'Carton {carton.name} updated successfully')
+        return HttpResponseRedirect(reverse('cartons'))
+        
+        
+    carton = Carton.objects.get(id=carton_id)
+
+    context = {
+        'carton' : carton,
+    }
+    
+    return render(request, 'pages/carton_edit.html', context)

@@ -98,7 +98,7 @@ class Carton(models.Model):
     last_updated =  models.DateField(auto_now=True)
 
     def __str__(self) -> str:
-        return f'{self.name} {self.brand} ({self.capacity} units/carton, in-stock: {self.quantity})'
+        return f'{self.name} ({self.capacity} units/carton, in-stock: {self.quantity})'
            
 
 class TopInsert(models.Model):
