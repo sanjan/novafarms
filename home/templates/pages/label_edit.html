@@ -1,0 +1,181 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Labels |{% endblock title %}
+
+{% block content %}
+
+  <!-- [ Main Content ] start -->
+  <div class="pc-container">
+    <div class="pc-content">
+      <!-- [ breadcrumb ] start -->
+      <div class="page-header">
+        <div class="page-block">
+          <div class="row align-items-center">
+            <div class="col-md-12">
+              <div class="page-header-title">
+                <h5 class="m-b-10">Edit Label</h5>
+              </div>
+              <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="javascript: void(0)">Inventory</a></li>
+                <li class="breadcrumb-item"><a href="javascript: void(0)">Labels</a></li>
+                <li class="breadcrumb-item" aria-current="page">Edit Label</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- [ breadcrumb ] end -->
+
+
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <!-- [ sample-page ] start -->
+        <div class="col-sm-12">
+          <div class="row justify-content-center">
+            <div class="col-xl-11 col-xxl-10">
+              <div class="card">
+                <div class="card-body">
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="label-id" name="label-id" value="{{label.id}}">
+                  <div class="row">
+
+
+                    <div class="col-md-5">
+                      <div class="sticky-md-top product-sticky">
+                        <div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                          <div class="carousel-inner">
+                            <div class="carousel-item active">
+                              <img src="{{label.image.url}}" class="d-block w-100 rounded" alt="Product images" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-7">
+                      <div class="float-end">
+                        <div class="form-check prod-likes">
+                          <input type="checkbox" class="form-check-input" />
+                          <i data-feather="heart" class="prod-likes-icon"></i>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        {% if label.quantity >= 10000 %}
+                        <span class="badge bg-light-success f-14">In stock</span>
+                        {% else %}
+                        <span class="badge bg-light-danger f-14">Low stock</span>
+                        {% endif %}
+                      </div>
+                      <div class="form-group">
+                        <input class="mb-3 form-control form-control-lg" type="text" name="label-name" id="label-name" placeholder="label name" value="{{label.name}}"/>
+                      </div>
+                      <hr class="my-3" />
+                      <div class="form-group row">
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Color <span class="text-danger">*</span></label>
+                        <input
+                        type="color"
+                        class="form-control form-control-color"
+                        id="label-color"
+                        name="label-color"
+                        value="{{label.color}}"
+                        title="Choose label color"
+                      />
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Brand <span class="text-danger">*</span></label>
+                        <div class="col-lg-6 col-md-12 col-sm-12">
+                          <select class="form-select" aria-label="Default select example" name="brand" id="brand">
+                            {% for b in brands %}
+                            <option value="{{ b.id }}" {% if b.id == label.brand.id %} selected {% endif %}>{{ b.name }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Quantity <span class="text-danger">*</span></label>
+                        <div class="col-lg-6 col-md-12 col-sm-12">
+                          <div class="btn-group btn-group-sm mb-2 border" role="group">
+                            <button type="button" id="decrease" onclick="decreaseValue('quantity')" class="btn btn-link-dark"
+                              ><i class="ti ti-minus"></i
+                            ></button>
+                            <input
+                              class="wid-70 text-center border-0 m-0 form-control rounded-0 shadow-none"
+                              type="text"
+                              id="quantity"
+                              name="quantity"
+                              value="{{label.quantity}}"
+                            />
+                            <button type="button" id="increase" onclick="increaseValue('quantity')" class="btn btn-link-dark"
+                              ><i class="ti ti-plus"></i
+                            ></button>
+                          </div>
+                        </div>
+                      </div>
+                      <hr class="my-3" />
+                      <div class="row">
+                        <div class="col-6">
+                          <div class="d-grid">
+                            <button  class="btn btn-primary"
+                              ><i class="ti ti-shopping-cart align-text-bottom me-1"></i> Update</button
+                            >
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="d-grid">
+                            <button type="reset" class="btn btn-secondary"
+                              ><i class="ti ti-truck align-text-bottom me-1"></i> Cancel</button
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                
+                  </div>
+                </form>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <!-- [ sample-page ] end -->
+      </div>
+      <!-- [ Main Content ] end -->
+    </div>
+  </div>
+  <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+{% block extra_js %}
+
+  <!-- Sweet Alert -->
+  <script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
+  {% load sweetify %}
+  {% sweetify %}
+  <script>
+// quantity start
+function increaseValue(temp) {
+  var value = parseInt(document.getElementById(temp).value, 10);
+  value = isNaN(value) ? 0 : value;
+  value++;
+  document.getElementById(temp).value = value;
+}
+
+function decreaseValue(temp) {
+  var value = parseInt(document.getElementById(temp).value, 10);
+  value = isNaN(value) ? 0 : value;
+  value < 1 ? (value = 1) : '';
+  value--;
+  document.getElementById(temp).value = value;
+}
+// quantity end
+
+  </script>
+  <!-- [Page Specific JS] end -->
+
+{% endblock extra_js %}
+
+

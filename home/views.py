@@ -406,11 +406,8 @@ def production_edit(request, production_code):
         production = Production.objects.get(production_code=request.POST.get('production-code'))
         date_format = '%d/%m/%Y'
         production.packing_date = datetime.strptime(request.POST.get('packing-date'), date_format)
-        production.requested_units = int(request.POST.get('requested-units'))
-        production.units_made =  int(request.POST.get('units-made'))
-    
-        production.save()
-        
+        requested_units = int(request.POST.get('requested-units'))
+        units_made =  int(request.POST.get('units-made'))
         order_item_id = request.POST.get('order')
         pallet_id = request.POST.get('pallet')
         top_insert_id = request.POST.get('top-insert')
@@ -421,7 +418,24 @@ def production_edit(request, production_code):
             if order_item and order_item.quantity < production.requested_units:
                 sweetify.error(request, f'Requested number of units greater than ordered quantity')
                 return redirect(request.META['HTTP_REFERER'])
-            production.order_item = order_item
+            elif order_item and order_item.quantity < units_made:
+                sweetify.error(request, f'Manufactured number of units greater than ordered quantity')
+                return redirect(request.META['HTTP_REFERER'])
+            if order_item:  
+                production.order_item = order_item
+                
+
+        production.units_made = units_made
+        if units_made == 0:
+            production.status = 'New'
+        elif units_made > 0 and units_made < requested_units and request.POST.get('prod-status'):
+            production.status = 'Processing'
+        elif production.units_made == requested_units:
+            production.status = 'Complete'
+        elif not request.POST.get('prod-status') and production.status != 'Complete':
+            production.status = 'Paused'
+        if requested_units:
+            production.requested_units = requested_units
         if pallet_id:
             production.pallet = Pallet.objects.get(id=pallet_id)
         if top_insert_id:
@@ -429,15 +443,8 @@ def production_edit(request, production_code):
         if batch_id:
             production.batch = Batch.objects.get(id=batch_id)
         
-        if production.units_made == 0:
-            production.status = 'New'
-        elif production.units_made > 0 and production.units_made < production.requested_units:
-            production.status = 'Processing'
-        elif production.units_made == production.requested_units:
-            production.status = 'Complete'
-        
-        if not request.POST.get('prod-status'):
-            production.status = 'Paused'
+
+ 
         
         production.save()
         
@@ -707,7 +714,27 @@ def label_create(request):
     pass
 
 def label_edit(request, label_id):
-    pass
+    if request.method == 'POST':
+        print(request.POST)
+        label = Label.objects.get(id=request.POST.get('label-id'))
+        label.name = request.POST.get('label-name')
+        label.quantity = int(request.POST.get('quantity'))
+        label.color = request.POST.get('label-color')
+        label.brand = Brand.objects.get(id=request.POST.get('brand'))
+        label.save()
+        
+        sweetify.success(request, f'Label {label.name} updated successfully')
+        return HttpResponseRedirect(reverse('labels'))
+        
+        
+    label = Label.objects.get(id=label_id)
+    brands = Brand.objects.all()
+    context = {
+        'brands': brands,
+        'label' : label,
+    }
+    
+    return render(request, 'pages/label_edit.html', context)
 
 def containers(request):
     

@@ -92,14 +92,13 @@ class Brand(models.Model):
 
 class Carton(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
-    brand = models.ForeignKey(Brand, null=True, blank=True, on_delete=models.PROTECT)
     capacity =  models.IntegerField(default=0)
     quantity =  models.IntegerField(default=0)
     image = models.ImageField(upload_to='carton_images',blank=True,null=True)
     last_updated =  models.DateField(auto_now=True)
 
     def __str__(self) -> str:
-        return f'{self.name} {self.brand} ({self.capacity} units, in-stock: {self.quantity})'
+        return f'{self.name} {self.brand} ({self.capacity} units/carton, in-stock: {self.quantity})'
            
 
 class TopInsert(models.Model):
@@ -135,13 +134,14 @@ class Lid(models.Model):
         return f'{self.name} {self.type} ({self.color}, in-stock: {self.quantity})'
 class Label(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
+    brand = models.ForeignKey(Brand, null=True, blank=True, on_delete=models.PROTECT)
     color = models.CharField(max_length=20, null=True)
     quantity =  models.IntegerField(default=0)
     image = models.ImageField(upload_to='label_images',blank=True,null=True)
     last_updated =  models.DateField(auto_now=True)
     
     def __str__(self) -> str:
-        return f'{self.name} ({self.color}, in-stock: {self.quantity})'
+        return f'{self.brand.name}-{self.name} ({self.color}, in-stock: {self.quantity})'
 
 class Product(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
