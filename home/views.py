@@ -6,8 +6,9 @@ from decimal import Decimal
 from datetime import datetime
 from django.contrib import messages
 import sweetify
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
+from django.shortcuts import redirect
 from django.forms.models import model_to_dict
 from django.db.models import Q
 
@@ -355,8 +356,14 @@ def production_create(request):
     if request.method == 'POST':
         date_format = '%d/%m/%Y'
         packing_date = datetime.strptime(request.POST.get('packing-date'), date_format)
-        requested_units = request.POST.get('requested-units')
+        requested_units = int(request.POST.get('requested-units'))
         order_item_id = request.POST.get('order')
+        if order_item_id:
+            order_item = CustomerOrderItem.objects.get(id=int(order_item_id))
+            if order_item and order_item.quantity < requested_units:
+                sweetify.error(request, f'Requested number of units greater than ordered quantity')
+                return HttpResponse('form error')
+                
         pallet = request.POST.get('pallet')
         top_insert = request.POST.get('top-insert')
         batch_id = request.POST.get('batch')
@@ -410,7 +417,11 @@ def production_edit(request, production_code):
         batch_id = request.POST.get('batch')
         
         if order_item_id:
-            production.order_item = CustomerOrderItem.objects.get(id=order_item_id)
+            order_item = CustomerOrderItem.objects.get(id=order_item_id)
+            if order_item and order_item.quantity < production.requested_units:
+                sweetify.error(request, f'Requested number of units greater than ordered quantity')
+                return redirect(request.META['HTTP_REFERER'])
+            production.order_item = order_item
         if pallet_id:
             production.pallet = Pallet.objects.get(id=pallet_id)
         if top_insert_id:
@@ -681,3 +692,68 @@ def customer_order_edit(request, order_number):
           }
     
     return render(request,'pages/customer_order_edit.html', context)
+
+def labels(request):
+    
+    labels = Label.objects.all() if Label.objects else []
+    
+    context = {
+        'labels' : labels,
+    }
+    
+    return render(request, 'pages/label_list.html', context)
+
+def label_create(request):
+    pass
+
+def label_edit(request, label_id):
+    pass
+
+def containers(request):
+    
+    containers = Container.objects.all() if Container.objects else []
+    
+    context = {
+        'containers' : containers,
+    }
+    
+    return render(request, 'pages/container_list.html', context)
+
+def container_create(request):
+    pass
+
+def container_edit(request, container_id):
+    pass
+
+
+def lids(request):
+    
+    lids = Lid.objects.all() if Lid.objects else []
+    
+    context = {
+        'lids' : lids,
+    }
+    
+    return render(request, 'pages/lid_list.html', context)
+
+def lid_create(request):
+    pass
+
+def lid_edit(request, lid_id):
+    pass
+
+
+def cartons(request):
+    
+    cartons = Carton.objects.all() if Carton.objects else []
+    
+    context = {
+        'cartons' : cartons,
+    }
+    
+    return render(request, 'pages/carton_list.html', context)
+
+def carton_create(request):
+    pass
+def carton_edit(request, carton_id):
+    pass

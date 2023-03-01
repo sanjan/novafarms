@@ -95,6 +95,7 @@ class Carton(models.Model):
     brand = models.ForeignKey(Brand, null=True, blank=True, on_delete=models.PROTECT)
     capacity =  models.IntegerField(default=0)
     quantity =  models.IntegerField(default=0)
+    image = models.ImageField(upload_to='carton_images',blank=True,null=True)
     last_updated =  models.DateField(auto_now=True)
 
     def __str__(self) -> str:

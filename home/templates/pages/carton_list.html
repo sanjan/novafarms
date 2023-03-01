@@ -1,0 +1,133 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Cartons |{% endblock title %}
+
+{% block content %}
+
+  <!-- [ Main Content ] start -->
+  <div class="pc-container">
+    <div class="pc-content">
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <!-- [ sample-page ] start -->
+        <div class="col-xl-4 col-md-6">
+          <div class="card bg-secondary-dark dashnum-card text-white overflow-hidden">
+            <span class="round small"></span>
+            <span class="round big"></span>
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <div class="avtar avtar-lg">
+                    <i class="text-white ti ti-credit-card"></i>
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <div class="btn-group">
+                    <a
+                      type="button"
+                      class="avtar bg-secondary dropdown-toggle arrow-none"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <i class="ti ti-dots"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><button class="dropdown-item" type="button">Import Card</button></li>
+                      <li><button class="dropdown-item" type="button">Export</button></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <span class="text-white d-block f-34 f-w-500 my-2">{{count}}<i class="ti ti-arrow-up-right-circle opacity-50"></i></span>
+              <p class="mb-0 opacity-50">Number of cartons</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- [ breadcrumb ] start -->
+
+      <!-- [ breadcrumb ] end -->
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <!-- [ sample-page ] start -->
+        <div class="col-sm-12">
+          <div class="card table-card">
+            <div class="card-header">
+              <h5 class="card-header d-flex justify-content-between align-items-center">
+                List of Cartons
+                <a href="{% url 'carton_create' %}" class="btn btn-primary me-2">New Cartons</a>  
+                <!-- Wrap with <div>...buttons...</div> if you have multiple buttons -->
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover" id="cartons-table">
+                  <thead>
+                    <tr>
+                      <th>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" />
+                        </div>
+                      </th>
+                      <th>Image</th>
+                      <th>Name</th>
+                      <th>Color</th>
+                      <th>Quantity</th>
+                      <th class="text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for carton in cartons %}
+                    <tr>
+                      <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" />
+                        </div>
+                      </td>
+                      <td>
+                        <img src="{% if carton.image %} {{carton.image.url}} {% endif %}" alt="image" class="wid-50 rounded" />
+                      </td>
+                      <td>
+                      <h5 class="mb-0"><a href="{% url 'carton_edit' carton.id %}">{{carton.name}}</a></h5>
+                      </td>
+                      <td>{{carton.color}}</td>
+                      <td>{{carton.quantity}}</td>
+                      <td class="text-center">
+                        <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='{% url 'carton_edit' carton.id %}';"><i class="ti ti-pencil"></i></button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ sample-page ] end -->
+      </div>
+      <!-- [ Main Content ] end -->
+    </div>
+  </div>
+  <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+{% block extra_js %}
+
+    <!-- [Page Specific JS] start -->
+    <script src="{% static 'assets/js/plugins/simple-datatables.js' %}"></script>
+              <!-- Sweet Alert -->
+  <script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
+  {% load sweetify %}
+  {% sweetify %}
+    <script>
+      const cartonsTable = new simpleDatatables.DataTable('#cartons-table', {
+        sortable: false,
+        perPage:10
+      });
+    </script>
+    <!-- [Page Specific JS] end -->
+
+{% endblock extra_js %}
+
+

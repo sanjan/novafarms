@@ -30,16 +30,30 @@ urlpatterns = [
     # path('supplier/<int:supplier_id>/details', views.supplier_details, name='supplier_details'),
     path('supplier/<int:supplier_id>/edit', views.supplier_edit, name='supplier_edit'),
     
-    path('products', views.products, name='products'),
-    path('product/create', views.product_create, name='product_create'),
-    path('product/<int:product_id>/details', views.product_details, name='product_details'),
-    path('product/<int:product_id>/edit', views.product_edit, name='product_edit'),
-    
     path('production/list', views.production_list, name='production_list'),
     path('production/create', views.production_create, name='production_create'),
     # path('production/<str:production_code>/details', views.production_details, name='production_details'),
     path('production/<str:production_code>/edit', views.production_edit, name='production_edit'),
     
+    path('products', views.products, name='products'),
+    path('product/create', views.product_create, name='product_create'),
+    path('product/<int:product_id>/details', views.product_details, name='product_details'),
+    path('product/<int:product_id>/edit', views.product_edit, name='product_edit'),
     
+    path('labels', views.labels, name='labels'),
+    path('label/create', views.label_create, name='label_create'),
+    path('label/<int:label_id>/edit', views.label_edit, name='label_edit'),
+    
+    path('lids', views.lids, name='lids'),
+    path('lid/create', views.lid_create, name='lid_create'),
+    path('lid/<int:lid_id>/edit', views.lid_edit, name='lid_edit'),
+    
+    path('cartons', views.cartons, name='cartons'),
+    path('carton/create', views.carton_create, name='carton_create'),
+    path('carton/<int:carton_id>/edit', views.carton_edit, name='carton_edit'),
+    
+    path('containers', views.containers, name='containers'),
+    path('container/create', views.container_create, name='container_create'),
+    path('container/<int:container_id>/edit', views.container_edit, name='container_edit'),
 ]
  
