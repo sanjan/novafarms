@@ -372,13 +372,13 @@ def production_create(request):
         if batch_id:
             prd.batch = Batch.objects.get(id=int(batch_id))
         if order_item_id:
-            prd.order_item = CustomerOrderItems.get(id=int(order_item_id))
+            prd.order_item = CustomerOrderItem.objects.get(id=int(order_item_id))
         prd.save()
         
         sweetify.success(request, f'Daily production set #{prd.production_code} created successfully')
         return HttpResponseRedirect(reverse('production_list'))
          
-    order_items = CustomerOrderItems.objects.all()
+    order_items = CustomerOrderItem.objects.all()
     pallets = Pallet.objects.all()
     top_inserts = TopInsert.objects.all()
     batches = Batch.objects.filter((~Q(batch_status='Used')))
@@ -410,7 +410,7 @@ def production_edit(request, production_code):
         batch_id = request.POST.get('batch')
         
         if order_item_id:
-            production.order_item = CustomerOrderItems.get(id=order_item_id)
+            production.order_item = CustomerOrderItem.objects.get(id=order_item_id)
         if pallet_id:
             production.pallet = Pallet.objects.get(id=pallet_id)
         if top_insert_id:
@@ -437,7 +437,7 @@ def production_edit(request, production_code):
         
     production = Production.objects.get(production_code=production_code)
     production.packing_date = production.packing_date.strftime("%d/%m/%Y")
-    order_items = CustomerOrderItems.objects.all()
+    order_items = CustomerOrderItem.objects.all()
     pallets = Pallet.objects.all()
     top_inserts = TopInsert.objects.all()
     batches = Batch.objects.filter((~Q(batch_status='Used')))

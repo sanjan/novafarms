@@ -218,7 +218,7 @@ class CustomerOrderItem(models.Model):
      sub_total_price = models.DecimalField(default=0.00, decimal_places=2, max_digits=10 )
      
      def __str__(self) -> str:
-        return f'{self.order_item_number} - {self.product.name} ({self.quantity})'
+        return f'{self.order.order_number} - {self.product.brand.name} {self.product.name} (Qty:{self.quantity})'
     
 class Pallet(models.Model):
     pallet_name = models.CharField(max_length=100,null=True, blank=True)
