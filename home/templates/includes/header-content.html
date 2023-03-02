@@ -55,7 +55,7 @@
         </a>
       </div>
     </li>
-    {% if request.user.is_superuser %}
+    {% if request.user.is_authenticated %}
     <li class="dropdown pc-h-item">
       <a class="pc-head-link head-link-secondary dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
         role="button" aria-haspopup="false" aria-expanded="false">
@@ -192,7 +192,7 @@
               <i class="ti ti-user"></i>
               <span>Social Profile</span>
             </a>
-            {% if request.user.is_authenticated %}
+            
               {% if request.user.is_superuser %}
                 <a href="{% url 'admin:logout' %}" class="dropdown-item">
               {% else %}
@@ -201,7 +201,7 @@
               <i class="ti ti-logout"></i>
               <span>Logout</span>
             </a>
-            {% endif %}
+          
           </div>
         </div>
       </div>

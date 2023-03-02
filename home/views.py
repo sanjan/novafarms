@@ -14,7 +14,7 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from django.forms.models import model_to_dict
 from django.db.models import Q
-
+import math
 # Create your views here.
 # @login_required(login_url='/accounts/login-v3/') 
 
@@ -536,6 +536,8 @@ def product_create(request):
     }
     return render(request, 'pages/product_create.html', context)
 
+
+ 
 def product_edit(request, product_id):
     
     if request.method == 'POST':
@@ -566,6 +568,9 @@ def product_edit(request, product_id):
         return HttpResponseRedirect(reverse('products'))    
     
     product = Product.objects.get(id=product_id)
+    maxman = min(product.lid.quantity, product.label.quantity, product.container.quantity)
+    cartons_required = math.ceil(maxman/product.carton.capacity)
+    max_with_cartons = min(product.lid.quantity, product.label.quantity, product.container.quantity, product.carton.capacity * product.carton.quantity)
     brands = Brand.objects.all()
     containers = Container.objects.all()
     lids = Lid.objects.all()
@@ -578,6 +583,9 @@ def product_edit(request, product_id):
         'lids': lids,
         'labels': labels,
         'cartons': cartons,
+        'maxman' : maxman,
+        'max_with_cartons': max_with_cartons,
+        'cartons_required': cartons_required,
     }
     return render(request, 'pages/product_edit.html', context)
 

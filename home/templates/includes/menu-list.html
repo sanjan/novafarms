@@ -46,17 +46,12 @@
   {% endfor %}
 {% endif %}
 
-{% if not request.user.is_authenticated or request.user.is_superuser %}
-<li class="pc-item pc-caption">
-  <label>Manage</label>
-  <i class="ti ti-news"></i>
-</li>
 
 <li class="pc-item pc-hasmenu">
   <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-user"></i></span><span
       class="pc-mtext">User</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
   <ul class="pc-submenu">
-    {% if request.user.is_superuser %}
+    {% if request.user.is_superuser  %}
       <li class="pc-item"><a class="pc-link" href="{% url 'admin:password_change' %}">Change Password</a></li>
       <li class="pc-item"><a class="pc-link" href="{% url 'admin:logout' %}">Logout</a></li>
     {% else %}
@@ -67,7 +62,8 @@
   </ul>
 </li>
 
-{% endif %}
+
+
 
 <li class="pc-item pc-hasmenu">
   <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-apps"></i></span><span
@@ -107,7 +103,8 @@
 </li>
 
 
-{% if request.user.username == 'sanjan' %}
+
+{% if request.user.username == 'sgrero' %}
 <li class="pc-item">
   <a href="{% url 'analytics' %}" class="pc-link"><span class="pc-micon"><i
         class="ti ti-device-analytics"></i></span><span class="pc-mtext">Analytics</span></a>

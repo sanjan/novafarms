@@ -57,6 +57,22 @@
             <form method="post" enctype="multipart/form-data" >
               {% csrf_token %}
               <input type="hidden" id="product-id" name="product-id" value="{{product.id}}">
+
+              <div class="row">
+                <div class="col-md-5">
+                  <div class="sticky-md-top product-sticky">
+                    <div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                      <div class="carousel-inner">
+                        <div class="carousel-item active">
+                          <img src="{{product.image.url}}" class="d-block w-100 rounded" alt="Product images" />
+                        </div>
+                       
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-7">
+                  <div class="alert alert-primary" role="alert"> Maximum manufacturable units with current stock: {{maxman}} (cartons req: {{cartons_required}}) (max w/cartons: {{max_with_cartons}}) </div>
               <div class="form-group">
                 <label for="product-name" class="col-form-label">Product Name</label>
                 <input
@@ -184,8 +200,11 @@
               </div>
 
               <div class="card-footer">
-                <button class="btn btn-primary me-2">Create product</button>
+                <button class="btn btn-primary me-2">Update product</button>
                 <button type="reset" class="btn btn-light">Reset</button>
+              </div>
+
+                </div>
               </div>
             </form>
           </div>
