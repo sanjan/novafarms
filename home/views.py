@@ -722,7 +722,25 @@ def labels(request):
     return render(request, 'pages/label_list.html', context)
 
 def label_create(request):
-    pass
+    if request.method == 'POST':
+        print(request.POST)
+        label = Label.objects.create(
+            name = request.POST.get('label-name'),
+            quantity = int(request.POST.get('quantity')),
+            color = request.POST.get('label-color'),
+            brand = Brand.objects.get(id=request.POST.get('brand')),
+            image = request.FILES.get('label-image'),
+        )
+        
+        sweetify.success(request, f'Label {label.name} created successfully')
+        return HttpResponseRedirect(reverse('labels'))
+        
+    brands = Brand.objects.all()
+    context = {
+        'brands': brands,
+    }
+    
+    return render(request, 'pages/label_create.html', context)
 
 def label_edit(request, label_id):
     if request.method == 'POST':
@@ -761,7 +779,29 @@ def containers(request):
     return render(request, 'pages/container_list.html', context)
 
 def container_create(request):
-    pass
+    if request.method == 'POST':
+        print(request.POST)
+        container = Container.objects.create(
+            name = request.POST.get('container-name'),
+            quantity = int(request.POST.get('quantity')),
+            color = request.POST.get('container-color'),
+            type = request.POST.get('container-type'),
+            capacity = int(request.POST.get('capacity')),
+            image = request.FILES.get('container-image')
+            )
+
+        
+        sweetify.success(request, f'Container {container.name} created successfully')
+        return HttpResponseRedirect(reverse('containers'))
+        
+
+
+    context = {
+        'container_colors': [p[0] for p in LID_CONTAINER_COLORS],
+        'container_types': [p[0] for p in HONEY_CONTAINER_TYPES],
+    }
+    
+    return render(request, 'pages/container_create.html', context)
 
 def container_edit(request, container_id):
     if request.method == 'POST':
@@ -803,7 +843,26 @@ def lids(request):
     return render(request, 'pages/lid_list.html', context)
 
 def lid_create(request):
-    pass
+    if request.method == 'POST':
+        print(request.POST)
+        lid = Lid.objects.create(
+        name = request.POST.get('lid-name'),
+        quantity = int(request.POST.get('quantity')),
+        color = request.POST.get('lid-color'),
+        type = request.POST.get('lid-type'),
+        image = request.FILES.get('lid-image'),
+        )
+  
+        
+        sweetify.success(request, f'Lid {lid.name} created successfully')
+        return HttpResponseRedirect(reverse('lids'))
+
+    context = {
+        'lid_colors': [p[0] for p in LID_CONTAINER_COLORS],
+        'lid_types': [p[0] for p in LID_TYPES],
+    }
+    
+    return render(request, 'pages/lid_create.html', context)
 
 def lid_edit(request, lid_id):
     if request.method == 'POST':
@@ -844,7 +903,24 @@ def cartons(request):
     return render(request, 'pages/carton_list.html', context)
 
 def carton_create(request):
-    pass
+    if request.method == 'POST':
+        print(request.POST)
+        carton = Carton.objects.create(
+        name = request.POST.get('carton-name'),
+        quantity = int(request.POST.get('quantity')),
+        capacity = int(request.POST.get('capacity')),
+        image = request.FILES.get('carton-image'),
+        )
+        
+        sweetify.success(request, f'Carton {carton.name} created successfully')
+        return HttpResponseRedirect(reverse('cartons'))
+
+    context = {
+
+    }
+    
+    return render(request, 'pages/carton_create.html', context)
+
 def carton_edit(request, carton_id):
     if request.method == 'POST':
         print(request.POST)
