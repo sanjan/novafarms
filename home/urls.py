@@ -55,5 +55,6 @@ urlpatterns = [
     path('containers', views.containers, name='containers'),
     path('container/create', views.container_create, name='container_create'),
     path('container/<int:container_id>/edit', views.container_edit, name='container_edit'),
+    path('wizard/', views.ProdCreationWizard.as_view(), name='fomr-wizard'),
 ]
  

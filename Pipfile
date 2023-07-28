@@ -1,0 +1,34 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url = "git+https://${GITHUB_TOKEN}@github.com/app-generator/priv-django-admin-berry-pro"
+verify_ssl = true
+name = "django-admin-berry-pro"
+
+[packages]
+asgiref = "*"
+crispy-bootstrap5 = "*"
+django-crispy-forms = "*"
+django-cloudinary-storage = "*"
+django-extensions = "*"
+django-countries = "*"
+pillow = "*"
+qrcode = "*"
+sqlparse = "*"
+django = "*"
+gunicorn = "*"
+python-dotenv = "*"
+whitenoise = "*"
+dj-database-url = "*"
+psycopg2-binary = "*"
+shortuuid = "*"
+sweetify = "*"
+django-formtools = "2.3"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"

@@ -74,7 +74,7 @@
                   value="{{production.packing_date}}"
                 />
               </div>
-              <div class="col-lg-6">
+              <div class="col-lg-3">
                 {% if production.status != 'Complete' %}
               
                   <label for="prod-status" class="col-form-label">Production Status</label><br/>
@@ -93,6 +93,9 @@
            
                 {% endif %}
               </div>
+              <div class="col-lg-3">
+                <img src="{{ production.order_item.product.image.url }}" class="img-thumbnail mw-20"/>
+              </div>
               </div>
 
               <div class="form-group">
@@ -105,6 +108,7 @@
                   id="requested-units"
                   name="requested-units"
                   value="{{production.requested_units}}"
+                  {% if production.status == 'Complete' %}readonly{% endif %}
                 />
               </div>
 
@@ -118,6 +122,7 @@
                   id="units-made"
                   name="units-made"
                   value="{{production.units_made}}"
+                  {% if production.status == 'Complete' %}readonly{% endif %}
                 />
               </div>
 
@@ -133,7 +138,7 @@
                   <option value="">Pick an order item</option>
                   {% for b in order_items %}
                   <option value="{{ b.id }}" {% if b.id == production.order_item.id %} selected {% endif %} >{{ b }}</option>
-                  {% endfor%}
+                  {% endfor %}
                 </select>
               </div>
 

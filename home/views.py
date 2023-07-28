@@ -15,6 +15,9 @@ from django.shortcuts import redirect
 from django.forms.models import model_to_dict
 from django.db.models import Q
 import math
+from formtools.wizard.views import SessionWizardView
+from .forms import DailyProdFormStepOne, DailyProdFormStepTwo
+
 # Create your views here.
 # @login_required(login_url='/accounts/login-v3/') 
 
@@ -944,3 +947,13 @@ def carton_edit(request, carton_id):
     }
     
     return render(request, 'pages/carton_edit.html', context)
+
+
+class ProdCreationWizard(SessionWizardView):
+    
+    template_name = "forms/production_wizard.html"
+    form_list = [DailyProdFormStepOne, DailyProdFormStepTwo]
+    
+    def done(self, form_list, **kwargs):
+        
+        return render(self.request, 'forms/production_complete.html', {'form_data': [form.cleaned_data for form in form_list]} )

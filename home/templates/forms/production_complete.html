@@ -1,0 +1,134 @@
+{% extends 'layouts/base.html' %} {% load static %}
+{% block title %} New Daily Production |{% endblock title %}
+{% block extrastyle %}
+<!-- [Page specific CSS] start -->
+<!-- Bootstrap DatePicker -->
+<link
+  rel="stylesheet"
+  href="{% static 'assets/css/plugins/datepicker-bs5.min.css' %}"
+/>
+<link
+  rel="stylesheet"
+  href="{% static 'assets/css/plugins/nouislider.min.css' %}"
+/>
+<!-- Animate.css -->
+<link
+  rel="stylesheet"
+  href="{% static 'assets/css/plugins/animate.min.css' %}"
+/>
+<!-- [Page specific CSS] end -->
+{% endblock extrastyle %} {% block content %}
+
+<!-- [ Main Content ] start -->
+<div class="pc-container">
+  <div class="pc-content">
+    <!-- [ breadcrumb ] start -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="m-b-10">New Daily Production</h5>
+            </div>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item">
+                <a href="{% url 'production_list' %}">Production</a>
+              </li>
+              <li class="breadcrumb-item" aria-current="page">New</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- [ breadcrumb ] end -->
+
+    <!-- [ Main Content ] start -->
+    <div class="row">
+      <!-- [ sample-page ] start -->
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header">
+            <h5>New Production</h5>
+          </div>
+          <div class="card-body">
+            <h2>Form Wizard Completed!</h2>
+            {% for data in form_data %}
+              <p>Data from Step {{ forloop.counter }}:</p>
+              <ul>
+                {% for key, value in data.items %}
+                  <li>{{ key }}: {{ value }}</li>
+                {% endfor %}
+              </ul>
+            {% endfor %}
+          </div>
+        </div>
+        <!-- [ sample-page ] end -->
+      </div>
+      <!-- [ Main Content ] end -->
+    </div>
+  </div>
+</div>
+<!-- [ Main Content ] end -->
+
+{% endblock content %} {% block extra_js %}
+
+<!-- <script src="static/js/jquery.min.js"></script> -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script src="{% static 'assets/js/plugins/choices.min.js' %}"></script>
+
+<!-- DatePicker js -->
+<script src="{% static 'assets/js/plugins/datepicker-full.min.js' %}"></script>
+
+<!-- tagify -->
+<script src="{% static 'assets/js/plugins/wNumb.min.js' %}"></script>
+<script src="{% static 'assets/js/plugins/nouislider.min.js' %}"></script>
+
+<!-- Sweet Alert -->
+<script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
+{% load sweetify %}
+{% sweetify %}
+<script>
+
+  //choices drop downs
+
+  var orderdd = new Choices(`#order`, {
+    searchPlaceholderValue: 'search for customer order item',
+  });
+
+
+  var palletdd = new Choices(`#pallet`, {
+    searchPlaceholderValue: 'search for pallet type',
+  });
+
+  var topindd = new Choices(`#top-insert`, {
+    searchPlaceholderValue: 'search for topinsert type',
+  });
+
+
+  var batchdd = new Choices(`#batch`, {
+    searchPlaceholderValue: 'search for source batch',
+  });
+
+
+  const d_today = new Datepicker(document.querySelector('#packing-date'), {
+    buttonClass: 'btn',
+    todayHighlight: true,
+    autohide: true,
+    format: 'dd/mm/yyyy',
+  });
+
+  var today = new Date();
+  d_today.setDate(today);
+
+
+  let selectedOrder = 0;
+  $("#order").change(function(){
+    selectedOrder = $(this).children("option:selected").val();
+    
+  } );
+  
+</script>
+
+{% endblock extra_js %}
