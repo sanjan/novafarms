@@ -42,11 +42,18 @@ def batch_create(request):
         date_format = '%d/%m/%Y'
         batch_date = datetime.strptime(request.POST.get('batch-date'), date_format) 
         expiry_date = datetime.strptime(request.POST.get('expiry-date'), date_format)
+        previous_batch = Batch.objects.get(id=request.POST.get('previous-batch'))
+        honey_type = request.POST.get('honey-type')
+        tank_number =  request.POST.get('tank-number')
         honey_stocks = request.POST.get('honey_stock[]')
         
         batch = Batch.objects.create(
+            batch_number = batch_date.strftime('%d%m%y'),
             batch_date = batch_date,
             expiry_date = expiry_date,
+            previous_batch = previous_batch,
+            honey_type = honey_type,
+            tank_number = tank_number,
         )
         
         hs_pks = []
@@ -66,8 +73,10 @@ def batch_create(request):
         
     # production = Production.objects.filter(~Q(status='Complete'))
     honey_stock = HoneyStock.objects.all()
+    previous_batches = Batch.objects.all()
     context = {
         'honey_stock': honey_stock,
+        'previous_batches' : previous_batches,
         }
     return render(request, 'pages/batch_create.html', context)
 
@@ -79,6 +88,9 @@ def batch_edit(request, batch_number):
         batch = Batch.objects.get(batch_number=request.POST.get('batch-number'))
         batch.batch_date = datetime.strptime(request.POST.get('batch-date'), date_format) 
         batch.expiry_date = datetime.strptime(request.POST.get('expiry-date'), date_format)
+        batch.previous_batch = Batch.objects.get(id=request.POST.get('previous-batch'))
+        batch.honey_type = request.POST.get('honey-type')
+        batch.tank_number =  request.POST.get('tank-number')
         batch.batch_status = request.POST.get('batch-status')
         batch.save()
 
@@ -363,13 +375,8 @@ def production_create(request):
         date_format = '%d/%m/%Y'
         packing_date = datetime.strptime(request.POST.get('packing-date'), date_format)
         requested_units = int(request.POST.get('requested-units'))
-        order_item_id = request.POST.get('order')
-        if order_item_id:
-            order_item = CustomerOrderItem.objects.get(id=int(order_item_id))
-            if order_item and order_item.quantity < requested_units:
-                sweetify.error(request, f'Requested number of units greater than ordered quantity')
-                return HttpResponse('form error')
-                
+        customer = request.POST.get('customer')
+        product = request.POST.get('product')
         pallet = request.POST.get('pallet')
         top_insert = request.POST.get('top-insert')
         batch_id = request.POST.get('batch')
@@ -377,6 +384,8 @@ def production_create(request):
         
         prd = Production.objects.create(
             packing_date = packing_date,
+            customer = Customer.objects.get(id=customer),
+            product = Product.objects.get(id=product),
             pallet = Pallet.objects.get(id=pallet),
             top_insert = TopInsert.objects.get(id=top_insert),
             requested_units = requested_units,
@@ -384,20 +393,20 @@ def production_create(request):
         
         if batch_id:
             prd.batch = Batch.objects.get(id=int(batch_id))
-        if order_item_id:
-            prd.order_item = CustomerOrderItem.objects.get(id=int(order_item_id))
         prd.save()
         
         sweetify.success(request, f'Daily production set #{prd.production_code} created successfully')
         return HttpResponseRedirect(reverse('production_list'))
          
-    order_items = CustomerOrderItem.objects.all()
+    customers = Customer.objects.all()
+    products = Product.objects.all()
     pallets = Pallet.objects.all()
     top_inserts = TopInsert.objects.all()
     batches = Batch.objects.filter((~Q(batch_status='Used')))
     
     context = {
-        'order_items' : order_items,
+        'customers' : customers,
+        'products' : products,
         'pallets' : pallets,
         'top_inserts' : top_inserts,
         'batches': batches,

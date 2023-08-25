@@ -100,7 +100,6 @@ class Carton(models.Model):
     def __str__(self) -> str:
         return f'{self.name} ({self.capacity} units/carton, in-stock: {self.quantity})'
            
-
 class TopInsert(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
     width = models.IntegerField(default=0)
@@ -122,6 +121,7 @@ class Container(models.Model):
     
     def __str__(self) -> str:
         return f'{self.type} (capacity: {self.capacity}g, color: {self.color}, in-stock: {self.quantity})'
+    
 class Lid(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
     type = models.CharField(max_length=20, choices=LID_TYPES)
@@ -132,10 +132,9 @@ class Lid(models.Model):
 
     def __str__(self) -> str:
         return f'{self.name} {self.type} ({self.color}, in-stock: {self.quantity})'
+    
 class Label(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
-    brand = models.ForeignKey(Brand, null=True, blank=True, on_delete=models.PROTECT)
-    color = models.CharField(max_length=20, null=True)
     quantity =  models.IntegerField(default=0)
     image = models.ImageField(upload_to='label_images',blank=True,null=True)
     last_updated =  models.DateField(auto_now=True)
@@ -145,11 +144,11 @@ class Label(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
-    brand = models.ForeignKey(Brand, null=True, blank=True, on_delete=models.PROTECT)
-    container = models.ForeignKey(Container, null=True, blank=True, on_delete=models.PROTECT)
-    lid = models.ForeignKey(Lid, null=True, blank=True, on_delete=models.PROTECT)
-    label = models.ForeignKey(Label,null=True, blank=True, on_delete=models.PROTECT)
-    carton  = models.ForeignKey(Carton, null=True, blank=True, on_delete=models.PROTECT)
+    brand = models.ForeignKey(Brand, null=True, blank=True, on_delete=models.SET_NULL)
+    container = models.ForeignKey(Container, null=True, blank=True, on_delete=models.SET_NULL)
+    lid = models.ForeignKey(Lid, null=True, blank=True, on_delete=models.SET_NULL)
+    label = models.ForeignKey(Label,null=True, blank=True, on_delete=models.SET_NULL)
+    carton  = models.ForeignKey(Carton, null=True, blank=True, on_delete=models.SET_NULL)
     unit_weight = models.IntegerField(default=0)
     image = models.ImageField(upload_to='product_images',blank=True,null=True)
     
@@ -238,6 +237,7 @@ class Pallet(models.Model):
 class Supplier(models.Model):
     name = models.CharField(max_length=50, null=True)
     supplier_number = models.CharField(max_length=100,null=True, blank=True)
+    ibc_identification = models.CharField(max_length=100,null=True, blank=True)
     unit_number = models.CharField(max_length=10, blank=True, null=True)
     street_number = models.CharField(max_length=10,blank=True,null=True)
     address_line_1 = models.CharField(max_length=100,blank=True, null=True)
@@ -324,7 +324,6 @@ class HoneyStock(models.Model):
     net_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10, null=True)
     honey_types = models.ManyToManyField(HoneyType)
     nova_ibc = models.CharField(max_length=100,null=True, blank=True, verbose_name='Nova IBC')
-    supplier_ibc = models.CharField(max_length=100,null=True, blank=True, verbose_name='Supplier IBC')
     date_received = models.DateField(auto_now_add=True)
     
     def __str__(self) -> str:
@@ -338,12 +337,17 @@ class HoneyStock(models.Model):
 class Batch(models.Model):
     batch_date = models.DateField(auto_now_add=True)
     expiry_date = models.DateField()
-    batch_number = ShortUUIDField(length=16,max_length=16,prefix="b_",alphabet="abcdefhkmnrstuvwxz123456789",)
+    previous_batch = models.ForeignKey('self', null=True, on_delete=models.PROTECT, related_name = 'child_batch')
+    batch_number = models.CharField(max_length=100, unique=True, null=True, blank=True)
     qrcode = models.ImageField(upload_to='batch_qr_codes',blank=True,null=True)
     qr_pointer = models.CharField(max_length=300, unique=True, null=True, blank=True)
     honey_stock = models.ManyToManyField(HoneyStock)
+    honey_type = models.CharField(max_length=100, unique=True, null=True, blank=True)
+    tank_number = models.CharField(max_length=3, unique=True, null=True, blank=True)
     batch_status = models.CharField(max_length=20, choices=BATCH_STATUS, default='New')
     weight = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10)
+    packed_weight = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10)
+    remaining_weight = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10)
     class Meta:
         ordering = ("-id",)
     
@@ -386,9 +390,10 @@ class Batch(models.Model):
 class Production(models.Model):
     packing_date = models.DateField(default=timezone.now)
     production_code = ShortUUIDField(length=16,max_length=16,prefix="p_",alphabet="abcdefhkmnrstuvwxz123456789_",)
-    order_item = models.ForeignKey(CustomerOrderItem, on_delete=models.PROTECT, related_name='order_item', null=True, blank=True)
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, null=True, blank=True)
     pallet = models.ForeignKey(Pallet, on_delete=models.PROTECT, null=True, blank=True)
-    top_insert = models.ForeignKey(TopInsert, on_delete=models.PROTECT, null=True, blank=True)
+    top_insert = models.ForeignKey(TopInsert, on_delete=models.SET_NULL, null=True, blank=True)
     units_made =  models.IntegerField(default=0)
     requested_units =  models.IntegerField(default=0)
     status = models.CharField(max_length=20, choices=PRODUCTION_STATUS, default='New')
