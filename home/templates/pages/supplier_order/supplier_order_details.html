@@ -14,12 +14,12 @@
           <div class="row align-items-center">
             <div class="col-md-12">
               <div class="page-header-title">
-                <h5 class="m-b-10">Order Details</h5>
+                <h5 class="m-b-10">Supplier Order Details</h5>
               </div>
               <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item"><a href="javascript: void(0)">Supplier</a></li>
-                <li class="breadcrumb-item" aria-current="page">Order Details</li>
+                <li class="breadcrumb-item"><a href="{% url 'supplier_orders' %}">Supplier Orders</a></li>
+                <li class="breadcrumb-item" aria-current="page">Supplier Order Details</li>
               </ul>
             </div>
           </div>
@@ -82,29 +82,25 @@
                       <div class="row">
                         <div class="col-sm-6">
                   
-                          <h5 class="mb-0">From: {{order.supplier.name}}</h5>
+                          <h3 class="mb-0">From: {{order.supplier.name | upper}}</h3>
                           <br/>
-                          <h5 class="mb-0"> Order: #{{order.order_number | upper}} Placed on {{ order.date }}</h5>
+                          <h5 class="mb-0"> Order: <span class="badge text-primary border border-primary rounded-pill f-16 align-baseline mb-1">#{{order.order_number}}</span> Placed on {{ order.date }}</h5>
                         </div>
                         <div class="col-sm-6 text-sm-end">
-                         
-                   
-                            <a href="{% url 'supplier_order_edit' order.order_number %}" class="btn btn-primary me-2">Modify Order</a>
-                          
+                            <a href="{% url 'supplier_order_edit' order.order_number %}" class="btn btn-primary me-2">Modify Order</a>                        
                         </div>
                       </div>
                     </div>
                     <div class="card-body">
                       <ul class="list-inline">
     
-                        <li class="list-inline-item"
-                          ><i class="material-icons-two-tone opacity-75 me-1 f-16">phone_android</i> {{ order.supplier.contact_number }}</li
-                        >
-                        <li class="list-inline-item"
-                          ><i class="material-icons-two-tone opacity-75 me-1 f-16">email</i> {{ order.supplier.email }}</li
-                        >
+                        <li class="list-inline-item">
+                          <i class="material-icons-two-tone opacity-75 me-1 f-16">phone_android</i> {{ order.supplier.contact_number }}
+                        </li>
+                        <li class="list-inline-item">
+                          <i class="material-icons-two-tone opacity-75 me-1 f-16">email</i> {{ order.supplier.email }}
+                        </li>
                       </ul>
-                      <hr class="my-4" />
                       <div class="row align-items-center">
                         <div class="col-md-4">
                           <h4 class="mb-2">Payment terms</h4>
@@ -115,28 +111,12 @@
                       
                         </div>
                         <div class="col-md-4">
-                          <h4 class="mb-2">Supplier Number</h4>
-                          <span class="badge text-secondary border border-secondary rounded-pill f-12 align-baseline mb-1">{{order.supplier.supplier_number}}</span> 
-                          <span class="text-muted f-14"></span>
-                          <h4 class="mb-2">IBC Identification</h4>
-                          <span class="badge text-secondary border border-secondary rounded-pill f-12 align-baseline mb-1">{{order.supplier.ibc_identification}}</span>
-                        </div>
-                        <div class="col-md-4">
-                          <h4 class="mb-2">Order QR Code</h4>
                             <img src="{{order.qrcode.url}}" width="200px"/>
                           </div>
                       </div>
-                      <hr class="my-4" />
                       <div class="row">
                         <div class="col-md-4">
                           <h4 class="mb-3">Billing address</h4>
-                          <p class="mb-1"><b>Address :</b> {% if order.supplier.unit_number %}{{order.supplier.unit_number}}{% endif %} {{order.supplier.street_number}} {{order.supplier.address_line_1}} {{order.supplier.address_line_2}}</p>
-                          <p class="mb-1"><b>Suburb :</b> {{order.supplier.suburb}}</p>
-                          <p class="mb-1"><b>State :</b> {{order.supplier.state}}</p>
-                          <p><b>Post Code :</b> {{order.supplier.post_code}}</p>
-                        </div>
-                        <div class="col-md-4">
-                          <h4 class="mb-3">Shipping address</h4>
                           <p class="mb-1"><b>Address :</b> {% if order.supplier.unit_number %}{{order.supplier.unit_number}}{% endif %} {{order.supplier.street_number}} {{order.supplier.address_line_1}} {{order.supplier.address_line_2}}</p>
                           <p class="mb-1"><b>Suburb :</b> {{order.supplier.suburb}}</p>
                           <p class="mb-1"><b>State :</b> {{order.supplier.state}}</p>
@@ -174,9 +154,6 @@
                               <td class="text-end">{{item.ibc_weight}}</td>
                               <td class="text-end">{{item.gross_weight}}</td>
                               <td class="text-end">{{item.net_weight}}</td>
-                              <td class="text-end"
-                                ><button type="button" class="btn btn-link-danger"><i class="ti ti-trash"></i></button
-                              ></td>
                             </tr>
                            {% endfor %}
                           </tbody>
@@ -225,7 +202,7 @@
                                   <tr>
                                     <td class="pe-0 pt-0">
                                       <hr class="mb-3 mt-0" />
-                                      <h5 class="text-primary m-r-10">Total :</h5>
+                                      <h5 class="text-primary m-r-10">Grand Total :</h5>
                                     </td>
                                     <td class="ps-0 pt-0">
                                       <hr class="mb-3 mt-0" />

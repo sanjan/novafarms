@@ -101,7 +101,7 @@
                         </div>
                       </td>
                       <td>
-                      <h5 class="mb-0">#{{supplier.supplier_number}}</h5>
+                      <h5 class="mb-0"><a href="{% url 'supplier_edit' supplier.id %}">#{{supplier.supplier_number}}</a></h5>
                       </td>
                       <td>
                         <h5 class="mb-0">{{supplier.name}}</h5>

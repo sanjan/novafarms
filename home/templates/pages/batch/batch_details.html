@@ -56,25 +56,47 @@
             <div class="card-body">
               <div class="row mb-3">
                 <div class="col-md-6">
-                  <h4 class="mb-2"><b>Nova Farms Pty Ltd.</b></h4>
-                  <p class="text-muted mb-1">2-4 White Road, </p>
-                  <p class="text-muted mb-1">Gepps Cross, SA 5086</p>
-                  <p class="text-muted mb-1"><a href="mailto:demo@company.com">info@novafarms.com.au</a></p>
-                  <p class="text-muted">(+61) 852 327 278</p>
+                  <h4 class="mb-2"><b>Tank Number: {{batch.tank_number}}</b></h4>
+                  <h4 class="mb-2">Honey Type: {{batch.honey_type}}</h4>
                 </div>
                 <div class="col-md-6">
                   <h4 class="mb-2">Batch QR Code</h4>
                     <img src="{{batch.qrcode.url}}" width="200px"/>
                   </div>
               </div>
+              {% if batch.previous_batch %}
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Previous Batch</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ batch.previous_batch.batch_number }}</td>
+                      <td>{{batch.previous_batch.honey_type }}</td>
+                      <td>
+                        <div>
+                          <h5 class="mb-1">{{batch.previous_batch.tank_number}}</h5>
+                        </div>
+                      </td>
+                      <td class="text-end">{{ batch.previous_batch.remaining_weight }} kg</td>
+                    </tr>
+
+                  </tbody>
+                </table>
+              </div>
+              {% endif %}
+
               <div class="table-responsive">
                 <table class="table">
                   <thead>
                     <tr>
                       <th>Supplier</th>
+                      <th>IBC</th>
                       <th>Honey Type</th>
                       <th class="text-end">IBC/Container Weight</th>
-                      <th class="text-end">Gross Weight</th>
                       <th class="text-end">Net Weight</th>
                     </tr>
                   </thead>
@@ -82,13 +104,13 @@
                     {% for item in honey_stock%}
                     <tr>
                       <td>{{item.order.supplier.name}}</td>
+                      <td>{{item.ibc_number}}</td>
                       <td>
                         <div>
                           <h5 class="mb-1">{{item.ht}}</h5>
                         </div>
                       </td>
                       <td class="text-end">{{item.ibc_weight}} kg</td>
-                      <td class="text-end">{{item.gross_weight}} kg</td>
                       <td class="text-end">{{item.net_weight}} kg</td>
                     </tr>
                     {% endfor %}
@@ -117,11 +139,6 @@
                   </div>
                 </div>
               </div>
-              <h5><b>Terms and Condition :</b></h5>
-              <p class="text-muted"
-                >lorem ipsum dolor sit connecter adieu siccing eliot, sed do elusion tempore incident ut laborer et dolors magna
-                aliquot.</p
-              >
             </div>
             <div class="text-center d-print-none mt-5 mb-3">
               <button type="button" class="btn btn-print-invoice btn-primary m-b-10 m-r-10">Print</button>

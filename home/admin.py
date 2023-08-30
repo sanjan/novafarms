@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import HoneyType, Brand, Pallet, Container, Lid, Carton, Label, TopInsert, Product
+from .models import HoneyType, Brand, Pallet, Container, Lid, Carton, Label, TopInsert, Product, Supplier
 
 
 admin.site.site_header = "Nova Farms Administration"
@@ -13,3 +13,4 @@ admin.site.register(Label)
 admin.site.register(Carton)
 admin.site.register(Pallet)
 admin.site.register(TopInsert)
+admin.site.register(Supplier)

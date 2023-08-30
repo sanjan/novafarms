@@ -16,6 +16,11 @@
   rel="stylesheet"
   href="{% static 'assets/css/plugins/animate.min.css' %}"
 />
+<!-- Choices css -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+/>
 <!-- [Page specific CSS] end -->
 {% endblock extrastyle %}
 
@@ -159,6 +164,40 @@
               </div>
 
               <div class="form-group">
+                <label for="top-insert" class="form-label">Top insert</label>
+                <select
+                  class="form-control"
+                  data-trigger
+                  name="top-insert"
+                  id="top-insert"
+                >
+                  <option value="" disabled selected hidden>
+                    Pick a Top Insert Type
+                  </option>
+                  {% for b in top_inserts %}
+                  <option value="{{ b.id }}">{{ b }}</option>
+                  {% endfor%}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="pallet" class="form-label">Pallet</label>
+                <select
+                  class="form-control"
+                  data-trigger
+                  name="pallet"
+                  id="pallet"
+                >
+                  <option value="" disabled selected hidden>
+                    Pick a Pallete type
+                  </option>
+                  {% for b in pallets %}
+                  <option value="{{ b.id }}">{{ b }}</option>
+                  {% endfor%}
+                </select>
+              </div>
+
+              <div class="form-group">
                 <label for="unit-weight" class="form-label">Unit weight</label>
                 <div class="row align-items-center">
                   <div class="col-4">
@@ -207,7 +246,7 @@
 <!-- <script src="static/js/jquery.min.js"></script> -->
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
-<script src="{% static 'assets/js/plugins/choices.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
 <!-- DatePicker js -->
 <script src="{% static 'assets/js/plugins/datepicker-full.min.js' %}"></script>
@@ -252,33 +291,37 @@
 
   var branddd = new Choices(`#brand`, {
     searchPlaceholderValue: 'search for brand',
+    searchResultLimit: 10,
   });
 
   var containerdd = new Choices(`#container`, {
     searchPlaceholderValue: 'search for container',
+    searchResultLimit: 10,
   });
 
   var liddd = new Choices(`#lid`, {
     searchPlaceholderValue: 'search for lid',
+    searchResultLimit: 10,
   });
 
   var labeldd = new Choices(`#label`, {
     searchPlaceholderValue: 'search for label',
+    searchResultLimit: 10,
   });
 
   var cartondd = new Choices(`#carton`, {
     searchPlaceholderValue: 'search for carton type',
+    searchResultLimit: 10,
   });
 
-  const d_today = new Datepicker(document.querySelector('#production-date'), {
-    buttonClass: 'btn',
-    todayHighlight: true,
-    autohide: true,
-    format: 'dd/mm/yyyy',
+  var palletdd = new Choices(`#pallet`, {
+    searchPlaceholderValue: 'search for pallet type',
   });
 
-  var today = new Date();
-  d_today.setDate(today);
+  var topindd = new Choices(`#top-insert`, {
+    searchPlaceholderValue: 'search for topinsert type',
+  });
+
 
 </script>
 

@@ -9,6 +9,11 @@
   <link rel="stylesheet" href="{% static 'assets/css/plugins/nouislider.min.css' %}" />
     <!-- Animate.css -->
   <link rel="stylesheet" href="{% static 'assets/css/plugins/animate.min.css' %}" />
+  <!-- Choices css -->
+<link
+rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+/>
   <!-- [Page specific CSS] end -->
 {% endblock extrastyle %}
 
@@ -55,12 +60,62 @@
                   <label for="expiry-date" class="col-form-label">Expiry Date</label>
                   <input class="form-control" type="text" id="expiry-date" name="expiry-date"/>
                 </div>
+
                 <div class="form-group">
-                  <label class="form-label">Honey Stocks</label>
+                  <label class="form-label">Previous Batch</label>
+                    <select
+                      class="form-control"
+                      name="previous-batch"
+                      id="previous-batch"
+                      placeholder=""
+                    >
+                    <option value="" disabled selected hidden>
+                      Select previous batch (if any)
+                    </option>
+                    {% for pb in previous_batches %}
+                      <option value="{{ pb.id }}" >{{ pb }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tank Number</label>
+                    <select
+                      class="form-control"
+                      name="tank-number"
+                      id="tank-number"
+                      placeholder=""
+                    >
+                    <option value="" disabled selected hidden>
+                      Pick a tank
+                    </option>
+                    {% for t in tank_numbers %}
+                      <option value="{{ t }}" >{{ t }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Honey Types</label>
+          
+                    <select
+                      class="form-control"
+                      name="honey-type"
+                      id="honey-type"
+                      placeholder=""
+                    >
+                    <option value="" disabled selected hidden>
+                      Pick a honey type
+                    </option>
+                    {% for h in honey_types %}
+                      <option value="{{ h.type }}" >{{ h.type }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Assign Supplier Honey Stocks</label>
                   <select
                   class="form-control"
-                  name="honey_stock[]"
-                  id="honey_stock"
+                  name="honey-stock[]"
+                  id="honey-stock"
                   placeholder=""
                   multiple
                   >
@@ -133,9 +188,20 @@
       // })();
 
 
+var honeytypedd = new Choices(`#honey-type`, {
+  searchPlaceholderValue: 'search for honey type',
+});
 
+var previousbatchdd = new Choices(`#previous-batch`, {
+  searchPlaceholderValue: 'search for previous batch',
+});
 
-var srccontainerbutton = new Choices(`#honey_stock`, {
+var tanknumberdd = new Choices(`#tank-number`, {
+  searchPlaceholderValue: 'search for tank number',
+});
+    
+
+var srccontainerbutton = new Choices(`#honey-stock`, {
   removeItemButton: true
 });
 

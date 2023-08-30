@@ -54,13 +54,16 @@ HONEY_CONTAINER_TYPES = (
     ('Jar','Jar'),
     ('Squeeze Bottle','Squeeze Bottle'),
     ('Pail','Pail'),
+    ('Tub','Tub'),
 )
 
 LID_TYPES = (
     ('Jar Lid','Jar Lid'),
     ('Squeeze Lid','Squeeze Lid'),
     ('Squeeze Tip','Squeeze Tip'),
+    ('Tub Lid','Tub Lid'),
     ('Pail Lid','Pail Lid'),
+    
 )
 
 LID_CONTAINER_COLORS = (
@@ -69,7 +72,20 @@ LID_CONTAINER_COLORS = (
     ('Black','Black'),
     ('Dark Brown','Dark Brown'),
     ('White','White'),
+    ('Blue','Blue'),
 )
+
+TANK_NUMBERS = {
+    ('01','01'),
+    ('02','02'),
+    ('03','03'),
+    ('04','04'),
+    ('05','05'),
+    ('06','06'),
+    ('07','07'),
+    ('08','08'),
+    ('09','09'),
+}
 
 class Config(models.Model):
     last_updated = models.DateField(default=timezone.now)
@@ -120,7 +136,7 @@ class Container(models.Model):
     last_updated =  models.DateField(auto_now=True)
     
     def __str__(self) -> str:
-        return f'{self.type} (capacity: {self.capacity}g, color: {self.color}, in-stock: {self.quantity})'
+        return f'{self.name} (capacity: {self.capacity}g, color: {self.color}, in-stock: {self.quantity})'
     
 class Lid(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
@@ -131,24 +147,40 @@ class Lid(models.Model):
     last_updated =  models.DateField(auto_now=True)
 
     def __str__(self) -> str:
-        return f'{self.name} {self.type} ({self.color}, in-stock: {self.quantity})'
+        return f'{self.name} (color: {self.color}, in-stock: {self.quantity})'
     
 class Label(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
+    brand = models.ForeignKey('Brand', null=True, blank=True, on_delete=models.SET_NULL)
     quantity =  models.IntegerField(default=0)
     image = models.ImageField(upload_to='label_images',blank=True,null=True)
     last_updated =  models.DateField(auto_now=True)
     
     def __str__(self) -> str:
-        return f'{self.brand.name}-{self.name} ({self.color}, in-stock: {self.quantity})'
+        return f'{self.name} (in-stock: {self.quantity})'
+
+class Pallet(models.Model):
+    pallet_name = models.CharField(max_length=100,null=True, blank=True)
+    pallet_number = models.CharField(max_length=100,null=True, blank=True)
+    width = models.IntegerField(default=0)
+    length = models.IntegerField(default=0)
+    quantity =  models.IntegerField(default=0)
+    capacity_cartons = models.IntegerField(default=0)
+    layout = models.FileField(upload_to='pallet_layouts',blank=True,null=True)
+    last_updated =  models.DateField(auto_now=True)
+    
+    def __str__(self) -> str:
+        return f'{self.pallet_name} - {self.pallet_number} ({self.width} cm x {self.length} cm) (in-stock: {self.quantity})'
 
 class Product(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
-    brand = models.ForeignKey(Brand, null=True, blank=True, on_delete=models.SET_NULL)
-    container = models.ForeignKey(Container, null=True, blank=True, on_delete=models.SET_NULL)
-    lid = models.ForeignKey(Lid, null=True, blank=True, on_delete=models.SET_NULL)
-    label = models.ForeignKey(Label,null=True, blank=True, on_delete=models.SET_NULL)
-    carton  = models.ForeignKey(Carton, null=True, blank=True, on_delete=models.SET_NULL)
+    brand = models.ForeignKey('Brand', null=True, blank=True, on_delete=models.SET_NULL)
+    container = models.ForeignKey('Container', null=True, blank=True, on_delete=models.SET_NULL)
+    lid = models.ForeignKey('Lid', null=True, blank=True, on_delete=models.SET_NULL)
+    label = models.ForeignKey('Label',null=True, blank=True, on_delete=models.SET_NULL)
+    carton  = models.ForeignKey('Carton', null=True, blank=True, on_delete=models.SET_NULL)
+    pallet = models.ForeignKey('Pallet', on_delete=models.SET_NULL, null=True, blank=True)
+    top_insert = models.ForeignKey('TopInsert', on_delete=models.SET_NULL, null=True, blank=True)
     unit_weight = models.IntegerField(default=0)
     image = models.ImageField(upload_to='product_images',blank=True,null=True)
     
@@ -174,8 +206,9 @@ class Customer(models.Model):
     
     def __str__(self) -> str:
         return self.name
+
 class CustomerOrder(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
+    customer = models.ForeignKey('Customer', on_delete=models.PROTECT)
     order_number = ShortUUIDField(length=16,max_length=16,prefix="co_",alphabet="abcdefhkmnrstuvwxz123456789_",)
     total_price = models.DecimalField(default=0.00, decimal_places=2, editable=False,max_digits=10)
     total_units = models.IntegerField(default=0)
@@ -210,34 +243,19 @@ class CustomerOrder(models.Model):
 
 class CustomerOrderItem(models.Model):
     
-     order = models.ForeignKey(CustomerOrder, on_delete=models.CASCADE, related_name='order_items',)
+     order = models.ForeignKey('CustomerOrder', on_delete=models.CASCADE, related_name='order_items',)
      order_item_number = ShortUUIDField(length=12,max_length=12,prefix="oi_",alphabet="abcdefhkmnrstuvwxz123456789")
-     product = models.ForeignKey(Product, on_delete=models.PROTECT,)
+     product = models.ForeignKey('Product', null=True, on_delete=models.SET_NULL,)
      quantity = models.IntegerField(default=0)
      unit_price = models.DecimalField(default=0.00, decimal_places=2, max_digits=10 )
      sub_total_price = models.DecimalField(default=0.00, decimal_places=2, max_digits=10 )
      
      def __str__(self) -> str:
-        return f'{self.order.order_number} - {self.product.brand.name} {self.product.name} (Qty:{self.quantity})'
-    
-class Pallet(models.Model):
-    pallet_name = models.CharField(max_length=100,null=True, blank=True)
-    pallet_number = models.CharField(max_length=100,null=True, blank=True)
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
-    width = models.IntegerField(default=0)
-    length = models.IntegerField(default=0)
-    quantity =  models.IntegerField(default=0)
-    capacity_cartons = models.IntegerField(default=0)
-    layout = models.FileField(upload_to='pallet_layouts',blank=True,null=True)
-    last_updated =  models.DateField(auto_now=True)
-    
-    def __str__(self) -> str:
-        return f'{self.pallet_name} - {self.customer.name} - {self.pallet_number} ({self.width} cm x {self.length} cm) (in-stock: {self.quantity})'
+        return f'{self.order.order_number} - {self.product.brand.name} {self.product.name} (Qty:{self.quantity})'    
 
 class Supplier(models.Model):
     name = models.CharField(max_length=50, null=True)
     supplier_number = models.CharField(max_length=100,null=True, blank=True)
-    ibc_identification = models.CharField(max_length=100,null=True, blank=True)
     unit_number = models.CharField(max_length=10, blank=True, null=True)
     street_number = models.CharField(max_length=10,blank=True,null=True)
     address_line_1 = models.CharField(max_length=100,blank=True, null=True)
@@ -257,10 +275,11 @@ class Supplier(models.Model):
     
     def __str__(self) -> str:
         return self.name
-    
+
 class SupplierOrder(models.Model):
-    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
-    order_number = ShortUUIDField(length=16,max_length=16,prefix="so_",alphabet="abcdefhkmnrstuvwxz123456789",)
+
+    supplier = models.ForeignKey('Supplier', on_delete=models.PROTECT)
+    order_number = models.CharField(max_length=20, unique=True, null=True, blank=True)
     gross_total_weight = models.DecimalField(default=0.00, decimal_places=2,  editable=False, max_digits=10, verbose_name ='Gross Weight')
     ibc_total_weight = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10,  verbose_name ='IBC/Drum Weight')
     net_total_weight = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10)
@@ -270,13 +289,14 @@ class SupplierOrder(models.Model):
     total_price = models.DecimalField(default=0.00, decimal_places=2, editable=False,max_digits=10)
     payment_term = models.CharField(max_length=20, choices=SUPPLIER_PAYMENT_TERMS)
     date = models.DateField(auto_now_add=True)
+    payment_due_date = models.DateField(null=True)
     qrcode = models.ImageField(upload_to='supplier_order_qr_codes',blank=True,null=True)
     qr_pointer = models.CharField(max_length=300, unique=True, null=True, blank=True)
     class Meta:
         ordering = ("-id",)
     
     def __str__(self) -> str:
-        return f'{self.order_number} - {self.supplier}'
+        return f'{self.date} - {self.order_number} - {self.supplier}'
    
     def save(self, *args, **kwargs):
         if self.pk is not None:
@@ -317,13 +337,13 @@ class SupplierOrder(models.Model):
     #         order.save()
             
 class HoneyStock(models.Model):
-    order = models.ForeignKey(SupplierOrder, on_delete=models.CASCADE, related_name='honey_stock', blank=True, null=True)
+    order = models.ForeignKey('SupplierOrder', on_delete=models.CASCADE, related_name='honey_stock', blank=True, null=True)
     stock_id = ShortUUIDField(length=16,max_length=16,prefix="h_",alphabet="abcdefhkmnrstuvwxz123456789")
     ibc_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10)
     gross_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10)
     net_weight = models.DecimalField(default=0.00, decimal_places=2, max_digits=10, null=True)
     honey_types = models.ManyToManyField(HoneyType)
-    nova_ibc = models.CharField(max_length=100,null=True, blank=True, verbose_name='Nova IBC')
+    ibc_number = models.CharField(max_length=100,null=True, blank=True, verbose_name='IBC')
     date_received = models.DateField(auto_now_add=True)
     
     def __str__(self) -> str:
@@ -337,7 +357,7 @@ class HoneyStock(models.Model):
 class Batch(models.Model):
     batch_date = models.DateField(auto_now_add=True)
     expiry_date = models.DateField()
-    previous_batch = models.ForeignKey('self', null=True, on_delete=models.PROTECT, related_name = 'child_batch')
+    previous_batch = models.ForeignKey('self', null=True, on_delete=models.PROTECT, related_name = 'parent_batch')
     batch_number = models.CharField(max_length=100, unique=True, null=True, blank=True)
     qrcode = models.ImageField(upload_to='batch_qr_codes',blank=True,null=True)
     qr_pointer = models.CharField(max_length=300, unique=True, null=True, blank=True)
@@ -357,7 +377,7 @@ class Batch(models.Model):
             for i in h.honey_types.all():
                 honeys.add(i.type)
         h_str = ','.join(h for h in honeys)
-        return f'{self.batch_number} {self.expiry_date} {h_str} ({self.weight} kg)'
+        return f'{self.batch_number} {self.expiry_date} {h_str} (total: {self.weight} kg, remaining: {self.remaining_weight} kg)'
 
     def save(self, *args, **kwargs):
         if self.pk is not None:
@@ -390,15 +410,14 @@ class Batch(models.Model):
 class Production(models.Model):
     packing_date = models.DateField(default=timezone.now)
     production_code = ShortUUIDField(length=16,max_length=16,prefix="p_",alphabet="abcdefhkmnrstuvwxz123456789_",)
-    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, null=True, blank=True)
-    product = models.ForeignKey(Product, on_delete=models.PROTECT, null=True, blank=True)
-    pallet = models.ForeignKey(Pallet, on_delete=models.PROTECT, null=True, blank=True)
-    top_insert = models.ForeignKey(TopInsert, on_delete=models.SET_NULL, null=True, blank=True)
+    customer = models.ForeignKey('Customer', on_delete=models.PROTECT, null=True, blank=True)
+    product = models.ForeignKey('Product', on_delete=models.PROTECT, null=True, blank=True)
+
     units_made =  models.IntegerField(default=0)
     requested_units =  models.IntegerField(default=0)
     status = models.CharField(max_length=20, choices=PRODUCTION_STATUS, default='New')
     product_image = models.ImageField(upload_to='production_images',blank=True,null=True)
-    batch = models.ForeignKey(Batch, on_delete=models.PROTECT, related_name='batch', null=True)
+    batch = models.ForeignKey('Batch', on_delete=models.PROTECT, related_name='batch', null=True)
         
     def save(self, *args, **kwargs):           
         super().save(*args, **kwargs)

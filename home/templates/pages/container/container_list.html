@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
-{% block title %}Cartons |{% endblock title %}
+{% block title %}Containers |{% endblock title %}
 
 {% block content %}
 
@@ -39,7 +39,7 @@
                 </div>
               </div>
               <span class="text-white d-block f-34 f-w-500 my-2">{{count}}<i class="ti ti-arrow-up-right-circle opacity-50"></i></span>
-              <p class="mb-0 opacity-50">Number of cartons</p>
+              <p class="mb-0 opacity-50">Number of containers types in inventory</p>
             </div>
           </div>
         </div>
@@ -54,14 +54,14 @@
           <div class="card table-card">
             <div class="card-header">
               <h5 class="d-flex justify-content-between align-items-center">
-                List of Cartons
-                <div><a href="{% url 'carton_create' %}" class="btn btn-primary me-2">New Carton</a></div>
+                List of Containers
+                <a href="{% url 'container_create' %}" class="btn btn-primary me-2">New Container</a>  
                 <!-- Wrap with <div>...buttons...</div> if you have multiple buttons -->
               </h5>
             </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-hover" id="cartons-table">
+                <table class="table table-hover" id="containers-table">
                   <thead>
                     <tr>
                       <th>
@@ -71,29 +71,33 @@
                       </th>
                       <th>Image</th>
                       <th>Name</th>
-                      <th>Capacity</th>
-                      <th>Quantity</th>
+                      <th>Type</th>
+                      <th>Capacity</th>                      
+                      <th>In Stock</th>
                       <th class="text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {% for carton in cartons %}
+                    {% for container in containers %}
                     <tr>
                       <td>
                         <div class="form-check">
                           <input class="form-check-input" type="checkbox" />
                         </div>
                       </td>
-                      <td>
-                        <img src="{% if carton.image %} {{carton.image.url}} {% endif %}" alt="image" class="wid-50 rounded" />
+                      <td>  
+                        {% if container.image %}
+                        <img src="{{container.image.url}} " alt="image" class="wid-50 rounded" />
+                        {% endif %}
                       </td>
                       <td>
-                      <h5 class="mb-0"><a href="{% url 'carton_edit' carton.id %}">{{carton.name}}</a></h5>
+                      <h5 class="mb-0"><a href="{% url 'container_edit' container.id %}">{{container.name}}</a></h5>
                       </td>
-                      <td>{{carton.capacity}}</td>
-                      <td>{{carton.quantity}}</td>
+                      <td>{{container.type}}</td>
+                      <td>{{container.capacity}}g</td>
+                      <td>{{container.quantity}}</td>
                       <td class="text-center">
-                        <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='{% url 'carton_edit' carton.id %}';"><i class="ti ti-pencil"></i></button>
+                        <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='{% url 'container_edit' container.id %}';"><i class="ti ti-pencil"></i></button>
                       </td>
                     </tr>
                     {% endfor %}
@@ -121,7 +125,7 @@
   {% load sweetify %}
   {% sweetify %}
     <script>
-      const cartonsTable = new simpleDatatables.DataTable('#cartons-table', {
+      const containersTable = new simpleDatatables.DataTable('#containers-table', {
         sortable: false,
         perPage:10
       });

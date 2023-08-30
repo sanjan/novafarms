@@ -51,7 +51,9 @@
                         <div id="carouselExampleCaptions" class="carousel scartone carousel-fade" data-bs-ride="carousel">
                           <div class="carousel-inner">
                             <div class="carousel-item active">
+                              {% if carton.image %}
                               <img src="{{carton.image.url}}" class="d-block w-100 rounded" alt="Product images" />
+                              {% endif %}
                             </div>
                           </div>
                         </div>

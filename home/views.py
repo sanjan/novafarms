@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import (Supplier, SupplierOrder, Customer, CustomerOrder, CustomerOrderItem, HoneyStock, 
 HoneyType, Batch, Product, Production, Brand, Pallet, Container, Lid, Carton, Label, TopInsert,  
 SUPPLIER_PAYMENT_TERMS, CUSTOMER_PAYMENT_TERMS, BATCH_STATUS, ORDER_STATUS, HONEY_CONTAINER_TYPES, 
-LID_TYPES, LID_CONTAINER_COLORS)
+LID_TYPES, LID_CONTAINER_COLORS, TANK_NUMBERS)
 from .forms import SupplierForm, CustomerForm
 from decimal import Decimal
 from datetime import datetime
@@ -45,7 +45,7 @@ def batch_create(request):
         previous_batch = Batch.objects.get(id=request.POST.get('previous-batch'))
         honey_type = request.POST.get('honey-type')
         tank_number =  request.POST.get('tank-number')
-        honey_stocks = request.POST.get('honey_stock[]')
+        honey_stocks = request.POST.get('honey-stock[]')
         
         batch = Batch.objects.create(
             batch_number = batch_date.strftime('%d%m%y'),
@@ -54,12 +54,18 @@ def batch_create(request):
             previous_batch = previous_batch,
             honey_type = honey_type,
             tank_number = tank_number,
+            weight = 0,
+            packed_weight = 0,
+            remaining_weight = 0            
         )
         
         hs_pks = []
+        total_weight = 0
         for i in honey_stocks or []:
             honey_stock = HoneyStock.objects.get(id=int(i))
             hs_pks.append(honey_stock.id)
+            total_weight += honey_stock.net_weight
+        batch.weight = total_weight
         batch.honey_stock.add(*hs_pks)
         batch.save()
 
@@ -73,12 +79,15 @@ def batch_create(request):
         
     # production = Production.objects.filter(~Q(status='Complete'))
     honey_stock = HoneyStock.objects.all()
-    previous_batches = Batch.objects.all()
+    previous_batches = Batch.objects.filter(remaining_weight__gt = Decimal(0)).values()
+    honey_types = HoneyType.objects.all()
     context = {
         'honey_stock': honey_stock,
+        'honey_types': honey_types,
+        'tank_numbers': [p[0] for p in TANK_NUMBERS],
         'previous_batches' : previous_batches,
         }
-    return render(request, 'pages/batch_create.html', context)
+    return render(request, 'pages/batch/batch_create.html', context)
 
 def batch_edit(request, batch_number):
     
@@ -88,13 +97,14 @@ def batch_edit(request, batch_number):
         batch = Batch.objects.get(batch_number=request.POST.get('batch-number'))
         batch.batch_date = datetime.strptime(request.POST.get('batch-date'), date_format) 
         batch.expiry_date = datetime.strptime(request.POST.get('expiry-date'), date_format)
-        batch.previous_batch = Batch.objects.get(id=request.POST.get('previous-batch'))
+        if request.POST.get('previous-batch'):
+            batch.previous_batch = Batch.objects.get(id=request.POST.get('previous-batch'))
         batch.honey_type = request.POST.get('honey-type')
         batch.tank_number =  request.POST.get('tank-number')
         batch.batch_status = request.POST.get('batch-status')
         batch.save()
 
-        honey_stocks = request.POST.getlist('honey_stock[]')
+        honey_stocks = request.POST.getlist('honey-stock[]')
         hs = []
         for i in honey_stocks:
             honey_stock = HoneyStock.objects.get(id=int(i))
@@ -111,22 +121,26 @@ def batch_edit(request, batch_number):
     batch.expiry_date = batch.expiry_date.strftime("%d/%m/%Y")
     batch_honey_stock = batch.honey_stock.all()
     honey_stock = HoneyStock.objects.all()
-    
+    previous_batches = Batch.objects.filter(remaining_weight__gt = Decimal(0)).values()
+    honey_types = HoneyType.objects.all()
     
     for i in honey_stock:
         if i in batch_honey_stock:
             i.selected = True
         else:
             i.selected = False
-        print(i,"selected:",i.selected)
-    
+        # print(i,"selected:",i.selected)
+
     context = {
                 'batch': batch,
                 'honey_stock': honey_stock,
-                'batch_status' : [s[0] for s in BATCH_STATUS]
+                'batch_status' : [s[0] for s in BATCH_STATUS],
+                'honey_types': honey_types,
+                'tank_numbers': [p[0] for p in TANK_NUMBERS],
+                'previous_batches' : previous_batches,
             }
     
-    return render(request,'pages/batch_edit.html', context)
+    return render(request,'pages/batch/batch_edit.html', context)
 
 def batch_list(request):
     
@@ -137,7 +151,7 @@ def batch_list(request):
         'count': count
     }
     
-    return render(request, 'pages/batch_list.html', context)
+    return render(request, 'pages/batch/batch_list.html', context)
 
 def batch_details(request, batch_number):
     
@@ -150,8 +164,140 @@ def batch_details(request, batch_number):
         'honey_stock' : honey_stock,
     }
     
-    return render(request, 'pages/batch_details.html', context)
+    return render(request, 'pages/batch/batch_details.html', context)
 
+
+def carton_list(request):
+    
+    cartons = Carton.objects.all() if Carton.objects else []
+    
+    context = {
+        'cartons' : cartons,
+    }
+    
+    return render(request, 'pages/carton/carton_list.html', context)
+
+def carton_create(request):
+    if request.method == 'POST':
+        print(request.POST)
+        carton = Carton.objects.create(
+        name = request.POST.get('carton-name'),
+        quantity = int(request.POST.get('quantity')),
+        capacity = int(request.POST.get('capacity')),
+        image = request.FILES.get('carton-image'),
+        )
+        
+        sweetify.success(request, f'Carton {carton.name} created successfully')
+        return HttpResponseRedirect(reverse('cartons'))
+
+    context = {
+
+    }
+    
+    return render(request, 'pages/carton/carton_create.html', context)
+
+def carton_edit(request, carton_id):
+    if request.method == 'POST':
+        print(request.POST)
+        carton = Carton.objects.get(id=request.POST.get('carton-id'))
+        carton.name = request.POST.get('carton-name')
+        carton.quantity = int(request.POST.get('quantity'))
+        carton.capacity = int(request.POST.get('capacity'))
+        image = request.FILES.get('carton-image')
+        if image:
+            carton.image = image
+        carton.save()
+        
+        sweetify.success(request, f'Carton {carton.name} updated successfully')
+        return HttpResponseRedirect(reverse('cartons'))
+        
+        
+    carton = Carton.objects.get(id=carton_id)
+
+    context = {
+        'carton' : carton,
+    }
+    
+    return render(request, 'pages/carton/carton_edit.html', context)
+
+
+def container_create(request):
+    if request.method == 'POST':
+        print(request.POST)
+        container = Container.objects.create(
+            name = request.POST.get('container-name'),
+            quantity = int(request.POST.get('quantity')),
+            color = request.POST.get('container-color'),
+            type = request.POST.get('container-type'),
+            capacity = int(request.POST.get('capacity')),
+            image = request.FILES.get('container-image')
+            )
+
+        
+        sweetify.success(request, f'Container {container.name} created successfully')
+        return HttpResponseRedirect(reverse('containers'))
+        
+
+
+    context = {
+        'container_colors': [p[0] for p in LID_CONTAINER_COLORS],
+        'container_types': [p[0] for p in HONEY_CONTAINER_TYPES],
+    }
+    
+    return render(request, 'pages/container/container_create.html', context)
+
+def container_edit(request, container_id):
+    if request.method == 'POST':
+        print(request.POST)
+        container = Container.objects.get(id=request.POST.get('container-id'))
+        container.name = request.POST.get('container-name')
+        container.quantity = int(request.POST.get('quantity'))
+        container.color = request.POST.get('container-color')
+        container.type = request.POST.get('container-type')
+        container.capacity = int(request.POST.get('capacity'))
+        image = request.FILES.get('container-image')
+        if image:
+            container.image = image
+        container.save()
+        
+        sweetify.success(request, f'Container {container.name} updated successfully')
+        return HttpResponseRedirect(reverse('containers'))
+        
+        
+    container = Container.objects.get(id=container_id)
+
+    context = {
+        'container_colors': [p[0] for p in LID_CONTAINER_COLORS],
+        'container_types': [p[0] for p in HONEY_CONTAINER_TYPES],
+        'container' : container,
+    }
+    
+    return render(request, 'pages/container/container_edit.html', context)
+
+def container_list(request):
+    
+    containers = Container.objects.all() if Container.objects else []
+    count = containers.count()
+    context = {
+        'containers' : containers,
+        'count' :count,
+    }
+    
+    return render(request, 'pages/container/container_list.html', context)
+
+
+def increment_supplier_order_invoice_number():
+    last_invoice = SupplierOrder.objects.all().order_by('id').last()
+    print("last invoice: ", last_invoice)
+    date_str = datetime.now().strftime('%d%m%y')
+    if not last_invoice:
+        print("return default")
+        return f"{date_str}001"
+    print(last_invoice)
+    invoice_no = int(last_invoice.order_number[-3:]) + 1
+    new_invoice_no = date_str + str(invoice_no).zfill(3)
+    return new_invoice_no
+    
 # # @login_required(login_url='/accounts/login-v3/')  
 def supplier_order_create(request):
     if request.method == 'POST':
@@ -160,12 +306,15 @@ def supplier_order_create(request):
         unit_price = Decimal(request.POST.get('unit_price'))
         payment_term = request.POST.get('payment_term')
         order = SupplierOrder.objects.create(
+            order_number = increment_supplier_order_invoice_number(),
+            payment_due_date = datetime.now() if payment_term == 'Immediate' else datetime.now() + datetime.timedelta(days=30),
             supplier = supplier,
             unit_price = unit_price,
             payment_term=payment_term,
         )
         
         # print(request.POST)
+        ibc_numbers = request.POST.getlist('ibc_numbers[]')
         container_weights = request.POST.getlist('container_weights[]')
         gross_weights = request.POST.getlist('gross_weights[]')
         for i in range(len(container_weights)):
@@ -176,6 +325,7 @@ def supplier_order_create(request):
                 ht_pks.append(honey_type.id)
             honey_stock_item = HoneyStock.objects.create(
                 order = order,
+                ibc_number = ibc_numbers[i],
                 ibc_weight = Decimal(container_weights[i]),
                 gross_weight = Decimal(gross_weights[i]),
             )
@@ -197,9 +347,9 @@ def supplier_order_create(request):
         'payment_terms': [p[0] for p in SUPPLIER_PAYMENT_TERMS]
         }
     
-    return render(request, 'pages/supplier_order_create.html', context)
+    return render(request, 'pages/supplier_order/supplier_order_create.html', context)
 
-def supplier_orders(request):
+def supplier_order_list(request):
     
     supplier_orders = SupplierOrder.objects.all()
     count = supplier_orders.count()
@@ -208,7 +358,7 @@ def supplier_orders(request):
         'count': count
     }
     
-    return render(request, 'pages/supplier_order_list.html', context)
+    return render(request, 'pages/supplier_order/supplier_order_list.html', context)
 
 def supplier_order_details(request, order_number):
     order = SupplierOrder.objects.get(order_number=order_number)
@@ -222,7 +372,7 @@ def supplier_order_details(request, order_number):
     context = {'order': order,
             'honey_stock': honey_stock}
     
-    return render(request,'pages/supplier_order_details.html', context)
+    return render(request,'pages/supplier_order/supplier_order_details.html', context)
 
 def supplier_order_edit(request, order_number):
     
@@ -235,10 +385,12 @@ def supplier_order_edit(request, order_number):
         order.supplier = Supplier.objects.get(id=request.POST.get('supplier'))
         order.unit_price = Decimal(request.POST.get('unit-price'))
         order.payment_term = request.POST.get('payment-term')
+        order.payment_due_date = datetime.strptime(request.POST.get('due-date'), date_format)
         order.save()
         
         HoneyStock.objects.filter(order=order).delete()
         
+        ibc_numbers = request.POST.getlist('ibc_numbers[]')
         container_weights = request.POST.getlist('container_weights[]')
         gross_weights = request.POST.getlist('gross_weights[]')
         for i in range(len(container_weights)):
@@ -249,6 +401,7 @@ def supplier_order_edit(request, order_number):
                 ht_pks.append(honey_type.id)
             honey_stock_item = HoneyStock.objects.create(
                 order = order,
+                ibc_number = ibc_numbers[i],
                 ibc_weight = Decimal(container_weights[i]),
                 gross_weight = Decimal(gross_weights[i]),
             )
@@ -276,9 +429,10 @@ def supplier_order_edit(request, order_number):
                 'payment_terms': [p[0] for p in SUPPLIER_PAYMENT_TERMS]
             }
     
-    return render(request,'pages/supplier_order_edit.html', context)
+    return render(request,'pages/supplier_order/supplier_order_edit.html', context)
 
-def suppliers(request):
+
+def supplier_list(request):
 
     suppliers = Supplier.objects.all()
     count = suppliers.count()
@@ -287,7 +441,7 @@ def suppliers(request):
         'suppliers' : suppliers,
         'count' : count,
     }
-    return render(request, 'pages/supplier_list.html', context)
+    return render(request, 'pages/supplier/supplier_list.html', context)
     
 def supplier_create(request):
     form = SupplierForm(request.POST or None)
@@ -303,7 +457,7 @@ def supplier_create(request):
         else:
             sweetify.error(request, 'Error saving new supplier data')
 
-    return render(request, 'pages/supplier_create.html', context)
+    return render(request, 'pages/supplier/supplier_create.html', context)
 
 def supplier_edit(request, supplier_id):
     supplier = Supplier.objects.get(id=supplier_id)
@@ -322,9 +476,10 @@ def supplier_edit(request, supplier_id):
     context = {
         'form' : form,
     }
-    return render(request, 'pages/supplier_edit.html', context)
+    return render(request, 'pages/supplier/supplier_edit.html', context)
 
-def customers(request):
+
+def customer_list(request):
 
     customers = Customer.objects.all()
     count = customers.count()
@@ -333,7 +488,7 @@ def customers(request):
         'customers' : customers,
         'count' : count,
     }
-    return render(request, 'pages/customer_list.html', context)
+    return render(request, 'pages/customer/customer_list.html', context)
 
 def customer_create(request):
     form = CustomerForm(request.POST or None)
@@ -349,7 +504,7 @@ def customer_create(request):
             sweetify.error(request, 'Error saving new customer data')
         
 
-    return render(request, 'pages/customer_create.html', context)
+    return render(request, 'pages/customer/customer_create.html', context)
 
 def customer_edit(request, customer_id):
     customer = Customer.objects.get(id=customer_id)
@@ -368,26 +523,21 @@ def customer_edit(request, customer_id):
     context = {
         'form' : form,
     }
-    return render(request, 'pages/customer_edit.html', context)
+    return render(request, 'pages/customer/customer_edit.html', context)
+
 
 def production_create(request):
     if request.method == 'POST':
         date_format = '%d/%m/%Y'
         packing_date = datetime.strptime(request.POST.get('packing-date'), date_format)
         requested_units = int(request.POST.get('requested-units'))
-        customer = request.POST.get('customer')
         product = request.POST.get('product')
-        pallet = request.POST.get('pallet')
-        top_insert = request.POST.get('top-insert')
         batch_id = request.POST.get('batch')
 
         
         prd = Production.objects.create(
             packing_date = packing_date,
-            customer = Customer.objects.get(id=customer),
             product = Product.objects.get(id=product),
-            pallet = Pallet.objects.get(id=pallet),
-            top_insert = TopInsert.objects.get(id=top_insert),
             requested_units = requested_units,
         )
         
@@ -398,21 +548,19 @@ def production_create(request):
         sweetify.success(request, f'Daily production set #{prd.production_code} created successfully')
         return HttpResponseRedirect(reverse('production_list'))
          
-    customers = Customer.objects.all()
     products = Product.objects.all()
     pallets = Pallet.objects.all()
     top_inserts = TopInsert.objects.all()
     batches = Batch.objects.filter((~Q(batch_status='Used')))
     
     context = {
-        'customers' : customers,
         'products' : products,
         'pallets' : pallets,
         'top_inserts' : top_inserts,
         'batches': batches,
     }
     
-    return render(request,'pages/production_create.html', context)
+    return render(request,'pages/production/production_create.html', context)
 
 def production_edit(request, production_code):
     
@@ -423,21 +571,10 @@ def production_edit(request, production_code):
         production.packing_date = datetime.strptime(request.POST.get('packing-date'), date_format)
         requested_units = int(request.POST.get('requested-units'))
         units_made =  int(request.POST.get('units-made'))
-        order_item_id = request.POST.get('order')
-        pallet_id = request.POST.get('pallet')
-        top_insert_id = request.POST.get('top-insert')
+        product_id = request.POST.get('product')
+
         batch_id = request.POST.get('batch')
         
-        if order_item_id:
-            order_item = CustomerOrderItem.objects.get(id=order_item_id)
-            if order_item and order_item.quantity < production.requested_units:
-                sweetify.error(request, f'Requested number of units greater than ordered quantity')
-                return redirect(request.META['HTTP_REFERER'])
-            elif order_item and order_item.quantity < units_made:
-                sweetify.error(request, f'Manufactured number of units greater than ordered quantity')
-                return redirect(request.META['HTTP_REFERER'])
-            if order_item:  
-                production.order_item = order_item
                 
 
         production.units_made = units_made
@@ -451,15 +588,13 @@ def production_edit(request, production_code):
             production.status = 'Paused'
         if requested_units:
             production.requested_units = requested_units
-        if pallet_id:
-            production.pallet = Pallet.objects.get(id=pallet_id)
-        if top_insert_id:
-            production.top_insert = TopInsert.objects.get(id=top_insert_id)
+        if product_id:
+            product = Product.objects.get(id=product_id)
+            production.product = product
         if batch_id:
             production.batch = Batch.objects.get(id=batch_id)
-        
-
- 
+            production.batch.remaining_weight = production.batch.weight - Decimal((production.units_made * product.unit_weight / 1000))
+            production.batch.save()
         
         production.save()
         
@@ -470,20 +605,16 @@ def production_edit(request, production_code):
         
     production = Production.objects.get(production_code=production_code)
     production.packing_date = production.packing_date.strftime("%d/%m/%Y")
-    order_items = CustomerOrderItem.objects.all()
-    pallets = Pallet.objects.all()
-    top_inserts = TopInsert.objects.all()
+    products = Product.objects.all() if Product.objects else []
     batches = Batch.objects.filter((~Q(batch_status='Used')))
 
     context = {
         'production' : production,
-        'order_items' : order_items,
-        'pallets' : pallets,
-        'top_inserts' : top_inserts,
+        'products' : products,
         'batches': batches,
     }
     
-    return render(request,'pages/production_edit.html', context)
+    return render(request,'pages/production/production_edit.html', context)
 
 def production_list(request):
     productions = Production.objects.all() if Production.objects else []
@@ -492,9 +623,10 @@ def production_list(request):
         'productions': productions,
     }
     
-    return render(request,'pages/production_list.html', context)
+    return render(request,'pages/production/production_list.html', context)
 
-def products(request):
+
+def product_list(request):
     
     products = Product.objects.all() if Product.objects else []
     
@@ -502,7 +634,7 @@ def products(request):
         'products' : products,
     }
     
-    return render(request, 'pages/product_list.html', context)
+    return render(request, 'pages/product/product_list.html', context)
 
 def product_create(request):
     
@@ -514,6 +646,8 @@ def product_create(request):
         lid  = request.POST.get('lid')
         label = request.POST.get('label')
         carton = request.POST.get('carton')
+        pallet = request.POST.get('pallet')
+        top_insert = request.POST.get('top-insert')
         unit_weight = request.POST.get('unit-weight') or 0
         image = request.FILES.get('product-image')
         
@@ -525,6 +659,8 @@ def product_create(request):
             label = Label.objects.get(id=label),
             carton = Carton.objects.get(id=carton),
             unit_weight = int(unit_weight),
+            pallet = Pallet.objects.get(id=pallet),
+            top_insert = TopInsert.objects.get(id=top_insert),
             image = image,
         )
         
@@ -538,6 +674,8 @@ def product_create(request):
     lids = Lid.objects.all()
     labels = Label.objects.all()
     cartons = Carton.objects.all()
+    pallets = Pallet.objects.all()
+    top_inserts = TopInsert.objects.all()
     
     context = {
         'brands': brands,
@@ -545,10 +683,10 @@ def product_create(request):
         'lids': lids,
         'labels': labels,
         'cartons': cartons,
+        'pallets' : pallets,
+        'top_inserts' : top_inserts,
     }
-    return render(request, 'pages/product_create.html', context)
-
-
+    return render(request, 'pages/product/product_create.html', context)
  
 def product_edit(request, product_id):
     
@@ -563,6 +701,8 @@ def product_edit(request, product_id):
         carton = request.POST.get('carton')
         unit_weight = request.POST.get('unit-weight') or 0
         image = request.FILES.get('product-image')
+        pallet = request.POST.get('pallet')
+        top_insert = request.POST.get('top-insert')
 
         product = Product.objects.get(id=product_id)
         product.name = product_name
@@ -572,6 +712,10 @@ def product_edit(request, product_id):
         product.label = Label.objects.get(id=label)
         product.carton = Carton.objects.get(id=carton)
         product.unit_weight = int(unit_weight)
+        product.top_insert = TopInsert.objects.get(id=top_insert) if top_insert else None
+        product.pallet =  Pallet.objects.get(id=pallet) if pallet else None
+        
+        
         if image:
             product.image = image
         product.save()
@@ -588,6 +732,9 @@ def product_edit(request, product_id):
     lids = Lid.objects.all()
     labels = Label.objects.all()
     cartons = Carton.objects.all()
+    pallets = Pallet.objects.all()
+    top_inserts = TopInsert.objects.all()
+    
     context = {
         'product': product,
         'brands': brands,
@@ -595,17 +742,20 @@ def product_edit(request, product_id):
         'lids': lids,
         'labels': labels,
         'cartons': cartons,
+        'pallets' : pallets,
+        'top_inserts' : top_inserts,
         'maxman' : maxman,
         'max_with_cartons': max_with_cartons,
         'cartons_required': cartons_required,
     }
-    return render(request, 'pages/product_edit.html', context)
+    return render(request, 'pages/product/product_edit.html', context)
 
 def product_details(request, product_id):
     context = {}
-    return render(request, 'pages/product_details.html', context)
+    return render(request, 'pages/product/product_details.html', context)
 
-def customer_orders(request):
+
+def customer_order_list(request):
     customer_orders = CustomerOrder.objects.all()
     
     count = customer_orders.count()
@@ -614,7 +764,7 @@ def customer_orders(request):
         'count': count
     }
     
-    return render(request, 'pages/customer_order_list.html', context)
+    return render(request, 'pages/customer_order/customer_order_list.html', context)
 
 def customer_order_create(request):
     if request.method == 'POST':
@@ -659,8 +809,7 @@ def customer_order_create(request):
         'payment_terms': [p[0] for p in CUSTOMER_PAYMENT_TERMS]
         }
     
-    return render(request, 'pages/customer_order_create.html', context)
-
+    return render(request, 'pages/customer_order/customer_order_create.html', context)
 
 def customer_order_details(request, order_number):
     order = CustomerOrder.objects.get(order_number=order_number)
@@ -670,7 +819,7 @@ def customer_order_details(request, order_number):
                'order_items': order_items
           }
     
-    return render(request,'pages/customer_order_details.html', context)
+    return render(request,'pages/customer_order/customer_order_details.html', context)
 
 def customer_order_edit(request, order_number):
     
@@ -721,9 +870,10 @@ def customer_order_edit(request, order_number):
                 'order_status': [p[0] for p in ORDER_STATUS],
           }
     
-    return render(request,'pages/customer_order_edit.html', context)
+    return render(request,'pages/customer_order/customer_order_edit.html', context)
 
-def labels(request):
+
+def label_list(request):
     
     labels = Label.objects.all() if Label.objects else []
     
@@ -731,7 +881,7 @@ def labels(request):
         'labels' : labels,
     }
     
-    return render(request, 'pages/label_list.html', context)
+    return render(request, 'pages/label/label_list.html', context)
 
 def label_create(request):
     if request.method == 'POST':
@@ -739,7 +889,6 @@ def label_create(request):
         label = Label.objects.create(
             name = request.POST.get('label-name'),
             quantity = int(request.POST.get('quantity')),
-            color = request.POST.get('label-color'),
             brand = Brand.objects.get(id=request.POST.get('brand')),
             image = request.FILES.get('label-image'),
         )
@@ -752,7 +901,7 @@ def label_create(request):
         'brands': brands,
     }
     
-    return render(request, 'pages/label_create.html', context)
+    return render(request, 'pages/label/label_create.html', context)
 
 def label_edit(request, label_id):
     if request.method == 'POST':
@@ -760,7 +909,6 @@ def label_edit(request, label_id):
         label = Label.objects.get(id=request.POST.get('label-id'))
         label.name = request.POST.get('label-name')
         label.quantity = int(request.POST.get('quantity'))
-        label.color = request.POST.get('label-color')
         label.brand = Brand.objects.get(id=request.POST.get('brand'))
         image = request.FILES.get('label-image')
         if image:
@@ -778,73 +926,10 @@ def label_edit(request, label_id):
         'label' : label,
     }
     
-    return render(request, 'pages/label_edit.html', context)
-
-def containers(request):
-    
-    containers = Container.objects.all() if Container.objects else []
-    
-    context = {
-        'containers' : containers,
-    }
-    
-    return render(request, 'pages/container_list.html', context)
-
-def container_create(request):
-    if request.method == 'POST':
-        print(request.POST)
-        container = Container.objects.create(
-            name = request.POST.get('container-name'),
-            quantity = int(request.POST.get('quantity')),
-            color = request.POST.get('container-color'),
-            type = request.POST.get('container-type'),
-            capacity = int(request.POST.get('capacity')),
-            image = request.FILES.get('container-image')
-            )
-
-        
-        sweetify.success(request, f'Container {container.name} created successfully')
-        return HttpResponseRedirect(reverse('containers'))
-        
+    return render(request, 'pages/label/label_edit.html', context)
 
 
-    context = {
-        'container_colors': [p[0] for p in LID_CONTAINER_COLORS],
-        'container_types': [p[0] for p in HONEY_CONTAINER_TYPES],
-    }
-    
-    return render(request, 'pages/container_create.html', context)
-
-def container_edit(request, container_id):
-    if request.method == 'POST':
-        print(request.POST)
-        container = Container.objects.get(id=request.POST.get('container-id'))
-        container.name = request.POST.get('container-name')
-        container.quantity = int(request.POST.get('quantity'))
-        container.color = request.POST.get('container-color')
-        container.type = request.POST.get('container-type')
-        container.capacity = int(request.POST.get('capacity'))
-        image = request.FILES.get('container-image')
-        if image:
-            container.image = image
-        container.save()
-        
-        sweetify.success(request, f'Container {container.name} updated successfully')
-        return HttpResponseRedirect(reverse('containers'))
-        
-        
-    container = Container.objects.get(id=container_id)
-
-    context = {
-        'container_colors': [p[0] for p in LID_CONTAINER_COLORS],
-        'container_types': [p[0] for p in HONEY_CONTAINER_TYPES],
-        'container' : container,
-    }
-    
-    return render(request, 'pages/container_edit.html', context)
-
-
-def lids(request):
+def lid_list(request):
     
     lids = Lid.objects.all() if Lid.objects else []
     
@@ -852,7 +937,7 @@ def lids(request):
         'lids' : lids,
     }
     
-    return render(request, 'pages/lid_list.html', context)
+    return render(request, 'pages/lid/lid_list.html', context)
 
 def lid_create(request):
     if request.method == 'POST':
@@ -874,7 +959,7 @@ def lid_create(request):
         'lid_types': [p[0] for p in LID_TYPES],
     }
     
-    return render(request, 'pages/lid_create.html', context)
+    return render(request, 'pages/lid/lid_create.html', context)
 
 def lid_edit(request, lid_id):
     if request.method == 'POST':
@@ -901,61 +986,9 @@ def lid_edit(request, lid_id):
         'lid' : lid,
     }
     
-    return render(request, 'pages/lid_edit.html', context)
+    return render(request, 'pages/lid/lid_edit.html', context)
 
 
-def cartons(request):
-    
-    cartons = Carton.objects.all() if Carton.objects else []
-    
-    context = {
-        'cartons' : cartons,
-    }
-    
-    return render(request, 'pages/carton_list.html', context)
-
-def carton_create(request):
-    if request.method == 'POST':
-        print(request.POST)
-        carton = Carton.objects.create(
-        name = request.POST.get('carton-name'),
-        quantity = int(request.POST.get('quantity')),
-        capacity = int(request.POST.get('capacity')),
-        image = request.FILES.get('carton-image'),
-        )
-        
-        sweetify.success(request, f'Carton {carton.name} created successfully')
-        return HttpResponseRedirect(reverse('cartons'))
-
-    context = {
-
-    }
-    
-    return render(request, 'pages/carton_create.html', context)
-
-def carton_edit(request, carton_id):
-    if request.method == 'POST':
-        print(request.POST)
-        carton = Carton.objects.get(id=request.POST.get('carton-id'))
-        carton.name = request.POST.get('carton-name')
-        carton.quantity = int(request.POST.get('quantity'))
-        carton.capacity = int(request.POST.get('capacity'))
-        image = request.FILES.get('carton-image')
-        if image:
-            carton.image = image
-        carton.save()
-        
-        sweetify.success(request, f'Carton {carton.name} updated successfully')
-        return HttpResponseRedirect(reverse('cartons'))
-        
-        
-    carton = Carton.objects.get(id=carton_id)
-
-    context = {
-        'carton' : carton,
-    }
-    
-    return render(request, 'pages/carton_edit.html', context)
 
 
 class ProdCreationWizard(SessionWizardView):

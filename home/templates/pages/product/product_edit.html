@@ -170,6 +170,40 @@
               </div>
 
               <div class="form-group">
+                <label for="pallet" class="form-label">Pallet</label>
+                <select
+                  class="form-control"
+                  data-trigger
+                  name="pallet"
+                  id="pallet"
+                >
+                  <option value="" disabled selected hidden>
+                    Pick a Pallete type
+                  </option>
+                  {% for b in pallets %}
+                  <option value="{{ b.id }}" {% if b.id == production.pallet.id %} selected {% endif %}>{{ b }}</option>
+                  {% endfor%}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="top-insert" class="form-label">Top insert</label>
+                <select
+                  class="form-control"
+                  data-trigger
+                  name="top-insert"
+                  id="top-insert"
+                >
+                  <option value="" disabled selected hidden>
+                    Pick a Top Insert Type
+                  </option>
+                  {% for b in top_inserts %}
+                  <option value="{{ b.id }}" {% if b.id == production.top_insert.id %} selected {% endif %}>{{ b }}</option>
+                  {% endfor%}
+                </select>
+              </div>
+
+              <div class="form-group">
                 <label for="unit-weight" class="form-label">Unit weight</label>
                 <div class="row align-items-center">
                   <div class="col-4">
@@ -286,6 +320,14 @@
   });
 
 
+  var palletdd = new Choices(`#pallet`, {
+    searchPlaceholderValue: 'search for pallet type',
+  });
+
+  var topindd = new Choices(`#top-insert`, {
+    searchPlaceholderValue: 'search for topinsert type',
+  });
+  
   const d_today = new Datepicker(document.querySelector('#production-date'), {
     buttonClass: 'btn',
     todayHighlight: true,
