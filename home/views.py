@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import (Supplier, SupplierOrder, Customer, CustomerOrder, CustomerOrderItem, HoneyStock, 
 HoneyType, Batch, Product, Production, Brand, Pallet, Container, Lid, Carton, Label, TopInsert,  
@@ -20,8 +20,11 @@ from .forms import DailyProdFormStepOne, DailyProdFormStepTwo
 from django.db.models import Sum
 from django.conf import settings
 
+from admin_berry_pro.forms import LoginForm, RegistrationForm, UserPasswordResetForm, UserSetPasswordForm, UserPasswordChangeForm
+from django.contrib.auth import logout
+from django.contrib.auth import views as auth_views
+
 # Create your views here.
-# @login_required(login_url='/accounts/login-v3/') 
 
 def index(request):
     orders = SupplierOrder.objects.all()
@@ -52,6 +55,7 @@ def increment_supplier_order_invoice_number():
     return new_invoice_no
 
 # Supplier
+@login_required(login_url='/accounts/login-v3/')
 def supplier_create(request):
     form = SupplierForm(request.POST or None)
     context = {
@@ -68,6 +72,7 @@ def supplier_create(request):
 
     return render(request, 'pages/supplier/supplier_create.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def supplier_edit(request, supplier_id):
     supplier = Supplier.objects.get(id=supplier_id)
 
@@ -87,6 +92,7 @@ def supplier_edit(request, supplier_id):
     }
     return render(request, 'pages/supplier/supplier_edit.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def supplier_list(request):
 
     suppliers = Supplier.objects.all()
@@ -99,7 +105,7 @@ def supplier_list(request):
     return render(request, 'pages/supplier/supplier_list.html', context)
  
 # Supplier Order
-# # @login_required(login_url='/accounts/login-v3/')
+@login_required(login_url='/accounts/login-v3/')
 def supplier_order_create(request):
     if request.method == 'POST':
         
@@ -150,6 +156,7 @@ def supplier_order_create(request):
     
     return render(request, 'pages/supplier_order/supplier_order_create.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def supplier_order_edit(request, order_number):
     
     if request.method == 'POST':
@@ -207,6 +214,7 @@ def supplier_order_edit(request, order_number):
     
     return render(request,'pages/supplier_order/supplier_order_edit.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def supplier_order_list(request):
     
     supplier_orders = SupplierOrder.objects.all()
@@ -218,6 +226,7 @@ def supplier_order_list(request):
     
     return render(request, 'pages/supplier_order/supplier_order_list.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def supplier_order_details(request, order_number):
     order = SupplierOrder.objects.get(order_number=order_number)
     honey_stock = HoneyStock.objects.filter(order=order.id)    
@@ -237,6 +246,7 @@ def supplier_order_details(request, order_number):
     return render(request,'pages/supplier_order/supplier_order_details.html', context)
 
 # Customer
+@login_required(login_url='/accounts/login-v3/')
 def customer_create(request):
     form = CustomerForm(request.POST or None)
     context = {
@@ -253,6 +263,7 @@ def customer_create(request):
 
     return render(request, 'pages/customer/customer_create.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def customer_edit(request, customer_id):
     customer = Customer.objects.get(id=customer_id)
 
@@ -272,6 +283,7 @@ def customer_edit(request, customer_id):
     }
     return render(request, 'pages/customer/customer_edit.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def customer_list(request):
 
     customers = Customer.objects.all()
@@ -284,6 +296,7 @@ def customer_list(request):
     return render(request, 'pages/customer/customer_list.html', context)
 
 # Customer Order
+@login_required(login_url='/accounts/login-v3/')
 def customer_order_create(request):
     if request.method == 'POST':
         customer = Customer.objects.get(id=request.POST.get('customer'))
@@ -329,6 +342,7 @@ def customer_order_create(request):
     
     return render(request, 'pages/customer_order/customer_order_create.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def customer_order_edit(request, order_number):
     
     if request.method == 'POST':
@@ -380,6 +394,7 @@ def customer_order_edit(request, order_number):
     
     return render(request,'pages/customer_order/customer_order_edit.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def customer_order_list(request):
     customer_orders = CustomerOrder.objects.all()
     
@@ -391,6 +406,7 @@ def customer_order_list(request):
     
     return render(request, 'pages/customer_order/customer_order_list.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def customer_order_details(request, order_number):
     order = CustomerOrder.objects.get(order_number=order_number)
     order_items = CustomerOrderItem.objects.filter(order=order)
@@ -402,7 +418,7 @@ def customer_order_details(request, order_number):
     return render(request,'pages/customer_order/customer_order_details.html', context)
 
 # Batch
-# @login_required(login_url='/accounts/login-v3/')  
+@login_required(login_url='/accounts/login-v3/') 
 def batch_create(request):
     if request.method == 'POST':
         date_format = '%d/%m/%Y'
@@ -457,6 +473,7 @@ def batch_create(request):
         }
     return render(request, 'pages/batch/batch_create.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def batch_edit(request, batch_number):
     
     if request.method == 'POST':
@@ -511,6 +528,7 @@ def batch_edit(request, batch_number):
     
     return render(request,'pages/batch/batch_edit.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def batch_list(request):
     
     batches = Batch.objects.all()
@@ -522,6 +540,7 @@ def batch_list(request):
     
     return render(request, 'pages/batch/batch_list.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def batch_details(request, batch_number):
     
     batch = Batch.objects.get(batch_number=batch_number)
@@ -539,6 +558,7 @@ def batch_details(request, batch_number):
     return render(request, 'pages/batch/batch_details.html', context)
 
 # Production
+@login_required(login_url='/accounts/login-v3/')
 def production_create(request):
     if request.method == 'POST':
         date_format = '%d/%m/%Y'
@@ -582,6 +602,7 @@ def production_create(request):
     
     return render(request,'pages/production/production_create.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def production_edit(request, production_code):
     
     if request.method == 'POST':
@@ -635,6 +656,7 @@ def production_edit(request, production_code):
     
     return render(request,'pages/production/production_edit.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def production_list(request):
     productions = Production.objects.all().order_by("-packing_date") if Production.objects else []
     
@@ -649,6 +671,7 @@ def production_list(request):
     
     return render(request,'pages/production/production_list.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def production_details(request, production_code):
     
     production = Production.objects.get(production_code=production_code)
@@ -656,6 +679,7 @@ def production_details(request, production_code):
     return render(request, 'pages/product/product_details.html', context)
 
 # Product
+@login_required(login_url='/accounts/login-v3/')
 def product_create(request):
     
     if request.method == 'POST':
@@ -708,6 +732,7 @@ def product_create(request):
     }
     return render(request, 'pages/product/product_create.html', context)
  
+@login_required(login_url='/accounts/login-v3/')
 def product_edit(request, product_id):
     
     if request.method == 'POST':
@@ -770,6 +795,7 @@ def product_edit(request, product_id):
     }
     return render(request, 'pages/product/product_edit.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def product_list(request):
     
     products = Product.objects.all() if Product.objects else []
@@ -780,6 +806,7 @@ def product_list(request):
     
     return render(request, 'pages/product/product_list.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def product_details(request, product_id):
     product = Product.objects.get(id=product_id)
     maxman = min(product.lid.quantity, product.label.quantity, product.container.quantity)
@@ -794,6 +821,7 @@ def product_details(request, product_id):
     return render(request, 'pages/product/product_details.html', context)
 
 # Carton
+@login_required(login_url='/accounts/login-v3/')
 def carton_create(request):
     if request.method == 'POST':
         print(request.POST)
@@ -813,6 +841,7 @@ def carton_create(request):
     
     return render(request, 'pages/carton/carton_create.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def carton_edit(request, carton_id):
     if request.method == 'POST':
         print(request.POST)
@@ -837,6 +866,7 @@ def carton_edit(request, carton_id):
     
     return render(request, 'pages/carton/carton_edit.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def carton_list(request):
     
     cartons = Carton.objects.all() if Carton.objects else []
@@ -848,6 +878,7 @@ def carton_list(request):
     return render(request, 'pages/carton/carton_list.html', context)
 
 # Container
+@login_required(login_url='/accounts/login-v3/')
 def container_create(request):
     if request.method == 'POST':
         print(request.POST)
@@ -873,6 +904,7 @@ def container_create(request):
     
     return render(request, 'pages/container/container_create.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def container_edit(request, container_id):
     if request.method == 'POST':
         print(request.POST)
@@ -901,6 +933,7 @@ def container_edit(request, container_id):
     
     return render(request, 'pages/container/container_edit.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def container_list(request):
     
     containers = Container.objects.all() if Container.objects else []
@@ -913,6 +946,7 @@ def container_list(request):
     return render(request, 'pages/container/container_list.html', context)
 
 # Label
+@login_required(login_url='/accounts/login-v3/')
 def label_create(request):
     if request.method == 'POST':
         print(request.POST)
@@ -933,6 +967,7 @@ def label_create(request):
     
     return render(request, 'pages/label/label_create.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def label_edit(request, label_id):
     if request.method == 'POST':
         print(request.POST)
@@ -958,6 +993,7 @@ def label_edit(request, label_id):
     
     return render(request, 'pages/label/label_edit.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def label_list(request):
     
     labels = Label.objects.all() if Label.objects else []
@@ -969,6 +1005,7 @@ def label_list(request):
     return render(request, 'pages/label/label_list.html', context)
 
 # Lid
+@login_required(login_url='/accounts/login-v3/')
 def lid_create(request):
     if request.method == 'POST':
         print(request.POST)
@@ -991,6 +1028,7 @@ def lid_create(request):
     
     return render(request, 'pages/lid/lid_create.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def lid_edit(request, lid_id):
     if request.method == 'POST':
         print(request.POST)
@@ -1018,6 +1056,7 @@ def lid_edit(request, lid_id):
     
     return render(request, 'pages/lid/lid_edit.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def lid_list(request):
     
     lids = Lid.objects.all() if Lid.objects else []
@@ -1029,6 +1068,7 @@ def lid_list(request):
     return render(request, 'pages/lid/lid_list.html', context)
 
 # Pallet
+@login_required(login_url='/accounts/login-v3/')
 def pallet_create(request):
     if request.method == 'POST':
         print(request.POST)
@@ -1051,6 +1091,7 @@ def pallet_create(request):
     
     return render(request, 'pages/pallet/pallet_create.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def pallet_edit(request, pallet_id):
     if request.method == 'POST':
         print(request.POST)
@@ -1077,6 +1118,7 @@ def pallet_edit(request, pallet_id):
     
     return render(request, 'pages/pallet/pallet_edit.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def pallet_list(request):
     pallets = Pallet.objects.all() if Pallet.objects else []
     
@@ -1087,6 +1129,7 @@ def pallet_list(request):
     return render(request, 'pages/pallet/pallet_list.html', context)
 
 # Top Insert
+@login_required(login_url='/accounts/login-v3/')
 def top_insert_create(request):
     if request.method == 'POST':
         print(request.POST)
@@ -1107,6 +1150,7 @@ def top_insert_create(request):
     
     return render(request, 'pages/top_insert/top_insert_create.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def top_insert_edit(request, top_insert_id):
     if request.method == 'POST':
         print(request.POST)
@@ -1132,6 +1176,7 @@ def top_insert_edit(request, top_insert_id):
     
     return render(request, 'pages/top_insert/top_insert_edit.html', context)
 
+@login_required(login_url='/accounts/login-v3/')
 def top_insert_list(request):
     top_inserts = TopInsert.objects.all() if TopInsert.objects else []
     
@@ -1141,6 +1186,50 @@ def top_insert_list(request):
     
     return render(request, 'pages/top_insert/top_insert_list.html', context)
 
+
+
+######## Start v3 #########
+def register_v3(request):
+  if request.method == 'POST':
+    form = RegistrationForm(request.POST)
+    if form.is_valid():
+      form.save()
+      print('Account created successfully!')
+      return redirect('/accounts/login-v3/')
+    else:
+      print("Registration failed!")
+  else:
+    form = RegistrationForm()
+  
+  context = {'form': form}
+  return render(request, 'accounts/register-v3.html', context)
+
+class UserLoginV3View(auth_views.LoginView):
+  template_name = 'accounts/login-v3.html'
+  form_class = LoginForm
+  success_url = '/dashboard'
+
+class UserPasswordChangeV3View(auth_views.PasswordChangeView):
+  template_name = 'accounts/password-change-v3.html'
+  form_class = UserPasswordChangeForm
+
+class UserPasswordResetV3View(auth_views.PasswordResetView):
+  template_name = 'accounts/forgot-password-v3.html'
+  form_class = UserPasswordResetForm
+
+######## End v3 #########
+
+
+######## Common #########
+class UserPasswordResetConfirmV1View(auth_views.PasswordResetConfirmView):
+  template_name = 'accounts/reset-password-v1.html'
+  form_class = UserSetPasswordForm
+
+def user_logout_view(request):
+  logout(request)
+  return redirect('/accounts/login-v1/')
+
+######## End Common #########
 
 # Additional Stuff
 class ProdCreationWizard(SessionWizardView):
