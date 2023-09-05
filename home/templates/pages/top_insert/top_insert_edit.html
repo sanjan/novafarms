@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
-{% block title %}Lids |{% endblock title %}
+{% block title %}Top Inserts | Edit{% endblock title %}
 {% block extrastyle %}
     <!-- [Page specific CSS] start -->
 
@@ -17,13 +17,13 @@
           <div class="row align-items-center">
             <div class="col-md-12">
               <div class="page-header-title">
-                <h5 class="m-b-10">Edit Lid</h5>
+                <h5 class="m-b-10">Edit Top Insert</h5>
               </div>
               <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
                 <li class="breadcrumb-item"><a href="javascript: void(0)">Inventory</a></li>
-                <li class="breadcrumb-item"><a href="{% url 'lids' %}">Lids</a></li>
-                <li class="breadcrumb-item" aria-current="page">Edit Lid</li>
+                <li class="breadcrumb-item"><a href="{% url 'top_inserts' %}">Top Inserts</a></li>
+                <li class="breadcrumb-item" aria-current="page">Edit</li>
               </ul>
             </div>
           </div>
@@ -42,17 +42,15 @@
                 <div class="card-body">
                   <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="hidden" id="lid-id" name="lid-id" value="{{lid.id}}">
+                    <input type="hidden" id="topinsert-id" name="topinsert-id" value="{{top_insert.id}}">
                   <div class="row">
-
-
                     <div class="col-md-5">
                       <div class="sticky-md-top product-sticky">
                         <div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-bs-ride="carousel">
                           <div class="carousel-inner">
                             <div class="carousel-item active">
-                              {% if lid.image %}
-                              <img src="{{lid.image.url}}" class="d-block w-100 rounded" alt="Product images" />
+                              {% if top_insert.image %}
+                              <img src="{{top_insert.image.url}}" class="d-block w-100 rounded" alt="Product images" />
                               {% endif %}
                             </div>
                           </div>
@@ -68,36 +66,49 @@
                         </div>
                       </div>
                       <div class="form-group">
-                        {% if lid.quantity >= 10000 %}
+                        {% if top_insert.quantity >= 10000 %}
                         <span class="badge bg-light-success f-14">In stock</span>
                         {% else %}
                         <span class="badge bg-light-danger f-14">Low stock</span>
                         {% endif %}
                       </div>
                       <div class="form-group">
-                        <input class="mb-3 form-control form-control-lg" type="text" name="lid-name" id="lid-name" placeholder="lid name" value="{{lid.name}}"/>
+                        <input class="mb-3 form-control form-control-lg" type="text" name="topinsert-name" id="topinsert-name" placeholder="top insert name" value="{{top_insert.name}}"/>
                       </div>
                       <hr class="my-3" />
                       <div class="form-group row">
-                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Type <span class="text-danger">*</span></label>
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Length <span class="text-danger">*</span></label>
                         <div class="col-lg-6 col-md-12 col-sm-12">
-                          <select class="form-select" aria-label="Default select example" name="lid-type" id="lid-type">
-                            {% for b in lid_types %}
-                            <option value="{{ b }}" {% if b == lid.type %} selected {% endif %}>{{ b }}</option>
-                            {% endfor %}
-                          </select>
+                          <div class="input-group">
+                            <input
+                              class="form-control"
+                              type="text"
+                              id="topinsert-length"
+                              name="topinsert-length"
+                              placeholder="top insert length"
+                              value="{{top_insert.length}}"
+                            />
+                            <span class="input-group-text"> mm</span>
+                          </div>
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Color <span class="text-danger">*</span></label>
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Width <span class="text-danger">*</span></label>
                         <div class="col-lg-6 col-md-12 col-sm-12">
-                          <select class="form-select" aria-label="Default select example" name="lid-color" id="lid-color">
-                            {% for b in lid_colors %}
-                            <option value="{{ b }}" {% if b == lid.color %} selected {% endif %}>{{ b }}</option>
-                            {% endfor %}
-                          </select>
+                          <div class="input-group">
+                            <input
+                              class="form-control"
+                              type="text"
+                              id="topinsert-width"
+                              name="topinsert-width"
+                              placeholder="top insert width"
+                              value="{{top_insert.width}}"
+                            />
+                            <span class="input-group-text"> mm</span>
+                          </div>
                         </div>
                       </div>
+
 
                       <div class="form-group row">
                         <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Quantity <span class="text-danger">*</span></label>
@@ -111,7 +122,7 @@
                               type="text"
                               id="quantity"
                               name="quantity"
-                              value="{{lid.quantity}}"
+                              value="{{top_insert.quantity}}"
                             />
                             <button type="button" id="increase" onclick="increaseValue('quantity')" class="btn btn-link-dark"
                               ><i class="ti ti-plus"></i
@@ -122,7 +133,7 @@
                       <div class="form-group row">
                         <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Image <span class="text-danger">*</span></label>
                         <div class="col-lg-6 col-md-12 col-sm-12">
-                        <input type="file" class="form-control" name="lid-image" id="lid-image" accept="image/*" />
+                        <input type="file" class="form-control" name="topinsert-image" id="topinsert-image" accept="image/*" />
                        </div>
                       </div>
                       <hr class="my-3" />

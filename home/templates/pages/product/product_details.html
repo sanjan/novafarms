@@ -135,7 +135,9 @@
             <div class="col-sm-6 col-md-4 col-xxl-3">
               <div class="card product-card">
                 <div class="card-img-top">
+                  {% if product.label.image %}
                   <img src="{{product.label.image.url}}" alt="image" class="img-prod" />
+                  {% endif %}
                 </div>
                 <div class="card-body">
                   <a href="{% url 'label_edit' product.label.id %}">
@@ -158,7 +160,9 @@
             <div class="col-sm-6 col-md-4 col-xxl-3">
               <div class="card product-card">
                 <div class="card-img-top">
+                  {% if product.container.image %}
                   <img src="{{product.container.image.url}}" alt="image" class="img-prod" />
+                  {% endif %}
                 </div>
                 <div class="card-body">
                   <a href="{% url 'container_edit' product.container.id %}">
@@ -181,7 +185,9 @@
             <div class="col-sm-6 col-md-4 col-xxl-3">
               <div class="card product-card">
                 <div class="card-img-top">
+                  {% if product.lid.image %}
                   <img src="{{product.lid.image.url}}" alt="image" class="img-prod" />
+                  {% endif %}
                 </div>
                 <div class="card-body">
                   <a href="{% url 'lid_edit' product.lid.id %}">
@@ -204,7 +210,9 @@
             <div class="col-sm-6 col-md-4 col-xxl-3">
               <div class="card product-card">
                 <div class="card-img-top">
+                  {% if product.carton.image %}
                   <img src="{{product.carton.image.url}}" alt="image" class="img-prod" />
+                  {% endif %}
                 </div>
                 <div class="card-body">
                   <a href="{% url 'carton_edit' product.carton.id %}">
@@ -229,7 +237,9 @@
             <div class="col-sm-6 col-md-4 col-xxl-3">
               <div class="card product-card">
                 <div class="card-img-top">
+                  {% if product.top_insert.image %}
                   <img src="{{product.top_insert.image.url}}" alt="image" class="img-prod" />
+                  {% endif %}
                 </div>
                 <div class="card-body">
                   <a href="{% url 'top_insert_edit' product.top_insert.id %}">
@@ -254,7 +264,9 @@
             <div class="col-sm-6 col-md-4 col-xxl-3">
               <div class="card product-card">
                 <div class="card-img-top">
+                  {% if product.pallet.image %}
                   <img src="{{product.pallet.image.url}}" alt="image" class="img-prod" />
+                  {% endif %}
                 </div>
                 <div class="card-body">
                   <a href="{% url 'pallet_edit' product.pallet.id %}">

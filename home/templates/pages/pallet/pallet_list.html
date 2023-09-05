@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
-{% block title %}Lids |{% endblock title %}
+{% block title %}Pallets{% endblock title %}
 
 {% block content %}
 
@@ -38,8 +38,8 @@
                   </div>
                 </div>
               </div>
-              <span class="text-white d-block f-34 f-w-500 my-2">{{count}}<i class="ti ti-arrow-up-right-circle opacity-50"></i></span>
-              <p class="mb-0 opacity-50">Number of lids</p>
+              <span class="text-white d-block f-34 f-w-500 my-2">{{ pallets | length }}<i class="ti ti-arrow-up-right-circle opacity-50"></i></span>
+              <p class="mb-0 opacity-50">Number of Pallets</p>
             </div>
           </div>
         </div>
@@ -54,14 +54,14 @@
           <div class="card table-card">
             <div class="card-header">
               <h5 class="d-flex justify-content-between align-items-center">
-                List of Lids
-                <a href="{% url 'lid_create' %}" class="btn btn-primary me-2">New Lid</a>  
+                List of Pallets
+                <a href="{% url 'pallet_create' %}" class="btn btn-primary me-2">New Pallet</a>  
                 <!-- Wrap with <div>...buttons...</div> if you have multiple buttons -->
               </h5>
             </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-hover" id="lids-table">
+                <table class="table table-hover" id="pallets-table">
                   <thead>
                     <tr>
                       <th>
@@ -71,14 +71,15 @@
                       </th>
                       <th>Image</th>
                       <th>Name</th>
-                      <th>Type</th>
-                      <th>Color</th>
+                      <th>Length</th>
+                      <th>Width</th>
+                      <th>Cartons Capacity</th>
                       <th>Quantity</th>
                       <th class="text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {% for lid in lids %}
+                    {% for pallet in pallets %}
                     <tr>
                       <td>
                         <div class="form-check">
@@ -86,18 +87,19 @@
                         </div>
                       </td>
                       <td>
-                        {% if lid.image %} 
-                        <img src="{{lid.image.url}}" alt="image" class="wid-50 rounded" />
+                        {% if pallet.image %} 
+                        <img src="{{pallet.image.url}}" alt="image" class="wid-50 rounded" />
                         {% endif %}
                       </td>
                       <td>
-                      <h5 class="mb-0"><a href="{% url 'lid_edit' lid.id %}">{{lid.name}}</a></h5>
+                      <h5 class="mb-0"><a href="{% url 'pallet_edit' pallet.id %}">{{pallet.name}}</a></h5>
                       </td>
-                      <td>{{lid.type}}</td>
-                      <td>{{lid.color}}</td>
-                      <td>{{lid.quantity}}</td>
+                      <td>{{pallet.length}} mm</td>
+                      <td>{{pallet.width}} mm</td>
+                      <td>{{pallet.capacity_cartons}}</td>
+                      <td>{{pallet.quantity}}</td>
                       <td class="text-center">
-                        <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='{% url 'lid_edit' lid.id %}';"><i class="ti ti-pencil"></i></button>
+                        <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='{% url 'pallet_edit' pallet.id %}';"><i class="ti ti-pencil"></i></button>
                       </td>
                     </tr>
                     {% endfor %}
@@ -125,7 +127,7 @@
   {% load sweetify %}
   {% sweetify %}
     <script>
-      const lidsTable = new simpleDatatables.DataTable('#lids-table', {
+      const palletsTable = new simpleDatatables.DataTable('#pallets-table', {
         sortable: false,
         perPage:10
       });

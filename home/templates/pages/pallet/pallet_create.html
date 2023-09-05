@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
-{% block title %}Lids |{% endblock title %}
+{% block title %}Pallets{% endblock title %}
 {% block extrastyle %}
     <!-- [Page specific CSS] start -->
 
@@ -17,13 +17,13 @@
           <div class="row align-items-center">
             <div class="col-md-12">
               <div class="page-header-title">
-                <h5 class="m-b-10">Edit Lid</h5>
+                <h5 class="m-b-10">Create Pallet</h5>
               </div>
               <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
                 <li class="breadcrumb-item"><a href="javascript: void(0)">Inventory</a></li>
-                <li class="breadcrumb-item"><a href="{% url 'lids' %}">Lids</a></li>
-                <li class="breadcrumb-item" aria-current="page">Edit Lid</li>
+                <li class="breadcrumb-item"><a href="{% url 'pallets' %}">Pallets</a></li>
+                <li class="breadcrumb-item" aria-current="page">Create Pallet</li>
               </ul>
             </div>
           </div>
@@ -49,41 +49,62 @@
 
 
                     <div class="col-md-7">
-
                       <div class="form-group row">
                         <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Name <span class="text-danger">*</span></label>
                         <div class="col-lg-6 col-md-12 col-sm-12">
                             <input
                               class="form-control"
                               type="text"
-                              id="lid-name"
-                              name="lid-name"
-                              placeholder="lid name"
+                              id="pallet-name"
+                              name="pallet-name"
+                              placeholder="pallet name"
                             />
 
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Type <span class="text-danger">*</span></label>
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Length <span class="text-danger">*</span></label>
                         <div class="col-lg-6 col-md-12 col-sm-12">
-                          <select class="form-select" aria-label="Default select example" name="lid-type" id="lid-type">
-                            {% for b in lid_types %}
-                            <option value="{{ b }}" >{{ b }}</option>
-                            {% endfor %}
-                          </select>
+                          <div class="input-group">
+                            <input
+                              class="form-control"
+                              type="text"
+                              id="pallet-length"
+                              name="pallet-length"
+                              placeholder="pallet length"
+                            />
+                            <span class="input-group-text"> mm</span>
+                          </div>
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Color <span class="text-danger">*</span></label>
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Width <span class="text-danger">*</span></label>
                         <div class="col-lg-6 col-md-12 col-sm-12">
-                          <select class="form-select" aria-label="Default select example" name="lid-color" id="lid-color">
-                            {% for b in lid_colors %}
-                            <option value="{{ b }}">{{ b }}</option>
-                            {% endfor %}
-                          </select>
+                          <div class="input-group">
+                            <input
+                              class="form-control"
+                              type="text"
+                              id="pallet-width"
+                              name="pallet-width"
+                              placeholder="pallet width"
+                            />
+                            <span class="input-group-text"> mm</span>
+                          </div>
                         </div>
                       </div>
+                      <div class="form-group row">
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Cartons Capacity <span class="text-danger">*</span></label>
+                        <div class="col-lg-6 col-md-12 col-sm-12">
+                            <input
+                              class="form-control"
+                              type="text"
+                              id="pallet-cartons"
+                              name="pallet-cartons"
+                              placeholder="maximum of cartons per pallet"
+                            />
 
+                        </div>
+                      </div>
                       <div class="form-group row">
                         <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Quantity <span class="text-danger">*</span></label>
                         <div class="col-lg-6 col-md-12 col-sm-12">
@@ -105,9 +126,9 @@
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Image <span class="text-danger">*</span></label>
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Layout <span class="text-danger">*</span></label>
                         <div class="col-lg-6 col-md-12 col-sm-12">
-                        <input type="file" class="form-control" name="lid-image" id="lid-image" accept="image/*" />
+                        <input type="file" class="form-control" name="pallet-layout" id="pallet-layout" accept="application/pdf,image/*" />
                        </div>
                       </div>
                       <hr class="my-3" />
