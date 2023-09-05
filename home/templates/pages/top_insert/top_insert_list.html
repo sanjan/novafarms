@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
-{% block title %} Daily Production {% endblock title %}
+{% block title %}Top Inserts{% endblock title %}
 
 {% block content %}
 
@@ -39,7 +39,7 @@
                 </div>
               </div>
               <span class="text-white d-block f-34 f-w-500 my-2">{{count}}<i class="ti ti-arrow-up-right-circle opacity-50"></i></span>
-              <p class="mb-0 opacity-50">Number of products</p>
+              <p class="mb-0 opacity-50">Number of Top Inserts</p>
             </div>
           </div>
         </div>
@@ -54,14 +54,14 @@
           <div class="card table-card">
             <div class="card-header">
               <h5 class="d-flex justify-content-between align-items-center">
-                List of Products
-                <a href="{% url 'product_create' %}" class="btn btn-primary me-2">New Product</a>  
+                List of Top Inserts
+                <a href="{% url 'top_insert_create' %}" class="btn btn-primary me-2">New Top Insert</a>  
                 <!-- Wrap with <div>...buttons...</div> if you have multiple buttons -->
               </h5>
             </div>
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-hover" id="products-table">
+                <table class="table table-hover" id="topinserts-table">
                   <thead>
                     <tr>
                       <th>
@@ -71,14 +71,14 @@
                       </th>
                       <th>Image</th>
                       <th>Name</th>
-                      <th>Brand</th>
-                      <th>Container Type</th>
-                      <th>Unit Weight</th>
+                      <th>Type</th>
+                      <th>Color</th>
+                      <th>Quantity</th>
                       <th class="text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {% for product in products %}
+                    {% for top_insert in top_inserts %}
                     <tr>
                       <td>
                         <div class="form-check">
@@ -86,16 +86,18 @@
                         </div>
                       </td>
                       <td>
-                        <img src="{% if product.image %} {{product.image.url}} {% endif %}" alt="image" class="wid-50 rounded" />
+                        {% if top_insert.image %} 
+                        <img src="{{top_insert.image.url}}" alt="image" class="wid-50 rounded" />
+                        {% endif %}
                       </td>
                       <td>
-                      <h5 class="mb-0"><a href="{% url 'product_details' product.id %}">{{product.name}}</a></h5>
+                      <h5 class="mb-0"><a href="{% url 'top_insert_edit' top_insert.id %}">{{top_insert.name}}</a></h5>
                       </td>
-                      <td>{{product.brand}}</td>
-                      <td>{{product.container.type}}</td>
-                      <td>{{product.unit_weight}}g</td>
+                      <td>{{top_insert.length}} mm</td>
+                      <td>{{top_insert.width}} mm</td>
+                      <td>{{top_insert.quantity}}</td>
                       <td class="text-center">
-                        <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='{% url 'product_edit' product.id %}';"><i class="ti ti-pencil"></i></button>
+                        <button type="button" class="btn btn-link-secondary"  onclick="window.location.href='{% url 'top_insert_edit' top_insert.id %}';"><i class="ti ti-pencil"></i></button>
                       </td>
                     </tr>
                     {% endfor %}
@@ -123,7 +125,7 @@
   {% load sweetify %}
   {% sweetify %}
     <script>
-      const productsTable = new simpleDatatables.DataTable('#products-table', {
+      const topinsertsTable = new simpleDatatables.DataTable('#topinserts-table', {
         sortable: false,
         perPage:10
       });

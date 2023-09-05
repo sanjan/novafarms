@@ -1,5 +1,5 @@
 from django import forms
-from .models import Supplier, Customer, HoneyType, Brand
+from .models import Supplier, Customer
 
 
 class SupplierForm(forms.ModelForm):

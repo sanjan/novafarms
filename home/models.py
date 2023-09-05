@@ -7,6 +7,7 @@ from django.core.files.base import ContentFile
 from shortuuid.django_fields import ShortUUIDField
 from django_countries.fields import CountryField
 from django.conf import settings
+from decimal import Decimal
 
 # Create your models here.
 STATE = (
@@ -105,88 +106,7 @@ class Brand(models.Model):
     name = models.CharField(max_length=100,null=True, blank=True)
     def __str__(self) -> str:
         return self.name
-
-class Carton(models.Model):
-    name = models.CharField(max_length=100,null=True, blank=True)
-    capacity =  models.IntegerField(default=0)
-    quantity =  models.IntegerField(default=0)
-    image = models.ImageField(upload_to='carton_images',blank=True,null=True)
-    last_updated =  models.DateField(auto_now=True)
-
-    def __str__(self) -> str:
-        return f'{self.name} ({self.capacity} units/carton, in-stock: {self.quantity})'
-           
-class TopInsert(models.Model):
-    name = models.CharField(max_length=100,null=True, blank=True)
-    width = models.IntegerField(default=0)
-    length = models.IntegerField(default=0)
-    quantity =  models.IntegerField(default=0)
-    last_updated =  models.DateField(auto_now=True)
     
-    def __str__(self) -> str:
-        return f'{self.name} ({self.width} cm x {self.length} cm, in-stock: {self.quantity})'
-
-class Container(models.Model):
-    name = models.CharField(max_length=100,null=True, blank=True)
-    type = models.CharField(max_length=20, choices=HONEY_CONTAINER_TYPES)
-    quantity =  models.IntegerField(default=0)
-    capacity =  models.IntegerField(default=0)
-    color = models.CharField(max_length=20, choices=LID_CONTAINER_COLORS)
-    image = models.ImageField(upload_to='container_images',blank=True,null=True)
-    last_updated =  models.DateField(auto_now=True)
-    
-    def __str__(self) -> str:
-        return f'{self.name} (capacity: {self.capacity}g, color: {self.color}, in-stock: {self.quantity})'
-    
-class Lid(models.Model):
-    name = models.CharField(max_length=100,null=True, blank=True)
-    type = models.CharField(max_length=20, choices=LID_TYPES)
-    quantity =  models.IntegerField(default=0)
-    color = models.CharField(max_length=20, choices=LID_CONTAINER_COLORS)
-    image = models.ImageField(upload_to='lid_images',blank=True,null=True)
-    last_updated =  models.DateField(auto_now=True)
-
-    def __str__(self) -> str:
-        return f'{self.name} (color: {self.color}, in-stock: {self.quantity})'
-    
-class Label(models.Model):
-    name = models.CharField(max_length=100,null=True, blank=True)
-    brand = models.ForeignKey('Brand', null=True, blank=True, on_delete=models.SET_NULL)
-    quantity =  models.IntegerField(default=0)
-    image = models.ImageField(upload_to='label_images',blank=True,null=True)
-    last_updated =  models.DateField(auto_now=True)
-    
-    def __str__(self) -> str:
-        return f'{self.name} (in-stock: {self.quantity})'
-
-class Pallet(models.Model):
-    pallet_name = models.CharField(max_length=100,null=True, blank=True)
-    pallet_number = models.CharField(max_length=100,null=True, blank=True)
-    width = models.IntegerField(default=0)
-    length = models.IntegerField(default=0)
-    quantity =  models.IntegerField(default=0)
-    capacity_cartons = models.IntegerField(default=0)
-    layout = models.FileField(upload_to='pallet_layouts',blank=True,null=True)
-    last_updated =  models.DateField(auto_now=True)
-    
-    def __str__(self) -> str:
-        return f'{self.pallet_name} - {self.pallet_number} ({self.width} cm x {self.length} cm) (in-stock: {self.quantity})'
-
-class Product(models.Model):
-    name = models.CharField(max_length=100,null=True, blank=True)
-    brand = models.ForeignKey('Brand', null=True, blank=True, on_delete=models.SET_NULL)
-    container = models.ForeignKey('Container', null=True, blank=True, on_delete=models.SET_NULL)
-    lid = models.ForeignKey('Lid', null=True, blank=True, on_delete=models.SET_NULL)
-    label = models.ForeignKey('Label',null=True, blank=True, on_delete=models.SET_NULL)
-    carton  = models.ForeignKey('Carton', null=True, blank=True, on_delete=models.SET_NULL)
-    pallet = models.ForeignKey('Pallet', on_delete=models.SET_NULL, null=True, blank=True)
-    top_insert = models.ForeignKey('TopInsert', on_delete=models.SET_NULL, null=True, blank=True)
-    unit_weight = models.IntegerField(default=0)
-    image = models.ImageField(upload_to='product_images',blank=True,null=True)
-    
-    def __str__(self) -> str:
-        ct = self.container.type if self.container else ''
-        return f'{self.brand} {self.name} {ct} ({self.unit_weight}g)'
 
 class Customer(models.Model):
     name = models.CharField(max_length=50, null=True)
@@ -348,7 +268,7 @@ class HoneyStock(models.Model):
     
     def __str__(self) -> str:
         ht = ', '.join([h.type for h in self.honey_types.all() ])
-        return f'{self.stock_id} {self.order.date} {self.order.supplier} {self.net_weight}kg ({ht})'
+        return f'{self.ibc_number} {self.order.date} {self.order.supplier.name} {self.net_weight}kg ({ht})'
     
     def save(self, *args, **kwargs):
         self.net_weight = self.gross_weight - self.ibc_weight
@@ -361,9 +281,9 @@ class Batch(models.Model):
     batch_number = models.CharField(max_length=100, unique=True, null=True, blank=True)
     qrcode = models.ImageField(upload_to='batch_qr_codes',blank=True,null=True)
     qr_pointer = models.CharField(max_length=300, unique=True, null=True, blank=True)
-    honey_stock = models.ManyToManyField(HoneyStock)
-    honey_type = models.CharField(max_length=100, unique=True, null=True, blank=True)
-    tank_number = models.CharField(max_length=3, unique=True, null=True, blank=True)
+    honey_stock = models.ManyToManyField('HoneyStock')
+    honey_type = models.CharField(max_length=100, null=True, blank=True)
+    tank_number = models.CharField(max_length=3, null=True, blank=True)
     batch_status = models.CharField(max_length=20, choices=BATCH_STATUS, default='New')
     weight = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10)
     packed_weight = models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10)
@@ -382,7 +302,8 @@ class Batch(models.Model):
     def save(self, *args, **kwargs):
         if self.pk is not None:
             honey_stock = self.honey_stock.all()
-            self.weight = honey_stock.aggregate(Sum('net_weight'))['net_weight__sum'] if honey_stock.exists() else 0.0
+            self.weight = honey_stock.aggregate(Sum('net_weight'))['net_weight__sum'] if honey_stock.exists() else Decimal(0.0)
+            self.weight += self.previous_batch.remaining_weight if self.previous_batch else Decimal(0.0)
             
         if self.qr_pointer is not None:
             qr_file_name = f'batch_{self.batch_number}.png'
@@ -409,15 +330,108 @@ class Batch(models.Model):
         
 class Production(models.Model):
     packing_date = models.DateField(default=timezone.now)
-    production_code = ShortUUIDField(length=16,max_length=16,prefix="p_",alphabet="abcdefhkmnrstuvwxz123456789_",)
+    production_code = models.CharField(max_length=100, unique=True, null=True, blank=True)
     customer = models.ForeignKey('Customer', on_delete=models.PROTECT, null=True, blank=True)
     product = models.ForeignKey('Product', on_delete=models.PROTECT, null=True, blank=True)
-
     units_made =  models.IntegerField(default=0)
     requested_units =  models.IntegerField(default=0)
     status = models.CharField(max_length=20, choices=PRODUCTION_STATUS, default='New')
     product_image = models.ImageField(upload_to='production_images',blank=True,null=True)
     batch = models.ForeignKey('Batch', on_delete=models.PROTECT, related_name='batch', null=True)
+    produced_weight =  models.DecimalField(default=0.00, decimal_places=2, editable=False, max_digits=10)
         
-    def save(self, *args, **kwargs):           
+    def save(self, *args, **kwargs):
+        if self.product is not None:
+            self.produced_weight = Decimal(self.product.unit_weight * self.units_made / 1000)
+
         super().save(*args, **kwargs)
+        
+        if self.batch is not None:
+            productions = Production.objects.filter(batch=self.batch)
+            weight_to_deduct =  productions.aggregate(Sum('produced_weight'))['produced_weight__sum']
+            self.batch.remaining_weight = Decimal(self.batch.weight - weight_to_deduct)
+            self.batch.save()
+
+class Carton(models.Model):
+    name = models.CharField(max_length=100,null=True, blank=True)
+    capacity =  models.IntegerField(default=0)
+    quantity =  models.IntegerField(default=0)
+    image = models.ImageField(upload_to='carton_images',blank=True,null=True)
+    last_updated =  models.DateField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f'{self.name} ({self.capacity} units/carton, in-stock: {self.quantity})'
+           
+class Container(models.Model):
+    name = models.CharField(max_length=100,null=True, blank=True)
+    type = models.CharField(max_length=20, choices=HONEY_CONTAINER_TYPES)
+    quantity =  models.IntegerField(default=0)
+    capacity =  models.IntegerField(default=0)
+    color = models.CharField(max_length=20, choices=LID_CONTAINER_COLORS)
+    image = models.ImageField(upload_to='container_images',blank=True,null=True)
+    last_updated =  models.DateField(auto_now=True)
+    
+    def __str__(self) -> str:
+        return f'{self.name} (capacity: {self.capacity}g, color: {self.color}, in-stock: {self.quantity})'
+  
+class Label(models.Model):
+    name = models.CharField(max_length=100,null=True, blank=True)
+    brand = models.ForeignKey('Brand', null=True, blank=True, on_delete=models.SET_NULL)
+    quantity =  models.IntegerField(default=0)
+    image = models.ImageField(upload_to='label_images',blank=True,null=True)
+    last_updated =  models.DateField(auto_now=True)
+    
+    def __str__(self) -> str:
+        return f'{self.name} (in-stock: {self.quantity})'
+
+class Lid(models.Model):
+    name = models.CharField(max_length=100,null=True, blank=True)
+    type = models.CharField(max_length=20, choices=LID_TYPES)
+    quantity =  models.IntegerField(default=0)
+    color = models.CharField(max_length=20, choices=LID_CONTAINER_COLORS)
+    image = models.ImageField(upload_to='lid_images',blank=True,null=True)
+    last_updated =  models.DateField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f'{self.name} (color: {self.color}, in-stock: {self.quantity})'
+    
+class Pallet(models.Model):
+    name = models.CharField(max_length=100,null=True, blank=True)
+    pallet_number = models.CharField(max_length=100,null=True, blank=True)
+    width = models.IntegerField(default=0)
+    length = models.IntegerField(default=0)
+    quantity =  models.IntegerField(default=0)
+    capacity_cartons = models.IntegerField(default=0)
+    layout = models.FileField(upload_to='pallet_layouts',blank=True,null=True)
+    last_updated =  models.DateField(auto_now=True)
+    
+    def __str__(self) -> str:
+        return f'{self.name} - {self.pallet_number} ({self.width} cm x {self.length} cm) (in-stock: {self.quantity})'
+
+class TopInsert(models.Model):
+    name = models.CharField(max_length=100,null=True, blank=True)
+    width = models.IntegerField(default=0)
+    length = models.IntegerField(default=0)
+    quantity =  models.IntegerField(default=0)
+    image = models.ImageField(upload_to='lid_images',blank=True,null=True)
+    last_updated =  models.DateField(auto_now=True)
+    
+    def __str__(self) -> str:
+        return f'{self.name} ({self.width} cm x {self.length} cm, in-stock: {self.quantity})'
+
+class Product(models.Model):
+    name = models.CharField(max_length=100,null=True, blank=True)
+    brand = models.ForeignKey('Brand', null=True, blank=True, on_delete=models.SET_NULL)
+    container = models.ForeignKey('Container', null=True, blank=True, on_delete=models.SET_NULL)
+    lid = models.ForeignKey('Lid', null=True, blank=True, on_delete=models.SET_NULL)
+    label = models.ForeignKey('Label',null=True, blank=True, on_delete=models.SET_NULL)
+    carton  = models.ForeignKey('Carton', null=True, blank=True, on_delete=models.SET_NULL)
+    pallet = models.ForeignKey('Pallet', on_delete=models.SET_NULL, null=True, blank=True)
+    top_insert = models.ForeignKey('TopInsert', on_delete=models.SET_NULL, null=True, blank=True)
+    unit_weight = models.IntegerField(default=0)
+    image = models.ImageField(upload_to='product_images',blank=True,null=True)
+    
+    def __str__(self) -> str:
+        ct = self.container.type if self.container else ''
+        return f'{self.brand} {self.name} {ct} ({self.unit_weight}g)'
+                  

@@ -1,0 +1,191 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %}Lids |{% endblock title %}
+{% block extrastyle %}
+    <!-- [Page specific CSS] start -->
+
+    <!-- [Page specific CSS] end -->
+{% endblock extrastyle %}
+{% block content %}
+
+  <!-- [ Main Content ] start -->
+  <div class="pc-container">
+    <div class="pc-content">
+      <!-- [ breadcrumb ] start -->
+      <div class="page-header">
+        <div class="page-block">
+          <div class="row align-items-center">
+            <div class="col-md-12">
+              <div class="page-header-title">
+                <h5 class="m-b-10">Edit Lid</h5>
+              </div>
+              <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="javascript: void(0)">Inventory</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'lids' %}">Lids</a></li>
+                <li class="breadcrumb-item" aria-current="page">Edit Lid</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- [ breadcrumb ] end -->
+
+
+      <!-- [ Main Content ] start -->
+      <div class="row">
+        <!-- [ sample-page ] start -->
+        <div class="col-sm-12">
+          <div class="row justify-content-center">
+            <div class="col-xl-11 col-xxl-10">
+              <div class="card">
+                <div class="card-body">
+                  <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" id="lid-id" name="lid-id" value="{{lid.id}}">
+                  <div class="row">
+
+
+                    <div class="col-md-5">
+                      <div class="sticky-md-top product-sticky">
+                        <div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                          <div class="carousel-inner">
+                            <div class="carousel-item active">
+                              {% if lid.image %}
+                              <img src="{{lid.image.url}}" class="d-block w-100 rounded" alt="Product images" />
+                              {% endif %}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-7">
+                      <div class="float-end">
+                        <div class="form-check prod-likes">
+                          <input type="checkbox" class="form-check-input" />
+                          <i data-feather="heart" class="prod-likes-icon"></i>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        {% if lid.quantity >= 10000 %}
+                        <span class="badge bg-light-success f-14">In stock</span>
+                        {% else %}
+                        <span class="badge bg-light-danger f-14">Low stock</span>
+                        {% endif %}
+                      </div>
+                      <div class="form-group">
+                        <input class="mb-3 form-control form-control-lg" type="text" name="lid-name" id="lid-name" placeholder="lid name" value="{{lid.name}}"/>
+                      </div>
+                      <hr class="my-3" />
+                      <div class="form-group row">
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Type <span class="text-danger">*</span></label>
+                        <div class="col-lg-6 col-md-12 col-sm-12">
+                          <select class="form-select" aria-label="Default select example" name="lid-type" id="lid-type">
+                            {% for b in lid_types %}
+                            <option value="{{ b }}" {% if b == lid.type %} selected {% endif %}>{{ b }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Color <span class="text-danger">*</span></label>
+                        <div class="col-lg-6 col-md-12 col-sm-12">
+                          <select class="form-select" aria-label="Default select example" name="lid-color" id="lid-color">
+                            {% for b in lid_colors %}
+                            <option value="{{ b }}" {% if b == lid.color %} selected {% endif %}>{{ b }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="form-group row">
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Quantity <span class="text-danger">*</span></label>
+                        <div class="col-lg-6 col-md-12 col-sm-12">
+                          <div class="btn-group btn-group-sm mb-2 border" role="group">
+                            <button type="button" id="decrease" onclick="decreaseValue('quantity')" class="btn btn-link-dark"
+                              ><i class="ti ti-minus"></i
+                            ></button>
+                            <input
+                              class="wid-70 text-center border-0 m-0 form-control rounded-0 shadow-none"
+                              type="text"
+                              id="quantity"
+                              name="quantity"
+                              value="{{lid.quantity}}"
+                            />
+                            <button type="button" id="increase" onclick="increaseValue('quantity')" class="btn btn-link-dark"
+                              ><i class="ti ti-plus"></i
+                            ></button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label class="col-form-label col-lg-3 col-sm-12 text-lg-end">Image <span class="text-danger">*</span></label>
+                        <div class="col-lg-6 col-md-12 col-sm-12">
+                        <input type="file" class="form-control" name="lid-image" id="lid-image" accept="image/*" />
+                       </div>
+                      </div>
+                      <hr class="my-3" />
+                      <div class="row">
+                        <div class="col-6">
+                          <div class="d-grid">
+                            <button  class="btn btn-primary">Update</button>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="d-grid">
+                            <button type="reset" class="btn btn-secondary">Reset</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                
+                  </div>
+                </form>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <!-- [ sample-page ] end -->
+      </div>
+      <!-- [ Main Content ] end -->
+    </div>
+  </div>
+  <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+{% block extra_js %}
+
+  <!-- Sweet Alert -->
+  <script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
+  {% load sweetify %}
+  {% sweetify %}
+  <script>
+// quantity start
+function increaseValue(temp) {
+  var value = parseInt(document.getElementById(temp).value, 10);
+  value = isNaN(value) ? 0 : value;
+  value++;
+  document.getElementById(temp).value = value;
+}
+
+function decreaseValue(temp) {
+  var value = parseInt(document.getElementById(temp).value, 10);
+  value = isNaN(value) ? 0 : value;
+  value < 1 ? (value = 1) : '';
+  value--;
+  document.getElementById(temp).value = value;
+}
+// quantity end
+
+
+
+  </script>
+  <!-- [Page Specific JS] end -->
+
+{% endblock extra_js %}
+
+

@@ -78,6 +78,7 @@
                       <th>Batch Date</th>
                       <th>Expiry Date</th>
                       <th>Batch Weight</th>
+                      <th>Batch Remaining</th>
                       <th>Status</th>
                       <th class="text-center">Actions</th>
                     </tr>
@@ -95,6 +96,7 @@
                       </td>
                       <td>{{batch.batch_date}}</td>
                       <td>{{batch.expiry_date}}</td>
+                      <td>{{batch.remaining_weight}}kg</td>
                       <td>{{batch.weight}}kg</td>
                       <td><span class="badge bg-light-primary rounded-pill f-12">{{batch.batch_status}}</span></td>
                       <td class="text-center">

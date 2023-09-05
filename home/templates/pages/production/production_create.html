@@ -54,28 +54,28 @@
           <div class="card-body">
             <form method="post">
               {% csrf_token %}
-
               <div class="form-group">
-                <label for="packing-date" class="col-form-label"
+                <label for="packing_date" class="col-form-label"
                   >Packing Date</label
                 >
                 <input
                   class="form-control"
                   type="text"
-                  id="packing-date"
-                  name="packing-date"
+                  id="packing_date"
+                  name="packing_date"
+                  required
                 />
               </div>
 
               <div class="form-group">
-                <label for="requested-units" class="col-form-label"
+                <label for="requested_units" class="col-form-label"
                   >Requested Units</label
                 >
                 <input
                   class="form-control"
                   type="number"
-                  id="requested-units"
-                  name="requested-units"
+                  id="requested_units"
+                  name="requested_units"
                   value="0"
                 />
               </div>
@@ -161,7 +161,7 @@
   });
 
 
-  const d_today = new Datepicker(document.querySelector('#packing-date'), {
+  const d_today = new Datepicker(document.querySelector('#packing_date'), {
     buttonClass: 'btn',
     todayHighlight: true,
     autohide: true,
@@ -172,11 +172,10 @@
   d_today.setDate(today);
 
 
-  let selectedOrder = 0;
-  $("#order").change(function(){
-    selectedOrder = $(this).children("option:selected").val();
-    
-  } );
+//  let selectedOrder = 0;
+ // $("#order").change(function(){
+  //  selectedOrder = $(this).children("option:selected").val();
+  // } );
   
 </script>
 

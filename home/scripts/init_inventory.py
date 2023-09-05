@@ -90,7 +90,7 @@ def run(*args):
     honey_types = ["Eucalyptus","Yellow Box","Red Gum","Blue Gum",
                     "Jarrah","Manuka","Spotted Gum","Banksia","Blackbutt",
                     "Orange Blossom","Grey Box","Mixed Flora","Salvation Jane",
-                    "Mallee","Stringy Bark","Wild Flower","Canola","Kunzea"
+                    "Mallee","Stringy Bark","Wild Flower","Canola","Kunzea",
                     "Ironbark", "Leatherwood"]
     honey_types.sort()
      

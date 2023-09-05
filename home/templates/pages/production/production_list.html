@@ -10,37 +10,16 @@
       <!-- [ Main Content ] start -->
       <div class="row">
         <!-- [ sample-page ] start -->
-        <div class="col-xl-4 col-md-6">
-          <div class="card bg-secondary-dark dashnum-card text-white overflow-hidden">
-            <span class="round small"></span>
-            <span class="round big"></span>
+        <div class="col-lg-3 col-md-6">
+          <div class="card bg-primary total-card">
             <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <div class="avtar avtar-lg">
-                    <i class="text-white ti ti-credit-card"></i>
-                  </div>
-                </div>
-                <div class="col-auto">
-                  <div class="btn-group">
-                    <a
-                      type="button"
-                      class="avtar bg-secondary dropdown-toggle arrow-none"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <i class="ti ti-dots"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button class="dropdown-item" type="button">Import Card</button></li>
-                      <li><button class="dropdown-item" type="button">Export</button></li>
-                    </ul>
-                  </div>
-                </div>
+              <!-- <span class="text-white float-end">12%</span> -->
+              <div class="text-start">
+                <h3 class="text-white mb-2">{{count}}</h3>
+                <p class="m-0 text-white">Total Production</p>
               </div>
-              <span class="text-white d-block f-34 f-w-500 my-2">{{count}}<i class="ti ti-arrow-up-right-circle opacity-50"></i></span>
-              <p class="mb-0 opacity-50">Number produced</p>
             </div>
+            <div id="total-value-graph-1"></div>
           </div>
         </div>
       </div>
@@ -90,7 +69,7 @@
                       <h5 class="mb-0"><a href="{% url 'production_edit' production.production_code %}">#{{production.production_code}}</a></h5>
                       </td>
                       <td>{{production.packing_date}}</td>
-                      <td>{{production.order_item.product.name}}</td>
+                      <td>{{production.product.name}}</td>
                       <td>{{production.requested_units}}</td>
                       <td>{{production.units_made}}</td>
                       <td><span class="badge bg-light-primary rounded-pill f-12">{{production.status}}</span></td>
@@ -116,9 +95,13 @@
 
 {% block extra_js %}
 
-    <!-- [Page Specific JS] start -->
-    <script src="{% static 'assets/js/plugins/simple-datatables.js' %}"></script>
-              <!-- Sweet Alert -->
+  <!-- [Page Specific JS] start -->
+  <!-- Apex Chart -->
+    <script src="{% static 'assets/js/plugins/apexcharts.min.js' %}"></script>
+    <script src="{% static 'assets/js/pages/w-chart.js' %}"></script>
+  <!-- data tables -->
+  <script src="{% static 'assets/js/plugins/simple-datatables.js' %}"></script>
+  <!-- Sweet Alert -->
   <script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
   {% load sweetify %}
   {% sweetify %}

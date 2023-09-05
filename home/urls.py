@@ -56,6 +56,14 @@ urlpatterns = [
     path('container/create', views.container_create, name='container_create'),
     path('container/<int:container_id>/edit', views.container_edit, name='container_edit'),
     
+    path('top_inserts', views.top_insert_list, name='top_inserts'),
+    path('top_insert/create', views.top_insert_create, name='top_insert_create'),
+    path('top_insert/<int:top_insert_id>/edit', views.top_insert_edit, name='top_insert_edit'),
+    
+    path('pallets', views.pallet_list, name='pallets'),
+    path('pallet/create', views.pallet_create, name='pallet_create'),
+    path('pallet/<int:pallet_id>/edit', views.pallet_edit, name='pallet_edit'),
+    
     path('wizard/', views.ProdCreationWizard.as_view(), name='fomr-wizard'),
 ]
  

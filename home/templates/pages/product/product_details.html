@@ -1,0 +1,376 @@
+{% extends 'layouts/base.html' %} {% load static %} 
+{% block title %} Product |{% endblock title %}
+{% block extrastyle %}
+<!-- [Page specific CSS] start -->
+<!-- Bootstrap DatePicker -->
+<link
+  rel="stylesheet"
+  href="{% static 'assets/css/plugins/datepicker-bs5.min.css' %}"
+/>
+<link
+  rel="stylesheet"
+  href="{% static 'assets/css/plugins/nouislider.min.css' %}"
+/>
+<!-- Animate.css -->
+<link
+  rel="stylesheet"
+  href="{% static 'assets/css/plugins/animate.min.css' %}"
+/>
+<!-- [Page specific CSS] end -->
+{% endblock extrastyle %}
+
+{% block content %}
+
+<!-- [ Main Content ] start -->
+<div class="pc-container">
+  <div class="pc-content">
+    <!-- [ breadcrumb ] start -->
+    <div class="page-header">
+      <div class="page-block">
+        <div class="row align-items-center">
+          <div class="col-md-12">
+            <div class="page-header-title">
+              <h5 class="m-b-10">Product</h5>
+            </div>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item">
+                <a href="{% url 'products' %}">Products</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a href="{% url 'product_details' product.id %}">{{product.name}}</a>
+              </li>
+              <li class="breadcrumb-item" aria-current="page">Details</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- [ breadcrumb ] end -->
+
+    <!-- [ Main Content ] start -->
+    <div class="row">
+      <!-- [ sample-page ] start -->
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header">
+            <h2>Product Details</h2>
+          </div>
+          <div class="card-body">
+
+              <div class="row">
+                <div class="col-md-5">
+                  <div class="sticky-md-top product-sticky">
+                    <div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                      <div class="carousel-inner">
+                        <div class="carousel-item active">
+                          <img src="{{product.image.url}}" class="d-block w-100 rounded" alt="Product images" />
+                        </div>
+                       
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-7">
+                  <div class="alert alert-primary" role="alert"> Maximum manufacturable units with current stock: {{maxman}} (cartons req: {{cartons_required}}) (max w/cartons: {{max_with_cartons}}) </div>
+
+
+                  <div>
+                    <h4>General Information</h4>
+                    <div class="table-responsive">
+                      <table class="table table-borderless">
+                        <tbody>
+                          <tr>
+                            <td class="text-muted py-1">Name</td>
+                            <td class="py-1">{{product.name}}</td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted py-1">Brand</td>
+                            <td class="py-1">{{product.brand.name}}</td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted py-1">Unit Weight</td>
+                            <td class="py-1">{{product.unit_weight}}g</td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted py-1">Label</td>
+                            <td class="py-1">{{product.label.name}}</td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted py-1">Container</td>
+                            <td class="py-1">{{product.container.name}}</td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted py-1">Lid</td>
+                            <td class="py-1">{{product.lid.name}}</td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted py-1">Carton</td>
+                            <td class="py-1">{{product.carton.name}}</td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted py-1">Top Insert</td>
+                            <td class="py-1">{{product.top_insert.name}}</td>
+                          </tr>
+                          <tr>
+                            <td class="text-muted py-1">Pallet</td>
+                            <td class="py-1">{{product.pallet.name}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+              <div class="card-footer">
+                <button type="button" class="btn btn-primary m-b-10"  onclick="window.location.href='{% url 'product_edit' product.id %}';">Modify Product</button>
+              </div>
+                </div>
+              </div>
+          </div>
+        </div>
+        <!-- related -->
+        <h2 class="mt-4 mb-3">Components Used</h2>
+        <div class="">
+          <div class="row flex-wrap">
+            <div class="col-sm-6 col-md-4 col-xxl-3">
+              <div class="card product-card">
+                <div class="card-img-top">
+                  <img src="{{product.label.image.url}}" alt="image" class="img-prod" />
+                </div>
+                <div class="card-body">
+                  <a href="{% url 'label_edit' product.label.id %}">
+                    <h4 class="mb-0">{{product.label.name}}</h4>
+                  </a>
+                  <div class="star mt-3">
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star-half-alt text-warning"></i>
+                    <i class="far fa-star text-muted"></i>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between mt-3">
+                    <h5 class="mb-0"><b>Type:</b> Label</h5>
+                    <h5 class="mb-0"><b>In Stock:</b> {{product.label.quantity}}</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-4 col-xxl-3">
+              <div class="card product-card">
+                <div class="card-img-top">
+                  <img src="{{product.container.image.url}}" alt="image" class="img-prod" />
+                </div>
+                <div class="card-body">
+                  <a href="{% url 'container_edit' product.container.id %}">
+                    <h4 class="mb-0">{{product.container.name}}</h4>
+                  </a>
+                  <div class="star mt-3">
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="far fa-star text-muted"></i>
+                    <i class="far fa-star text-muted"></i>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between mt-3">
+                    <h5 class="mb-0"><b>Type:</b> Container</h5>
+                    <h5 class="mb-0"><b>In Stock:</b> {{product.container.quantity}}</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-4 col-xxl-3">
+              <div class="card product-card">
+                <div class="card-img-top">
+                  <img src="{{product.lid.image.url}}" alt="image" class="img-prod" />
+                </div>
+                <div class="card-body">
+                  <a href="{% url 'lid_edit' product.lid.id %}">
+                    <h4 class="mb-0">{{product.lid.name}}</h4>
+                  </a>
+                  <div class="star mt-3">
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star-half-alt text-warning"></i>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between mt-3">
+                    <h5 class="mb-0"><b>Type:</b> Lid</h5>
+                    <h5 class="mb-0"><b>In Stock:</b> {{product.lid.quantity}}</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-4 col-xxl-3">
+              <div class="card product-card">
+                <div class="card-img-top">
+                  <img src="{{product.carton.image.url}}" alt="image" class="img-prod" />
+                </div>
+                <div class="card-body">
+                  <a href="{% url 'carton_edit' product.carton.id %}">
+                    <h4 class="mb-0">{{product.carton.name}}</h4>
+                  </a>
+                  <div class="star mt-3">
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="far fa-star text-muted"></i>
+                    <i class="far fa-star text-muted"></i>
+                    <i class="far fa-star text-muted"></i>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between mt-3">
+                    <h5 class="mb-0"><b>Type:</b> Carton</h5>
+                    <h5 class="mb-0"><b>In Stock:</b> {{product.carton.quantity}}</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {% if product.top_insert %}
+            <div class="col-sm-6 col-md-4 col-xxl-3">
+              <div class="card product-card">
+                <div class="card-img-top">
+                  <img src="{{product.top_insert.image.url}}" alt="image" class="img-prod" />
+                </div>
+                <div class="card-body">
+                  <a href="{% url 'top_insert_edit' product.top_insert.id %}">
+                    <h4 class="mb-0">{{product.top_insert.name}}</h4>
+                  </a>
+                  <div class="star mt-3">
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star-half-alt text-warning"></i>
+                    <i class="far fa-star text-muted"></i>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between mt-3">
+                    <h5 class="mb-0"><b>Type:</b> Top Insert</h5>
+                    <h5 class="mb-0"><b>In Stock:</b> {{product.top_insert.quantity}}</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if product.pallet %}
+            <div class="col-sm-6 col-md-4 col-xxl-3">
+              <div class="card product-card">
+                <div class="card-img-top">
+                  <img src="{{product.pallet.image.url}}" alt="image" class="img-prod" />
+                </div>
+                <div class="card-body">
+                  <a href="{% url 'pallet_edit' product.pallet.id %}">
+                    <h4 class="mb-0">{{product.pallet.name}}</h4>
+                  </a>
+                  <div class="star mt-3">
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star text-warning"></i>
+                    <i class="fas fa-star-half-alt text-warning"></i>
+                    <i class="far fa-star text-muted"></i>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between mt-3">
+                    <h5 class="mb-0"><b>Type:</b> Pallet</h5>
+                    <h5 class="mb-0"><b>In Stock:</b> {{product.pallet.quantity}}</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+          </div>
+        </div>
+        <!-- [ sample-page ] end -->
+      </div>
+      <!-- [ Main Content ] end -->
+    </div>
+  </div>
+</div>
+<!-- [ Main Content ] end -->
+
+{% endblock content %} {% block extra_js %}
+
+<!-- <script src="static/js/jquery.min.js"></script> -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<script src="{% static 'assets/js/plugins/choices.min.js' %}"></script>
+
+<!-- DatePicker js -->
+<script src="{% static 'assets/js/plugins/datepicker-full.min.js' %}"></script>
+
+<!-- tagify -->
+<script src="{% static 'assets/js/plugins/wNumb.min.js' %}"></script>
+<script src="{% static 'assets/js/plugins/nouislider.min.js' %}"></script>
+
+<!-- Sweet Alert -->
+<script src="{% static 'assets/js/plugins/sweetalert2.all.min.js' %}"></script>
+
+<script>
+  (function () {
+    // init slider
+    var slider = document.getElementById('unit-weight-slider');
+
+    noUiSlider.create(slider, {
+      start: [{{product.unit_weight}}],
+      step: 25,
+      range: {
+        min: [200],
+        max: [3000],
+      },
+      format: wNumb({
+        decimals: 0,
+      }),
+    });
+
+    // init slider input
+    var sliderInput = document.getElementById('unit-weight');
+
+    slider.noUiSlider.on('update', function (values, handle) {
+      sliderInput.value = values[handle];
+    });
+
+    sliderInput.addEventListener('change', function () {
+      slider.noUiSlider.set(this.value);
+    });
+  })();
+
+  //choices drop downs
+
+  var branddd = new Choices(`#brand`, {
+    searchPlaceholderValue: 'search for brand',
+  });
+
+  var containerdd = new Choices(`#container`, {
+    searchPlaceholderValue: 'search for container',
+  });
+
+  var liddd = new Choices(`#lid`, {
+    searchPlaceholderValue: 'search for lid',
+  });
+
+  var labeldd = new Choices(`#label`, {
+    searchPlaceholderValue: 'search for label',
+  });
+
+  var cartondd = new Choices(`#carton`, {
+    searchPlaceholderValue: 'search for carton type',
+  });
+
+
+  var palletdd = new Choices(`#pallet`, {
+    searchPlaceholderValue: 'search for pallet type',
+  });
+
+  var topindd = new Choices(`#top-insert`, {
+    searchPlaceholderValue: 'search for topinsert type',
+  });
+  
+  const d_today = new Datepicker(document.querySelector('#production-date'), {
+    buttonClass: 'btn',
+    todayHighlight: true,
+    autohide: true,
+    format: 'dd/mm/yyyy',
+  });
+
+  var today = new Date();
+  d_today.setDate(today);
+</script>
+
+{% endblock extra_js %}

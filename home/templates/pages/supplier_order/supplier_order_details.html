@@ -37,36 +37,34 @@
               <ul class="nav nav-tabs profile-tabs border-bottom mb-3 d-print-none" id="myTab" role="tablist">
                 <li class="nav-item">
                   <a
-                    class="nav-link active"
-                    id="profile-tab-1"
+                    class="nav-link"
+                    id="details-tab"
                     data-bs-toggle="tab"
-                    href="#profile-1"
+                    href="#details"
                     role="tab"
                     aria-controls="Profile-1"
                     aria-selected="true"
                   >
-                    <i class="material-icons-two-tone me-2">description</i>Details
-                  </a>
+                    <i class="material-icons-two-tone me-2">description</i>Details</a>
                 </li>
                 <li class="nav-item">
                   <a
-                    class="nav-link"
-                    id="profile-tab-2"
+                    class="nav-link active"
+                    id="invoice-tab"
                     data-bs-toggle="tab"
-                    href="#profile-2"
+                    href="#invoice"
                     role="tab"
                     aria-controls="Profile-2"
                     aria-selected="true"
                   >
-                    <i class="material-icons-two-tone me-2">receipt</i>Invoice
-                  </a>
+                    <i class="material-icons-two-tone me-2">receipt</i>Invoice</a>
                 </li>
                 <li class="nav-item">
                   <a
                     class="nav-link"
-                    id="profile-tab-3"
+                    id="shipping-tab"
                     data-bs-toggle="tab"
-                    href="#profile-3"
+                    href="#shipping"
                     role="tab"
                     aria-controls="Profile-3"
                     aria-selected="true"
@@ -76,7 +74,7 @@
                 </li>
               </ul>
               <div class="tab-content">
-                <div class="tab-pane show active" id="profile-1" role="tabpanel" aria-labelledby="profile-tab-1">
+                <div class="tab-pane" id="details" role="tabpanel" aria-labelledby="details-tab">
                   <div class="card border">
                     <div class="card-header">
                       <div class="row">
@@ -92,52 +90,58 @@
                       </div>
                     </div>
                     <div class="card-body">
-                      <ul class="list-inline">
-    
-                        <li class="list-inline-item">
-                          <i class="material-icons-two-tone opacity-75 me-1 f-16">phone_android</i> {{ order.supplier.contact_number }}
-                        </li>
-                        <li class="list-inline-item">
-                          <i class="material-icons-two-tone opacity-75 me-1 f-16">email</i> {{ order.supplier.email }}
-                        </li>
-                      </ul>
+ 
                       <div class="row align-items-center">
-                        <div class="col-md-4">
-                          <h4 class="mb-2">Payment terms</h4>
-                          <span class="badge text-success border border-success rounded-pill f-12 align-baseline mb-1">{{order.payment_term}}</span>
-                          <span class="text-muted f-14"></span>
-                          <p class="mb-1 mt-2"><b>Unit Price :</b> $ {{ order.unit_price}}</p>
-                          <p><b>Honey Levy :</b> $ {{ order.honey_levy}}</p>
-                      
+                        <div class="col-md-6">
+                          <h4 class="mb-2">Payment terms: <span class="badge text-primary border border-primary rounded-pill f-12 align-baseline mb-1">{{order.payment_term}}</span></h4>
+                          <p class="mb-1"><b>Payment Due Date: </b>{{order.payment_due_date}}</p>
+                          <p class="mb-1 mt-2"><b>Unit Price: </b> ${{order.unit_price}}</p>
+                          <p><b>Honey Levy: </b> ${{order.honey_levy}}</p>
                         </div>
-                        <div class="col-md-4">
-                            <img src="{{order.qrcode.url}}" width="200px"/>
-                          </div>
+                        <div class="col-md-6 text-sm-end">
+                          <img src="{{order.qrcode.url}}" width="150px"/>
+                        </div>
                       </div>
+
                       <div class="row">
-                        <div class="col-md-4">
-                          <h4 class="mb-3">Billing address</h4>
-                          <p class="mb-1"><b>Address :</b> {% if order.supplier.unit_number %}{{order.supplier.unit_number}}{% endif %} {{order.supplier.street_number}} {{order.supplier.address_line_1}} {{order.supplier.address_line_2}}</p>
-                          <p class="mb-1"><b>Suburb :</b> {{order.supplier.suburb}}</p>
-                          <p class="mb-1"><b>State :</b> {{order.supplier.state}}</p>
-                          <p><b>Post Code :</b> {{order.supplier.post_code}}</p>
+                        <div class="col-md-6">
+                          <h4 class="mb-2"><b>Honey Supplier:</b></h4>
+                          <p class="text-primary mb-1" >{{ order.supplier.name }}</p>
+                          <p class="text-muted mb-1">{% if order.supplier.unit_number %}{{order.supplier.unit_number}}{% endif %} 
+                            {{order.supplier.street_number}} {{order.supplier.address_line_1}}
+                          </p>
+                            {% if order.supplier.address_line_2 %}
+                            <p class="text-muted mb-1">{{order.supplier.address_line_2}}</p>
+                            {% endif %} 
+                          <p class="text-muted mb-1">{{order.supplier.suburb}}  {{order.supplier.state}}  {{order.supplier.post_code}}</p>
+                          <p class="text-muted mb-1">ABN: {{order.supplier.abn}}</p>
+                          <ul class="list-inline">
+    
+                            <li class="list-inline-item">
+                              <i class="material-icons-two-tone opacity-75 me-1 f-16">phone_android</i> {{ order.supplier.contact_number }}
+                            </li>
+                            <li class="list-inline-item">
+                              <i class="material-icons-two-tone opacity-75 me-1 f-16">email</i> {{ order.supplier.email }}
+                            </li>
+                          </ul>
+
                         </div>
                       </div>
                     </div>
                   </div>
                   <div class="card border table-card">
                     <div class="card-header">
-                      <h5 class="mb-0">Products</h5>
+                      <h5 class="mb-0">Honey Supplied</h5>
                     </div>
                     <div class="card-body p-0">
                       <div class="table-responsive">
                         <table class="table mb-0">
                           <thead>
                             <tr>
-                              <th>Stock ID</th>
-                              <th>Description</th>
-                              <th class="text-end">IBC/Container Weight</th>
+                              <th>IBC Number</th>
+                              <th>Honey Variety</th>
                               <th class="text-end">Gross Weight</th>
+                              <th class="text-end">Drum Weight</th>
                               <th class="text-end">Net Weight</th>
                               <th class="text-end"></th>
                             </tr>
@@ -145,15 +149,15 @@
                           <tbody>
                             {% for item in honey_stock%}
                             <tr>
-                             <td>{{item.stock_id}}</td>
+                             <td>{{item.ibc_number}}</td>
                               <td>
                                 <div>
                                   <h5 class="mb-1">{{ item.ht }}</h5>
                                 </div>
                               </td>
-                              <td class="text-end">{{item.ibc_weight}}</td>
-                              <td class="text-end">{{item.gross_weight}}</td>
-                              <td class="text-end">{{item.net_weight}}</td>
+                              <td class="text-end">{{item.gross_weight}} kg</td>
+                              <td class="text-end">{{item.ibc_weight}} kg</td>
+                              <td class="text-end">{{item.net_weight}} kg</td>
                             </tr>
                            {% endfor %}
                           </tbody>
@@ -169,33 +173,30 @@
                                 <tbody>
                                   <tr>
                                     <th>Gross Total Weight :</th>
-                                    <td>{{order.gross_total_weight}}</td>
+                                    <td>{{order.gross_total_weight}} kg</td>
                                   </tr>
                                   <tr>
                                     <th>Total Container Weight :</th>
-                                    <td>({{order.ibc_total_weight}})</td>
+                                    <td>({{order.ibc_total_weight}} kg)</td>
                                   </tr>
                                   <tr>
                                     <th>Net weight:</th>
-                                    <td>{{order.net_total_weight}}</td>
+                                    <td>{{order.net_total_weight}} kg</td>
                                   </tr>
                                   <tr>
-                                    <td class="pe-0 pt-0">
-                                      <hr class="mb-3 mt-0" />
+                                    <td class="pe-0 pt-2">
+                         
                                       <h5 class="text-primary m-r-10">Total for Weight :</h5>
                                     </td>
-                                    <td class="ps-0 pt-0">
-                                      <hr class="mb-3 mt-0" />
+                                    <td class="ps-0 pt-2">
                                       <h5 class="text-primary">$ {{order.total_weight_price}}</h5>
                                     </td>
                                   </tr>
                                   <tr>
                                   <td class="pe-0 pt-0">
-                                    <hr class="mb-3 mt-0" />
-                                    <h5 class="text-primary m-r-10">Total Honey Levy :</h5>
+                                    <h5 class="text-primary m-r-10">Honey Levy :</h5>
                                   </td>
                                   <td class="ps-0 pt-0">
-                                    <hr class="mb-3 mt-0" />
                                     <h5 class="text-primary">$ {{order.honey_levy}}</h5>
                                   </td>
                                 </tr>
@@ -218,12 +219,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="tab-pane" id="profile-2" role="tabpanel" aria-labelledby="profile-tab-2">
+                <div class="tab-pane show active" id="invoice" role="tabpanel" aria-labelledby="invoice-tab">
                   <div class="card border invoice-card">
                     <div class="card-header">
                       <div class="row align-items-center">
                         <div class="col-sm-6">
-                          <h5 class="mb-0">Invoice #{{ order.order_number}}</h5>
+                          <h4 class="mb-0">Order No: {{ order.order_number}}</h4>
                         </div>
                         <div class="col-sm-6 text-sm-end"><img src="/media/logo.svg" alt="logo" class="img-fluid" /></div>
                       </div>
@@ -234,30 +235,44 @@
                           <h4 class="mb-2"><b>Nova Farms Pty Ltd.</b></h4>
                           <p class="text-muted mb-1">2-4 White Road, </p>
                           <p class="text-muted mb-1">Gepps Cross, SA 5086</p>
-                          <p class="text-muted mb-1"><a href="mailto:demo@company.com">info@novafarms.com.au</a></p>
-                          <p class="text-muted">(+61) 852 327 278</p>
+                          <p class="text-muted mb-1"><a href="mailto:info@novafarms.com.au">info@novafarms.com.au</a></p>
+                          <p class="text-muted">(+61) 403 131 461 / 421 487 599</p>
                         </div>
-                        <div class="col-md-6">
-                          <h4 class="mb-2">Order QR Code</h4>
-                            <img src="{{order.qrcode.url}}" width="200px"/>
-                          </div>
+                        <div class="col-md-6 text-sm-end">
+                            <img src="{{order.qrcode.url}}" width="150px"/>
+                        </div>
                       </div>
                       <div class="row mb-3">
-                        <div class="col-md-6">
-                          <h4 class="mb-2"><b>Customer : {{ order.supplier.name}}</b></h4>
-                          <p class="text-muted mb-1">{% if order.supplier.unit_number %}{{order.supplier.unit_number}}{% endif %} {{order.supplier.street_number}} {{order.supplier.address_line_1}}</p>
-                          <p class="text-muted mb-1"> {{order.supplier.suburb}}  {{order.supplier.state}}  {{order.supplier.post_code}}</p>
-                          <p class="text-muted mb-1"> {{order.supplier.contact_number}}</p>
-                          <p class="text-muted mb-1"><a href="mailto:demo@company.com"> {{order.supplier.email}}</a></p>
-                        </div>
-                        <div class="col-md-6">
-                          <h4 class="mb-2"><b>Order Details :</b></h4>
-                          <p class="text-muted mb-1">Date : {{order.date}}</p>
-                          <p class="text-muted mb-1"
-                            >Payment Terms:
-                            <span class="badge text-warning border border-warning rounded-pill f-12 align-baseline">{{order.payment_term}}</span>
+                        <div class="col-md-5">
+                          <h4 class="mb-2"><b>Honey Supplier:</b></h4>
+                          <p class="mb-1" >{{ order.supplier.name }}</p>
+                          <p class="text-muted mb-1">{% if order.supplier.unit_number %}{{order.supplier.unit_number}}{% endif %} 
+                            {{order.supplier.street_number}} {{order.supplier.address_line_1}}
                           </p>
-                          <p class="text-muted">Order Id : #{{order.order_number}}</p>
+                            {% if order.supplier.address_line_2 %}
+                            <p class="text-muted mb-1">{{order.supplier.address_line_2}}</p>
+                            {% endif %} 
+                          <p class="text-muted mb-1">{{order.supplier.suburb}}  {{order.supplier.state}}  {{order.supplier.post_code}}</p>
+                          <p class="text-muted mb-1">ABN: {{order.supplier.abn}}</p>
+                          <ul class="list-inline">
+                            <li class="list-inline-item">
+                              <i class="material-icons-two-tone opacity-75 me-1 f-16">phone_android</i>{{ order.supplier.contact_number }}
+                            </li>
+                            <li class="list-inline-item">
+                              <i class="material-icons-two-tone opacity-75 me-1 f-16">email</i>{{ order.supplier.email }}
+                            </li>
+                          </ul>
+
+                        </div>
+                        <div class="col-md-2"></div>
+                        <div class="col-md-5">
+                          <h4 class="mb-2"><b>Order Details :</b></h4>
+                          <p class="mb-1">Date : <span class="text-muted">{{order.date}} </span></p>
+                          <p class="mb-1"
+                            >Payment Terms:
+                            <span class="badge text-primary border border-primary rounded-pill f-12 align-baseline">{{order.payment_term}}</span>
+                          </p>
+                          <p class="mb-1">Payment Due Date : <span class="text-muted">{{order.payment_due_date}} </span></p>
                         </div>
                       </div>
                       <div class="table-responsive">
@@ -266,8 +281,8 @@
                             <tr>
                               <!-- <th>Stock ID</th> -->
                               <th>Description</th>
-                              <th class="text-end">IBC/Container Weight</th>
                               <th class="text-end">Gross Weight</th>
+                              <th class="text-end">Drum Weight</th>
                               <th class="text-end">Net Weight</th>
                             </tr>
                           </thead>
@@ -280,9 +295,9 @@
                                   <h5 class="mb-1">{{item.ht}}</h5>
                                 </div>
                               </td>
-                              <td class="text-end">{{item.ibc_weight}}</td>
-                              <td class="text-end">{{item.gross_weight}}</td>
-                              <td class="text-end">{{item.net_weight}}</td>
+                              <td class="text-end">{{item.gross_weight}} kg</td>
+                              <td class="text-end">{{item.ibc_weight}} kg</td>
+                              <td class="text-end">{{item.net_weight}} kg</td>
                             </tr>
                             {% endfor %}
                           </tbody>
@@ -296,15 +311,15 @@
                                 <tbody>
                                   <tr>
                                     <th>Gross Total Weight :</th>
-                                    <td>{{order.gross_total_weight}}</td>
+                                    <td>{{order.gross_total_weight}} kg</td>
                                   </tr>
                                   <tr>
                                     <th>Total Container Weight :</th>
-                                    <td>({{order.ibc_total_weight}})</td>
+                                    <td>({{order.ibc_total_weight}} kg)</td>
                                   </tr>
                                   <tr>
                                     <th>Net weight:</th>
-                                    <td>{{order.net_total_weight}}</td>
+                                    <td>{{order.net_total_weight}} kg</td>
                                   </tr>
                                   <tr>
                                     <td class="pe-0 pt-0">
@@ -318,21 +333,21 @@
                                   </tr>
                                   <tr>
                                   <td class="pe-0 pt-0">
-                                    <hr class="mb-3 mt-0" />
-                                    <h5 class="text-primary m-r-10">Total Honey Levy :</h5>
+                  
+                                    <h5 class="text-primary m-r-10">Honey Levy (multiplier: ${{multiplier}}) :</h5>
                                   </td>
                                   <td class="ps-0 pt-0">
-                                    <hr class="mb-3 mt-0" />
+                       
                                     <h5 class="text-primary">$ {{order.honey_levy}}</h5>
                                   </td>
                                 </tr>
                                   <tr>
                                     <td class="pe-0 pt-0">
-                                      <hr class="mb-3 mt-0" />
-                                      <h5 class="text-primary m-r-10">Total Sum :</h5>
+                            
+                                      <h5 class="text-primary m-r-10">Total Payable:</h5>
                                     </td>
                                     <td class="ps-0 pt-0">
-                                      <hr class="mb-3 mt-0" />
+                                  
                                       <h5 class="text-primary">$ {{order.total_price}}</h5>
                                     </td>
                                   </tr>
@@ -342,11 +357,7 @@
                           </div>
                         </div>
                       </div>
-                      <h5><b>Terms and Condition :</b></h5>
-                      <p class="text-muted"
-                        >lorem ipsum dolor sit connecter adieu siccing eliot, sed do elusion tempore incident ut laborer et dolors magna
-                        aliquot.</p
-                      >
+                      <p class="text-mute">NovaFarms Supporting South Australian Beekeepers Since 1995</p>
                     </div>
                   </div>
                   <div class="text-center d-print-none mt-5 mb-3">
@@ -354,7 +365,7 @@
                     <button type="button" class="btn btn-secondary m-b-10">Cancel</button>
                   </div>
                 </div>
-                <div class="tab-pane" id="profile-3" role="tabpanel" aria-labelledby="profile-tab-3">
+                <div class="tab-pane" id="shipping" role="tabpanel" aria-labelledby="shipping-tab">
                   <div class="card border">
                     <div class="card-header">
                       <h5>ORDER STATUS</h5>

@@ -28,7 +28,7 @@
               </div>
               <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item"><a href="javascript: void(0)">Batch</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'batch_list' %}">Batch</a></li>
                 <li class="breadcrumb-item" aria-current="page">Batch Details</li>
               </ul>
             </div>
@@ -46,7 +46,7 @@
             <div class="card-header">
               <div class="row align-items-center">
                 <div class="col-sm-6">
-                  <h5 class="mb-0">Batch #{{ batch.batch_number | upper}}</h5>
+                  <h2 class="mb-0"><strong>Batch #{{ batch.batch_number | upper}}</strong></h2>
                   <br/>
                   <span class="badge text-success border border-success rounded-pill f-12 align-baseline mb-1">{{batch.batch_status}}</span>
                 </div>
@@ -55,14 +55,14 @@
             </div>
             <div class="card-body">
               <div class="row mb-3">
-                <div class="col-md-6">
-                  <h4 class="mb-2"><b>Tank Number: {{batch.tank_number}}</b></h4>
-                  <h4 class="mb-2">Honey Type: {{batch.honey_type}}</h4>
+                <div class="col-md-6 ">
+                  <img src="{{batch.qrcode.url}}" width="200px"/>
                 </div>
-                <div class="col-md-6">
-                  <h4 class="mb-2">Batch QR Code</h4>
-                    <img src="{{batch.qrcode.url}}" width="200px"/>
-                  </div>
+                <div class="col-md-6 mt-3 text-end">
+                  <h3 class="mb-2"><b class="m-r-10">Tank Number:</b> {{batch.tank_number}}</h3>
+                  <h3 class="mb-2"><b class="m-r-10">Honey Type:</b> {{batch.honey_type}}</h3>
+                </div>
+
               </div>
               {% if batch.previous_batch %}
               <div class="table-responsive">
@@ -70,11 +70,14 @@
                   <thead>
                     <tr>
                       <th>Previous Batch</th>
+                      <th>Honey Type</th>
+                      <th>Tank Number</th>
+                      <th class="text-end">Remaining Weight</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>{{ batch.previous_batch.batch_number }}</td>
+                      <td>#{{ batch.previous_batch.batch_number }}</td>
                       <td>{{batch.previous_batch.honey_type }}</td>
                       <td>
                         <div>
@@ -96,7 +99,6 @@
                       <th>Supplier</th>
                       <th>IBC</th>
                       <th>Honey Type</th>
-                      <th class="text-end">IBC/Container Weight</th>
                       <th class="text-end">Net Weight</th>
                     </tr>
                   </thead>
@@ -110,7 +112,6 @@
                           <h5 class="mb-1">{{item.ht}}</h5>
                         </div>
                       </td>
-                      <td class="text-end">{{item.ibc_weight}} kg</td>
                       <td class="text-end">{{item.net_weight}} kg</td>
                     </tr>
                     {% endfor %}
@@ -124,14 +125,49 @@
                       <table class="table table-borderless text-end mb-0">
                         <tbody>
                           <tr>
-                            <td class="pe-0 pt-0">
-                              <hr class="mb-3 mt-0" />
-                              <h5 class="text-primary m-r-10">Total Honey Weight :</h5>
-                            </td>
-                            <td class="ps-0 pt-0">
-                              <hr class="mb-3 mt-0" />
-                              <h5 class="text-primary">{{batch.weight}} kg</h5>
-                            </td>
+                            <th>Total Starting Weight :</th>
+                            <td>{{batch.weight}} kg</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- honey used in  -->
+              <h3><strong>Used in:</strong></h3>
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Packing Date</th>
+                      <th>Product</th>
+                      <th class="text-end">Units Made</th>
+                      <th class="text-end">Produced Weight</th> 
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for product in production %}
+                    <tr>
+                      <td><a href="{% url 'production_edit' product.production_code %}">{{product.packing_date}}</a></td>
+                      <td>{{product.product.name}} ({{product.product.unit_weight}}g)</td>
+                      <td class="text-end">{{product.units_made}}</td>
+                      <td class="text-end">{{product.produced_weight}} kg</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="rounded p-3 mb-3 bg-light-primary">
+                <div class="row justify-content-end">
+                  <div class="col-auto">
+                    <div class="table-responsive">
+                      <table class="table table-borderless text-end mb-0">
+                        <tbody>
+                          <tr>
+                            <th>Currently Remaining Weight :</th>
+                            <td>{{batch.remaining_weight}} kg</td>
                           </tr>
                         </tbody>
                       </table>
