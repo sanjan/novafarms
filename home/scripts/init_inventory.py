@@ -99,8 +99,8 @@ def run(*args):
              type = type,
          )
      
-    SupplierOrder.objects.all().delete()
-    Supplier.objects.all().delete() 
+    # SupplierOrder.objects.all().delete()
+    # Supplier.objects.all().delete() 
      
     
     
