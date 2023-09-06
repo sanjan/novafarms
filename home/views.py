@@ -25,7 +25,7 @@ from django.contrib.auth import logout
 from django.contrib.auth import views as auth_views
 
 # Create your views here.
-
+@login_required(login_url='/accounts/login-v3/')
 def index(request):
     orders = SupplierOrder.objects.all()
     batches = Batch.objects.all()
@@ -1207,7 +1207,7 @@ def register_v3(request):
 class UserLoginV3View(auth_views.LoginView):
   template_name = 'accounts/login-v3.html'
   form_class = LoginForm
-  success_url = '/dashboard'
+  success_url = '/'
 
 class UserPasswordChangeV3View(auth_views.PasswordChangeView):
   template_name = 'accounts/password-change-v3.html'
@@ -1222,12 +1222,12 @@ class UserPasswordResetV3View(auth_views.PasswordResetView):
 
 ######## Common #########
 class UserPasswordResetConfirmV1View(auth_views.PasswordResetConfirmView):
-  template_name = 'accounts/reset-password-v1.html'
+  template_name = 'accounts/reset-password-v3.html'
   form_class = UserSetPasswordForm
 
 def user_logout_view(request):
   logout(request)
-  return redirect('/accounts/login-v1/')
+  return redirect('/accounts/login-v3/')
 
 ######## End Common #########
 

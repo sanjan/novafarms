@@ -71,6 +71,7 @@ urlpatterns = [
     path('accounts/register-v3/', views.register_v3, name='register_v3'),
     path('accounts/password-reset-v3/', views.UserPasswordResetV3View.as_view(), name='password_reset_v3'),
     path('accounts/password-change-v3/', views.UserPasswordChangeV3View.as_view(), name='password_change_v3'),
+    path('accounts/logout/', views.user_logout_view, name='logout'),
     ######## End v3 #########
 ]
  
