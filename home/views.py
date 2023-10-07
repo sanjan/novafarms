@@ -780,9 +780,9 @@ def product_edit(request, product_id):
         return HttpResponseRedirect(reverse('products'))    
     
     product = Product.objects.get(id=product_id)
-    maxman = min(product.lid.quantity, product.label.quantity, product.container.quantity)
-    cartons_required = math.ceil(maxman/product.carton.capacity)
-    max_with_cartons = min(product.lid.quantity, product.label.quantity, product.container.quantity, product.carton.capacity * product.carton.quantity)
+    # maxman = min(product.lid.quantity, product.label.quantity, product.container.quantity)
+    # cartons_required = math.ceil(maxman/product.carton.capacity)
+    # max_with_cartons = min(product.lid.quantity, product.label.quantity, product.container.quantity, product.carton.capacity * product.carton.quantity)
     brands = Brand.objects.all()
     containers = Container.objects.all()
     lids = Lid.objects.all()
@@ -800,9 +800,9 @@ def product_edit(request, product_id):
         'cartons': cartons,
         'pallets' : pallets,
         'top_inserts' : top_inserts,
-        'maxman' : maxman,
-        'max_with_cartons': max_with_cartons,
-        'cartons_required': cartons_required,
+        # 'maxman' : maxman,
+        # 'max_with_cartons': max_with_cartons,
+        # 'cartons_required': cartons_required,
     }
     return render(request, 'pages/product/product_edit.html', context)
 
@@ -820,14 +820,14 @@ def product_list(request):
 @login_required(login_url='/accounts/login-v3/')
 def product_details(request, product_id):
     product = Product.objects.get(id=product_id)
-    maxman = min(product.lid.quantity, product.label.quantity, product.container.quantity)
-    cartons_required = math.ceil(maxman/product.carton.capacity)
-    max_with_cartons = min(product.lid.quantity, product.label.quantity, product.container.quantity, product.carton.capacity * product.carton.quantity)
+    # maxman = min(product.lid.quantity, product.label.quantity, product.container.quantity)
+    # cartons_required = math.ceil(maxman/product.carton.capacity)
+    # max_with_cartons = min(product.lid.quantity, product.label.quantity, product.container.quantity, product.carton.capacity * product.carton.quantity)
     
     context = {'product': product,
-                       'maxman' : maxman,
-        'max_with_cartons': max_with_cartons,
-        'cartons_required': cartons_required,
+        # 'maxman' : maxman,
+        # 'max_with_cartons': max_with_cartons,
+        # 'cartons_required': cartons_required,
         }
     return render(request, 'pages/product/product_details.html', context)
 
