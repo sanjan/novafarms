@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import (Supplier, SupplierOrder, Customer, CustomerOrder, CustomerOrderItem, HoneyStock, 
-HoneyType, Batch, Product, Production, Brand, Pallet, Container, Lid, Carton, Label, TopInsert,  
-SUPPLIER_PAYMENT_TERMS, CUSTOMER_PAYMENT_TERMS, BATCH_STATUS, ORDER_STATUS, HONEY_CONTAINER_TYPES, 
-LID_TYPES, LID_CONTAINER_COLORS, TANK_NUMBERS)
+from .models import (Config, Supplier, SupplierOrder, Customer, CustomerOrder, 
+                     CustomerOrderItem, HoneyStock, HoneyType, Batch, Product, 
+                     Production, Brand, Pallet, Container, Lid, Carton, Label, 
+                     TopInsert, SUPPLIER_PAYMENT_TERMS, CUSTOMER_PAYMENT_TERMS,
+                     BATCH_STATUS, ORDER_STATUS, HONEY_CONTAINER_TYPES, LID_TYPES,
+                     LID_CONTAINER_COLORS, TANK_NUMBERS)
 from .forms import SupplierForm, CustomerForm
 from decimal import Decimal
 from datetime import datetime, timedelta
@@ -238,7 +240,9 @@ def supplier_order_details(request, order_number):
     
     order.save()
     order.honey_levy = round(order.honey_levy,2)
+    config = {config.name: config.value for config in Config.objects.all()}
     context = {'order': order,
+            'config' : config,
             'honey_stock': honey_stock,
             'multiplier': settings.HONEY_LEVY_MULTIPLIER,
             }
@@ -334,6 +338,7 @@ def customer_order_create(request):
 
     products = Product.objects.all()
     customers = Customer.objects.all()
+
     context = {
         'products': products,
         'customers': customers,
@@ -701,12 +706,18 @@ def product_create(request):
             container = Container.objects.get(id=container),
             lid = Lid.objects.get(id=lid),
             label = Label.objects.get(id=label),
-            carton = Carton.objects.get(id=carton),
             unit_weight = int(unit_weight),
-            pallet = Pallet.objects.get(id=pallet),
-            top_insert = TopInsert.objects.get(id=top_insert),
             image = image,
         )
+        
+        if carton:
+            product.carton = Carton.objects.get(id=carton)
+        if pallet:
+            product.pallet = Pallet.objects.get(id=pallet)
+        if top_insert:    
+            product.top_insert = TopInsert.objects.get(id=top_insert)
+
+        product.save()
         
         sweetify.success(request, f'Product #{product.id} created successfully')
         return HttpResponseRedirect(reverse('products'))

@@ -21,6 +21,12 @@
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
 />
+<style> 
+  .form-group.required .form-label:after {
+    content:" *";
+    color:red;
+  }
+</style>
 <!-- [Page specific CSS] end -->
 {% endblock extrastyle %}
 
@@ -62,8 +68,8 @@
             <form method="post" enctype="multipart/form-data" >
               {% csrf_token %}
 
-              <div class="form-group">
-                <label for="product-name" class="col-form-label">Product Name</label>
+              <div class="form-group required">
+                <label for="product-name" class="form-label">Product Name</label>
                 <input
                   class="form-control"
                   type="text"
@@ -73,7 +79,7 @@
                 />
               </div>
 
-              <div class="form-group">
+              <div class="form-group required">
                 <label for="brand" class="form-label">Brand</label>
                 <select
                   class="form-control"
@@ -91,7 +97,7 @@
                 </select>
               </div>
 
-              <div class="form-group">
+              <div class="form-group required">
                 <label for="container" class="form-label">Container</label>
                 <select
                   class="form-control"
@@ -109,7 +115,7 @@
                 </select>
               </div>
 
-              <div class="form-group">
+              <div class="form-group required">
                 <label for="lid" class="form-label">Lid</label>
                 <select
                   class="form-control"
@@ -127,7 +133,7 @@
                 </select>
               </div>
 
-              <div class="form-group">
+              <div class="form-group required">
                 <label for="label" class="form-label">Label</label>
                 <select
                   class="form-control"
@@ -145,7 +151,7 @@
                 </select>
               </div>
 
-              <div class="form-group">
+              <div class="form-group required">
                 <label for="carton" class="form-label">Carton</label>
                 <select
                   class="form-control"
@@ -197,7 +203,7 @@
                 </select>
               </div>
 
-              <div class="form-group">
+              <div class="form-group required">
                 <label for="unit-weight" class="form-label">Unit weight</label>
                 <div class="row align-items-center">
                   <div class="col-4">
@@ -221,7 +227,7 @@
                 </div>
               </div>
 
-              <div class="form-group">
+              <div class="form-group required">
                 <label for="product-image" class="form-label">Product Image</label>
                 <input type="file" class="form-control" name="product-image" id="product-image" accept="image/*" />
               </div>

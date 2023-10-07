@@ -1,11 +1,12 @@
 from django.contrib import admin
-from .models import HoneyType, Brand, Pallet, Container, Lid, Carton, Label, TopInsert, Product, Supplier
-
+from .models import HoneyType, Brand, Config
 
 admin.site.site_header = "NovaFarms Administration"
 
+admin.site.register(Config)
 admin.site.register(HoneyType)
 admin.site.register(Brand)
+
 # admin.site.register(Product)
 # admin.site.register(Container)
 # admin.site.register(Lid)

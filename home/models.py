@@ -91,7 +91,7 @@ TANK_NUMBERS = {
 class Config(models.Model):
     last_updated = models.DateField(default=timezone.now)
     name = models.CharField(max_length=50)
-    value = models.CharField(max_length=50)
+    value = models.CharField(max_length=200)
     
     def __str__(self) -> str:
         return f'{self.name}: {self.value} ({self.last_updated})'
