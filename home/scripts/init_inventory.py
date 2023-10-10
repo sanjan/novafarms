@@ -1,3 +1,4 @@
+import os
 from home.models import Carton, TopInsert, Lid, Container, Label, Brand, HoneyType, Supplier, SupplierOrder
 import csv
 import requests
@@ -69,40 +70,41 @@ def run(*args):
                     )
                     insert_image(top_insert, image_url)
 
-    # populate brands
-    Brand.objects.all().delete()
-    
-    brands = ["Aldi/Bramwells","Beesante","Dorado","FairPrice",
-              "Farmside","Foodland","Healthy Adeland","Hive Smith","Kangaroo Village",
-              "Nature Australia","New Natural","New Organic","New Origins","NovaFarms",
-              "Orchids Pearl","OriginHealth","PandaHoney","Paradise Gold","Plain",
-              "Purabee","River farm","Value Brand","Costco/Winn"]
-    brands.sort()
-    
-    for brand in brands:
-        Brand.objects.create(
-                    name = brand,
-                )
-    
-    # populate Honey Types
-    HoneyType.objects.all().delete()
-     
-    honey_types = ["Eucalyptus","Yellow Box","Red Gum","Blue Gum",
-                    "Jarrah","Manuka","Spotted Gum","Banksia","Blackbutt",
-                    "Orange Blossom","Grey Box","Mixed Flora","Salvation Jane",
-                    "Mallee","Stringy Bark","Wild Flower","Canola","Kunzea",
-                    "Ironbark", "Leatherwood"]
-    honey_types.sort()
-     
-    for type in honey_types:
-         HoneyType.objects.create(
-             type = type,
-         )
-     
-    # SupplierOrder.objects.all().delete()
-    # Supplier.objects.all().delete() 
-     
-    
+    if 'RENDER' not in os.environ:
+        # populate brands
+        Brand.objects.all().delete()
+        
+        brands = ["Aldi/Bramwells","Beesante","Dorado","FairPrice",
+                "Farmside","Foodland","Healthy Adeland","Hive Smith","Kangaroo Village",
+                "Nature Australia","New Natural","New Organic","New Origins","NovaFarms",
+                "Orchids Pearl","OriginHealth","PandaHoney","Paradise Gold","Plain",
+                "Purabee","River farm","Value Brand","Costco/Winn"]
+        brands.sort()
+        
+        for brand in brands:
+            Brand.objects.create(
+                        name = brand,
+                    )
+        
+        # populate Honey Types
+        HoneyType.objects.all().delete()
+        
+        honey_types = ["Eucalyptus","Yellow Box","Red Gum","Blue Gum",
+                        "Jarrah","Manuka","Spotted Gum","Banksia","Blackbutt",
+                        "Orange Blossom","Grey Box","Mixed Flora","Salvation Jane",
+                        "Mallee","Stringy Bark","Wild Flower","Canola","Kunzea",
+                        "Ironbark", "Leatherwood"]
+        honey_types.sort()
+        
+        for type in honey_types:
+            HoneyType.objects.create(
+                type = type,
+            )
+        
+        # SupplierOrder.objects.all().delete()
+        # Supplier.objects.all().delete() 
+        
+        
     
                     
               

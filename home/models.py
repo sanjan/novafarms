@@ -428,10 +428,18 @@ class Product(models.Model):
     carton  = models.ForeignKey('Carton', null=True, blank=True, on_delete=models.SET_NULL)
     pallet = models.ForeignKey('Pallet', on_delete=models.SET_NULL, null=True, blank=True)
     top_insert = models.ForeignKey('TopInsert', on_delete=models.SET_NULL, null=True, blank=True)
+    cartons_per_layer = models.IntegerField(default=0)
+    layers_per_pallet = models.IntegerField(default=0)
+    cartons_per_pallet = models.IntegerField(default=0)
     unit_weight = models.IntegerField(default=0)
     image = models.ImageField(upload_to='product_images',blank=True,null=True)
     
     def __str__(self) -> str:
         ct = self.container.type if self.container else ''
         return f'{self.brand} {self.name} {ct} ({self.unit_weight}g)'
+    
+    def save(self, *args, **kwargs):
+        if self.pk is not None:
+            self.cartons_per_pallet = self.cartons_per_layer * self.layers_per_pallet
+        super().save(*args, **kwargs)
                   

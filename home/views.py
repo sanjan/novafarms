@@ -698,6 +698,8 @@ def product_create(request):
         pallet = request.POST.get('pallet')
         top_insert = request.POST.get('top-insert')
         unit_weight = request.POST.get('unit-weight') or 0
+        cartons_per_layer = request.POST.get('cartons-per-layer') or 0
+        layers_per_pallet = request.POST.get('layers-per-pallet') or 0
         image = request.FILES.get('product-image')
         
         product = Product.objects.create(
@@ -707,6 +709,8 @@ def product_create(request):
             lid = Lid.objects.get(id=lid),
             label = Label.objects.get(id=label),
             unit_weight = int(unit_weight),
+            cartons_per_layer = int(cartons_per_layer),
+            layers_per_pallet = int(layers_per_pallet),
             image = image,
         )
         
@@ -756,6 +760,8 @@ def product_edit(request, product_id):
         label = request.POST.get('label')
         carton = request.POST.get('carton')
         unit_weight = request.POST.get('unit-weight') or 0
+        cartons_per_layer = request.POST.get('cartons-per-layer') or 0
+        layers_per_pallet = request.POST.get('layers-per-pallet') or 0
         image = request.FILES.get('product-image')
         pallet = request.POST.get('pallet')
         top_insert = request.POST.get('top-insert')
@@ -768,6 +774,8 @@ def product_edit(request, product_id):
         product.label = Label.objects.get(id=label)
         product.carton = Carton.objects.get(id=carton)
         product.unit_weight = int(unit_weight)
+        product.cartons_per_layer = int(cartons_per_layer)
+        product.layers_per_pallet = int(layers_per_pallet)
         product.top_insert = TopInsert.objects.get(id=top_insert) if top_insert else None
         product.pallet =  Pallet.objects.get(id=pallet) if pallet else None
         
