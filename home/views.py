@@ -429,7 +429,9 @@ def batch_create(request):
         date_format = '%d/%m/%Y'
         batch_date = datetime.strptime(request.POST.get('batch-date'), date_format) 
         expiry_date = datetime.strptime(request.POST.get('expiry-date'), date_format)
-        previous_batch = Batch.objects.get(id=request.POST.get('previous-batch')) or 0
+        previous_batch = None
+        if type(request.POST.get('previous-batch')) == 'int':
+            previous_batch = Batch.objects.get(id=request.POST.get('previous-batch'))
         honey_type = request.POST.get('honey-type')
         tank_number =  request.POST.get('tank-number')
         honey_stocks = request.POST.get('honey-stock[]')
